@@ -59,16 +59,28 @@ with st.sidebar:
             st.rerun()
 
 # ==============================================================================
-# ETAPA 1: CARREGAR PEDIDO NO PC + EXCLUIR CARGA (APENAS ADMIN)
+# ETAPA 1: CARREGAR PEDIDO NO PC (COM BLOQUEIO DE CARGA DUPLICADA) + EXCLUIR
 # ==============================================================================
 if aba == "1️⃣ [PC] Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
     st.write("Suba a planilha do pedido no PC (SKU, Produto e Quantidade). Ela ficará disponível imediatamente no celular do conferente.")
 
     id_carga = st.text_input("Identificação da Carga / Pedido (Ex: CARGA-105):", placeholder="Digite um código único para esta carga")
+    
+    # Verificação imediata se o código da carga já existe na planilha
+    df_existente_check = carregar_dados("cargas")
+    carga_ja_existe = False
+    id_limpo = id_carga.strip().upper()
+
+    if id_limpo and not df_existente_check.empty and "id_carga" in df_existente_check.columns:
+        cargas_cadastradas = df_existente_check["id_carga"].astype(str).str.strip().str.upper().unique().tolist()
+        if id_limpo in cargas_cadastradas:
+            carga_ja_existe = True
+            st.error(f"🚫 BLOQUEADO! A carga **'{id_limpo}'** já existe no sistema! Para evitar perda de dados, digite um código diferente ou exclua a carga antiga lá embaixo primeiro.")
+
     arq_pedido = st.file_uploader("Suba o Excel/CSV do seu pedido", type=["xlsx", "xls", "csv"])
     
-    if arq_pedido and id_carga:
+    if arq_pedido and id_limpo and not carga_ja_existe:
         df_ped = pd.read_csv(arq_pedido, sep=None, engine="python", dtype=str) if arq_pedido.name.endswith(".csv") else pd.read_excel(arq_pedido, dtype=str)
         cols_ped = list(df_ped.columns)
         
@@ -83,8 +95,15 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
 
         if st.button("🚀 Enviar Pedido para o Celular do Conferente", type="primary", use_container_width=True):
             try:
+                # Dupla checagem no momento do clique para garantir segurança total
+                df_existente = carregar_dados("cargas")
+                if not df_existente.empty and "id_carga" in df_existente.columns:
+                    if id_limpo in df_existente["id_carga"].astype(str).str.strip().str.upper().unique().tolist():
+                        st.error(f"🚫 BLOQUEADO! A carga '{id_limpo}' já está cadastrada.")
+                        st.stop()
+
                 base_ped = pd.DataFrame({
-                    "id_carga": id_carga.strip().upper(),
+                    "id_carga": id_limpo,
                     "codigo": df_ped[p_cod].astype(str).str.strip(),
                     "produto": df_ped[p_prod].astype(str).str.strip(),
                     "pedido_real": pd.to_numeric(df_ped[p_qtd], errors="coerce").fillna(0).astype(int)
@@ -93,15 +112,13 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
                 base_ped = base_ped.groupby(["id_carga", "codigo", "produto"], as_index=False).sum()
                 base_ped["bipado"] = 0
 
-                df_existente = carregar_dados("cargas")
                 if not df_existente.empty and "id_carga" in df_existente.columns:
-                    df_existente = df_existente[df_existente["id_carga"] != id_carga.strip().upper()]
                     df_final = pd.concat([df_existente, base_ped], ignore_index=True)
                 else:
                     df_final = base_ped
 
                 salvar_dados(df_final, "cargas")
-                st.success(f"✅ Carga '{id_carga.strip().upper()}' enviada para a nuvem! O conferente já pode iniciar no celular.")
+                st.success(f"✅ Carga '{id_limpo}' enviada para a nuvem! O conferente já pode iniciar no celular.")
             except Exception as e:
                 st.error(f"Erro ao processar arquivo: {e}")
 
@@ -261,7 +278,6 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
             itens_originais = df_carga_atual[pd.to_numeric(df_carga_atual["pedido_real"]) > 0]
 
             if not itens_originais.empty:
-                # Conferência às cegas: exibe apenas o código e nome do produto, sem revelar quantidades do pedido
                 opcoes_dict = {
                     f"{row['codigo']} - {row['produto']}": str(row['codigo']).strip()
                     for _, row in itens_originais.iterrows()
