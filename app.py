@@ -30,7 +30,7 @@ aba = st.sidebar.radio(
 )
 
 # ==============================================================================
-# ETAPA 1: CARREGAR PEDIDO NO PC (SEM LOTE)
+# ETAPA 1: CARREGAR PEDIDO NO PC + EXCLUIR CARGA
 # ==============================================================================
 if aba == "1️⃣ [PC] Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
@@ -75,6 +75,38 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
                 st.success(f"✅ Carga '{id_carga.strip().upper()}' enviada para a nuvem! O conferente já pode iniciar no celular.")
             except Exception as e:
                 st.error(f"Erro ao processar arquivo: {e}")
+
+    # SEÇÃO PARA GERENCIAR / EXCLUIR CARGAS EXISTENTES
+    st.divider()
+    with st.expander("🗑️ Gerenciar / Excluir Carga Existente"):
+        df_cargas_ger = carregar_dados("cargas")
+        if not df_cargas_ger.empty and "id_carga" in df_cargas_ger.columns:
+            lista_cargas_ex = df_cargas_ger["id_carga"].dropna().unique().tolist()
+            if lista_cargas_ex:
+                carga_para_excluir = st.selectbox("Selecione a carga que deseja apagar:", lista_cargas_ex, key="sel_excluir_carga")
+                confirmar_exclusao = st.checkbox(f"Confirmo que desejo excluir permanentemente a carga '{carga_para_excluir}' e todos os seus bipes.")
+                
+                if st.button("🗑️ Excluir Carga Definitivamente", type="primary", disabled=not confirmar_exclusao):
+                    # Remove da aba 'cargas' mantendo as colunas caso fique vazia
+                    df_cargas_restante = df_cargas_ger[df_cargas_ger["id_carga"] != carga_para_excluir]
+                    if df_cargas_restante.empty:
+                        df_cargas_restante = pd.DataFrame(columns=["id_carga", "codigo", "produto", "pedido_real", "bipado"])
+                    salvar_dados(df_cargas_restante, "cargas")
+
+                    # Remove também da aba 'bipes'
+                    df_bipes_ger = carregar_dados("bipes")
+                    if not df_bipes_ger.empty and "id_carga" in df_bipes_ger.columns:
+                        df_bipes_restante = df_bipes_ger[df_bipes_ger["id_carga"] != carga_para_excluir]
+                        if df_bipes_restante.empty:
+                            df_bipes_restante = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade"])
+                        salvar_dados(df_bipes_restante, "bipes")
+
+                    st.success(f"✅ Carga '{carga_para_excluir}' excluída com sucesso!")
+                    st.rerun()
+            else:
+                st.info("Nenhuma carga cadastrada no momento.")
+        else:
+            st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
 # ETAPA 2: CONFERÊNCIA EM 4 PASSOS + SUBSTITUIÇÃO DE SKU (CONFERENTE INFORMA LOTE)
@@ -295,8 +327,8 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc
-                idx_bipe = bipes_carga.index
+                ultimo_registro = bipes_carga.iloc[0]
+                idx_bipe = bipes_carga.index[0]
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
@@ -395,7 +427,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
             c_lote = st.selectbox("Coluna do LOTE (Cliente):", ["(Não informar lote)"] + cols_cli)
 
         if st.button("⚖️ Gerar Validação Tripla + Lotes", type="primary", use_container_width=True):
-            # Agrupa dados do cliente por SKU
             df_cli_prep = pd.DataFrame({
                 "codigo": df_cli[c_cod].astype(str).str.strip(),
                 "informado_cliente": pd.to_numeric(df_cli[c_qtd], errors="coerce").fillna(0).astype(int),
@@ -403,14 +434,12 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
             })
             df_cli_prep = df_cli_prep[df_cli_prep["codigo"] != "nan"]
 
-            # Consolida quantidades e lista única de lotes informados pelo cliente por SKU
             base_cli_qtd = df_cli_prep.groupby("codigo", as_index=False)["informado_cliente"].sum()
             base_cli_lotes = df_cli_prep.groupby("codigo")["lote_cli"].apply(
                 lambda x: ", ".join(sorted(set(v for v in x if v and v != "NAN")))
             ).reset_index().rename(columns={"lote_cli": "Lotes Cliente"})
             base_cli = pd.merge(base_cli_qtd, base_cli_lotes, on="codigo", how="left")
 
-            # Busca lotes bipados pelo conferente na aba 'bipes'
             df_bipes_all = carregar_dados("bipes")
             if not df_bipes_all.empty and "id_carga" in df_bipes_all.columns:
                 bipes_carga = df_bipes_all[df_bipes_all["id_carga"] == carga_selecionada].copy()
@@ -424,7 +453,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
             else:
                 lotes_conf = pd.DataFrame(columns=["codigo", "Lotes Conferente"])
 
-            # Cruza Pedido x Conferência x Cliente
             df_conferencia = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada].copy()
             df_conferencia["codigo"] = df_conferencia["codigo"].astype(str).str.strip()
             df_conferencia["pedido_real"] = pd.to_numeric(df_conferencia["pedido_real"]).astype(int)
@@ -447,7 +475,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                 l_conf = row["Lotes Conferente"]
                 l_cli = row["Lotes Cliente"]
 
-                # Verifica divergência de lote se o cliente informou lote
                 lote_divergente = False
                 if c_lote != "(Não informar lote)" and l_conf != "-" and l_cli != "-" and l_conf != l_cli:
                     lote_divergente = True
