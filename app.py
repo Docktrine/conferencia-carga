@@ -80,11 +80,6 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
     st.write("Suba a planilha do pedido no PC (SKU, Produto e Quantidade). Ela ficará disponível imediatamente no celular do conferente.")
 
-    # Exibe o alerta verde caso tenha acabado de enviar uma carga
-    if st.session_state.msg_sucesso_carga:
-        st.success(st.session_state.msg_sucesso_carga)
-        st.session_state.msg_sucesso_carga = ""
-
     id_carga = st.text_input(
         "Identificação da Carga / Pedido (Ex: CARGA-105):",
         placeholder="Digite um código único para esta carga",
@@ -107,6 +102,11 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
         type=["xlsx", "xls", "csv"],
         key=f"uploader_pedido_{st.session_state.upload_key}"
     )
+
+    # Exibe a mensagem verde exatamente na posição original abaixo do upload
+    if st.session_state.msg_sucesso_carga:
+        st.success(st.session_state.msg_sucesso_carga)
+        st.session_state.msg_sucesso_carga = ""
     
     if arq_pedido and id_limpo and not carga_ja_existe:
         df_ped = pd.read_csv(arq_pedido, sep=None, engine="python", dtype=str) if arq_pedido.name.endswith(".csv") else pd.read_excel(arq_pedido, dtype=str)
@@ -147,7 +147,7 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
                 salvar_dados(df_final, "cargas")
                 
                 # Limpa o arquivo e o campo de texto automaticamente para o próximo envio
-                st.session_state.msg_sucesso_carga = f"✅ Carga '{id_limpo}' enviada para a nuvem! O conferente já pode iniciar no celular."
+                st.session_state.msg_sucesso_carga = f"✅ Carga '{id_limpo}' enviada com sucesso! O conferente já pode iniciar a conferência."
                 st.session_state.upload_key += 1
                 st.rerun()
             except Exception as e:
