@@ -14,14 +14,25 @@ SENHA_ADMIN = "grano2026"
 if "admin_autenticado" not in st.session_state:
     st.session_state.admin_autenticado = False
 
+def limpar_id(valor):
+    texto = str(valor).strip().upper()
+    if texto.endswith(".0"):
+        texto = texto[:-2]
+    return texto
+
 def carregar_dados(aba):
     try:
         df = conn.read(worksheet=aba, ttl=0)
-        return df.dropna(how="all")
+        df = df.dropna(how="all")
+        if not df.empty and "id_carga" in df.columns:
+            df["id_carga"] = df["id_carga"].apply(limpar_id)
+        return df
     except Exception:
         return pd.DataFrame()
 
 def salvar_dados(df, aba):
+    if not df.empty and "id_carga" in df.columns:
+        df["id_carga"] = df["id_carga"].apply(limpar_id)
     conn.update(worksheet=aba, data=df)
 
 # ==============================================================================
@@ -70,10 +81,10 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
     # Verificação imediata se o código da carga já existe na planilha
     df_existente_check = carregar_dados("cargas")
     carga_ja_existe = False
-    id_limpo = id_carga.strip().upper()
+    id_limpo = limpar_id(id_carga)
 
     if id_limpo and not df_existente_check.empty and "id_carga" in df_existente_check.columns:
-        cargas_cadastradas = df_existente_check["id_carga"].astype(str).str.strip().str.upper().unique().tolist()
+        cargas_cadastradas = df_existente_check["id_carga"].unique().tolist()
         if id_limpo in cargas_cadastradas:
             carga_ja_existe = True
             st.error(f"🚫 BLOQUEADO! A carga **'{id_limpo}'** já existe no sistema! Para evitar perda de dados, digite um código diferente ou exclua a carga antiga lá embaixo primeiro.")
@@ -95,10 +106,10 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
 
         if st.button("🚀 Enviar Pedido para o Celular do Conferente", type="primary", use_container_width=True):
             try:
-                # Dupla checagem no momento do clique para garantir segurança total
+                # Dupla checagem no momento do clique
                 df_existente = carregar_dados("cargas")
                 if not df_existente.empty and "id_carga" in df_existente.columns:
-                    if id_limpo in df_existente["id_carga"].astype(str).str.strip().str.upper().unique().tolist():
+                    if id_limpo in df_existente["id_carga"].unique().tolist():
                         st.error(f"🚫 BLOQUEADO! A carga '{id_limpo}' já está cadastrada.")
                         st.stop()
 
@@ -176,16 +187,16 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
     def concluir_gravacao(etiq_atual, sku_bipado, sku_destino, lote_limpo, qtd_final, obs_tipo):
         df_bipes_check = carregar_dados("bipes")
         if not df_bipes_check.empty and "etiqueta" in df_bipes_check.columns:
-            dup = (df_bipes_check["id_carga"] == carga_selecionada) & (df_bipes_check["etiqueta"].astype(str).str.strip() == etiq_atual)
+            dup = (df_bipes_check["id_carga"] == carga_selecionada) & (df_bipes_check["etiqueta"].apply(limpar_id) == limpar_id(etiq_atual))
             if dup.any():
                 st.error(f"🚫 BLOQUEADO! A etiqueta '{etiq_atual}' já foi registrada!")
                 st.stop()
 
         df_banco = carregar_dados("cargas")
-        filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].astype(str).str.strip() == sku_destino)
+        filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == limpar_id(sku_destino))
 
         if filtro.any():
-            idx = df_banco.index[filtro]
+            idx = df_banco.index[filtro][0]
             df_banco.at[idx, "bipado"] = int(df_banco.at[idx, "bipado"]) + qtd_final
             if obs_tipo == "SUBSTITUIDO":
                 desc_atual = str(df_banco.at[idx, "produto"])
@@ -231,7 +242,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         ja_existe = False
 
         if not df_bipes.empty and "etiqueta" in df_bipes.columns and "id_carga" in df_bipes.columns:
-            filtro_dup = (df_bipes["id_carga"] == carga_selecionada) & (df_bipes["etiqueta"].astype(str).str.strip() == etiq)
+            filtro_dup = (df_bipes["id_carga"] == carga_selecionada) & (df_bipes["etiqueta"].apply(limpar_id) == limpar_id(etiq))
             if filtro_dup.any():
                 ja_existe = True
 
@@ -279,7 +290,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
 
             if not itens_originais.empty:
                 opcoes_dict = {
-                    f"{row['codigo']} - {row['produto']}": str(row['codigo']).strip()
+                    f"{limpar_id(row['codigo'])} - {row['produto']}": limpar_id(row['codigo'])
                     for _, row in itens_originais.iterrows()
                 }
                 escolha_label = st.selectbox("Selecione o item original que está sendo substituído:", list(opcoes_dict.keys()))
@@ -350,7 +361,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
                     else:
                         qtd_final = int(qtd_texto)
                         df_banco = carregar_dados("cargas")
-                        filtro_existe = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].astype(str).str.strip() == sku_limpo)
+                        filtro_existe = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == limpar_id(sku_limpo))
 
                         if filtro_existe.any():
                             concluir_gravacao(etiq_atual, sku_limpo, sku_limpo, lote_limpo, qtd_final, "NORMAL")
@@ -370,19 +381,19 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc
-                idx_bipe = bipes_carga.index
+                ultimo_registro = bipes_carga.iloc[0]
+                idx_bipe = bipes_carga.index[0]
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
-                ult_sku_alvo = str(ultimo_registro[col_alvo]).strip()
+                ult_sku_alvo = limpar_id(ultimo_registro[col_alvo])
                 ult_qtd = int(ultimo_registro["quantidade"])
 
                 df_banco = carregar_dados("cargas")
-                filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].astype(str).str.strip() == ult_sku_alvo)
+                filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == ult_sku_alvo)
 
                 if filtro.any():
-                    idx_prod = df_banco.index[filtro]
+                    idx_prod = df_banco.index[filtro][0]
                     nova_qtd = max(0, int(df_banco.at[idx_prod, "bipado"]) - ult_qtd)
                     df_banco.at[idx_prod, "bipado"] = nova_qtd
                     salvar_dados(df_banco, "cargas")
@@ -466,8 +477,8 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
             if not bipes_da_carga.empty:
                 opcoes_etiq = {}
                 for idx_row, r in bipes_da_carga.iterrows():
-                    etiq_str = str(r["etiqueta"]).strip()
-                    sku_str = str(r["codigo_bipado"]).strip()
+                    etiq_str = limpar_id(r["etiqueta"])
+                    sku_str = limpar_id(r["codigo_bipado"])
                     lote_str = str(r["lote"]).strip()
                     qtd_str = str(r["quantidade"]).strip()
                     label = f"Etiqueta: {etiq_str} | SKU: {sku_str} | Lote atual: {lote_str} | Qtd: {qtd_str}"
@@ -503,13 +514,13 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                     confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{registro_alvo['etiqueta']}'", key="chk_estorno_adm")
                     if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
                         col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
-                        sku_estornar = str(registro_alvo[col_alvo_sku]).strip()
+                        sku_estornar = limpar_id(registro_alvo[col_alvo_sku])
                         qtd_estornar = int(registro_alvo["quantidade"])
 
                         df_cargas_adm = carregar_dados("cargas")
-                        filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].astype(str).str.strip() == sku_estornar)
+                        filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_id) == sku_estornar)
                         if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c]
+                            idx_c = df_cargas_adm.index[filtro_c][0]
                             df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
                             salvar_dados(df_cargas_adm, "cargas")
 
@@ -544,11 +555,11 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
 
         if st.button("⚖️ Gerar Validação Tripla + Lotes", type="primary", use_container_width=True):
             df_cli_prep = pd.DataFrame({
-                "codigo": df_cli[c_cod].astype(str).str.strip(),
+                "codigo": df_cli[c_cod].apply(limpar_id),
                 "informado_cliente": pd.to_numeric(df_cli[c_qtd], errors="coerce").fillna(0).astype(int),
                 "lote_cli": df_cli[c_lote].astype(str).str.strip().str.upper() if c_lote != "(Não informar lote)" else "N/I"
             })
-            df_cli_prep = df_cli_prep[df_cli_prep["codigo"] != "nan"]
+            df_cli_prep = df_cli_prep[df_cli_prep["codigo"] != "NAN"]
 
             base_cli_qtd = df_cli_prep.groupby("codigo", as_index=False)["informado_cliente"].sum()
             base_cli_lotes = df_cli_prep.groupby("codigo")["lote_cli"].apply(
@@ -560,7 +571,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
             if not df_bipes_all.empty and "id_carga" in df_bipes_all.columns:
                 bipes_carga = df_bipes_all[df_bipes_all["id_carga"] == carga_selecionada].copy()
                 col_sku_bipe = "codigo_vinculado" if "codigo_vinculado" in bipes_carga.columns else "codigo"
-                bipes_carga[col_sku_bipe] = bipes_carga[col_sku_bipe].astype(str).str.strip()
+                bipes_carga[col_sku_bipe] = bipes_carga[col_sku_bipe].apply(limpar_id)
                 bipes_carga["lote"] = bipes_carga["lote"].astype(str).str.strip().str.upper()
                 
                 lotes_conf = bipes_carga.groupby(col_sku_bipe)["lote"].apply(
@@ -570,7 +581,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                 lotes_conf = pd.DataFrame(columns=["codigo", "Lotes Conferente"])
 
             df_conferencia = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada].copy()
-            df_conferencia["codigo"] = df_conferencia["codigo"].astype(str).str.strip()
+            df_conferencia["codigo"] = df_conferencia["codigo"].apply(limpar_id)
             df_conferencia["pedido_real"] = pd.to_numeric(df_conferencia["pedido_real"]).astype(int)
             df_conferencia["bipado"] = pd.to_numeric(df_conferencia["bipado"]).astype(int)
 
