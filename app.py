@@ -8,6 +8,12 @@ st.set_page_config(page_title="Sistema de Conferência de Carga", layout="wide")
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
+# Senha do Administrativo para liberar as Etapas 1, 3 e 4
+SENHA_ADMIN = "grano2026"
+
+if "admin_autenticado" not in st.session_state:
+    st.session_state.admin_autenticado = False
+
 def carregar_dados(aba):
     try:
         df = conn.read(worksheet=aba, ttl=0)
@@ -18,19 +24,42 @@ def carregar_dados(aba):
 def salvar_dados(df, aba):
     conn.update(worksheet=aba, data=df)
 
-st.sidebar.title("📦 Fluxo Operacional")
-aba = st.sidebar.radio(
-    "Escolha a etapa:",
-    [
-        "1️⃣ [PC] Carregar Meu Pedido",
-        "2️⃣ [Celular] Bipagem / Digitação",
-        "3️⃣ [PC/Celular] Painel: O que falta",
-        "4️⃣ [PC] Validação Final (Cliente)"
-    ]
-)
+# ==============================================================================
+# CONTROLE DE PERFIL (CONFERÊNCIA ÀS CEGAS VS ADMINISTRATIVO)
+# ==============================================================================
+with st.sidebar:
+    st.title("📦 Grano Logística")
+    if not st.session_state.admin_autenticado:
+        st.info("👷‍♂️ Modo: **Conferente (Às Cegas)**")
+        aba = "2️⃣ [Celular] Bipagem / Digitação"
+        
+        st.divider()
+        with st.expander("🔐 Acesso Administrativo"):
+            senha_digitada = st.text_input("Senha do Administrativo:", type="password", key="input_senha_adm")
+            if st.button("Entrar como Admin", use_container_width=True):
+                if senha_digitada == SENHA_ADMIN:
+                    st.session_state.admin_autenticado = True
+                    st.rerun()
+                else:
+                    st.error("Senha incorreta.")
+    else:
+        st.success("👔 Modo: **Administrativo**")
+        aba = st.radio(
+            "Escolha a etapa:",
+            [
+                "1️⃣ [PC] Carregar Meu Pedido",
+                "2️⃣ [Celular] Bipagem / Digitação",
+                "3️⃣ [PC] Painel: O que falta",
+                "4️⃣ [PC] Validação Final (Cliente)"
+            ]
+        )
+        st.divider()
+        if st.button("🔒 Sair do Modo Admin", use_container_width=True):
+            st.session_state.admin_autenticado = False
+            st.rerun()
 
 # ==============================================================================
-# ETAPA 1: CARREGAR PEDIDO NO PC + EXCLUIR CARGA
+# ETAPA 1: CARREGAR PEDIDO NO PC + EXCLUIR CARGA (APENAS ADMIN)
 # ==============================================================================
 if aba == "1️⃣ [PC] Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
@@ -106,15 +135,15 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# ETAPA 2: CONFERÊNCIA EM 4 PASSOS + SUBSTITUIÇÃO DE SKU (CONFERENTE)
+# ETAPA 2: CONFERÊNCIA ÀS CEGAS (TELA PADRÃO DO CONFERENTE)
 # ==============================================================================
 elif aba == "2️⃣ [Celular] Bipagem / Digitação":
-    st.title("2️⃣ Conferência Física (Bipe ou Manual)")
+    st.title("📦 Conferência Física de Carga")
 
     df_todas_cargas = carregar_dados("cargas")
     
     if df_todas_cargas.empty or "id_carga" not in df_todas_cargas.columns:
-        st.warning("Nenhuma carga disponível. Peça para carregarem o pedido no PC primeiro.")
+        st.warning("Nenhuma carga disponível no momento. Aguarde a liberação do administrativo.")
         st.stop()
 
     lista_cargas = df_todas_cargas["id_carga"].unique().tolist()
@@ -139,7 +168,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].astype(str).str.strip() == sku_destino)
 
         if filtro.any():
-            idx = df_banco.index[filtro][0]
+            idx = df_banco.index[filtro]
             df_banco.at[idx, "bipado"] = int(df_banco.at[idx, "bipado"]) + qtd_final
             if obs_tipo == "SUBSTITUIDO":
                 desc_atual = str(df_banco.at[idx, "produto"])
@@ -232,8 +261,9 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
             itens_originais = df_carga_atual[pd.to_numeric(df_carga_atual["pedido_real"]) > 0]
 
             if not itens_originais.empty:
+                # Conferência às cegas: exibe apenas o código e nome do produto, sem revelar quantidades do pedido
                 opcoes_dict = {
-                    f"{row['codigo']} - {row['produto']} (Pedido: {row['pedido_real']} | Bipado: {row['bipado']})": str(row['codigo']).strip()
+                    f"{row['codigo']} - {row['produto']}": str(row['codigo']).strip()
                     for _, row in itens_originais.iterrows()
                 }
                 escolha_label = st.selectbox("Selecione o item original que está sendo substituído:", list(opcoes_dict.keys()))
@@ -324,8 +354,8 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc[0]
-                idx_bipe = bipes_carga.index[0]
+                ultimo_registro = bipes_carga.iloc
+                idx_bipe = bipes_carga.index
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
@@ -336,7 +366,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
                 filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].astype(str).str.strip() == ult_sku_alvo)
 
                 if filtro.any():
-                    idx_prod = df_banco.index[filtro][0]
+                    idx_prod = df_banco.index[filtro]
                     nova_qtd = max(0, int(df_banco.at[idx_prod, "bipado"]) - ult_qtd)
                     df_banco.at[idx_prod, "bipado"] = nova_qtd
                     salvar_dados(df_banco, "cargas")
@@ -354,9 +384,9 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         st.dataframe(df_bipes_vis[df_bipes_vis["id_carga"] == carga_selecionada].head(10), use_container_width=True, hide_index=True)
 
 # ==============================================================================
-# ETAPA 3: PAINEL DE ACOMPANHAMENTO
+# ETAPA 3: PAINEL DE ACOMPANHAMENTO (APENAS ADMIN)
 # ==============================================================================
-elif aba == "3️⃣ [PC/Celular] Painel: O que falta":
+elif aba == "3️⃣ [PC] Painel: O que falta":
     st.title("3️⃣ Acompanhamento em Tempo Real")
 
     df_todas_cargas = carregar_dados("cargas")
@@ -412,9 +442,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
 
     carga_selecionada = st.selectbox("Selecione a Carga para Auditar:", df_todas_cargas["id_carga"].unique().tolist())
 
-    # --------------------------------------------------------------------------
-    # CONTROLE EXCLUSIVO DO ADMINISTRATIVO (PC): CORRIGIR LOTE OU ESTORNAR
-    # --------------------------------------------------------------------------
     with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Mandar Rebipar)"):
         df_bipes_adm = carregar_dados("bipes")
         if not df_bipes_adm.empty and "id_carga" in df_bipes_adm.columns:
@@ -436,7 +463,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
 
                 col_edit, col_estorno = st.columns(2)
 
-                # OPÇÃO 1: CORRIGIR APENAS O LOTE
                 with col_edit:
                     st.markdown("**1️⃣ Corrigir Apenas o Lote**")
                     novo_lote_input = st.text_input(
@@ -455,7 +481,6 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                         else:
                             st.error("⚠️ O lote não pode ficar em branco.")
 
-                # OPÇÃO 2: ESTORNAR ETIQUETA PARA O CONFERENTE REFAZER O BIPE
                 with col_estorno:
                     st.markdown("**2️⃣ Estornar Etiqueta (Mandar Rebipar)**")
                     st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
@@ -468,7 +493,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                         df_cargas_adm = carregar_dados("cargas")
                         filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].astype(str).str.strip() == sku_estornar)
                         if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c][0]
+                            idx_c = df_cargas_adm.index[filtro_c]
                             df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
                             salvar_dados(df_cargas_adm, "cargas")
 
