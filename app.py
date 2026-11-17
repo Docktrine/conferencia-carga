@@ -13,6 +13,10 @@ SENHA_ADMIN = "grano2026"
 
 if "admin_autenticado" not in st.session_state:
     st.session_state.admin_autenticado = False
+if "upload_key" not in st.session_state:
+    st.session_state.upload_key = 0
+if "msg_sucesso_carga" not in st.session_state:
+    st.session_state.msg_sucesso_carga = ""
 
 def limpar_id(valor):
     texto = str(valor).strip().upper()
@@ -70,13 +74,22 @@ with st.sidebar:
             st.rerun()
 
 # ==============================================================================
-# ETAPA 1: CARREGAR PEDIDO NO PC (COM BLOQUEIO DE CARGA DUPLICADA) + EXCLUIR
+# ETAPA 1: CARREGAR PEDIDO NO PC (LIMPA AUTOMATICAMENTE APÓS ENVIAR) + EXCLUIR
 # ==============================================================================
 if aba == "1️⃣ [PC] Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
     st.write("Suba a planilha do pedido no PC (SKU, Produto e Quantidade). Ela ficará disponível imediatamente no celular do conferente.")
 
-    id_carga = st.text_input("Identificação da Carga / Pedido (Ex: CARGA-105):", placeholder="Digite um código único para esta carga")
+    # Exibe o alerta verde caso tenha acabado de enviar uma carga
+    if st.session_state.msg_sucesso_carga:
+        st.success(st.session_state.msg_sucesso_carga)
+        st.session_state.msg_sucesso_carga = ""
+
+    id_carga = st.text_input(
+        "Identificação da Carga / Pedido (Ex: CARGA-105):",
+        placeholder="Digite um código único para esta carga",
+        key=f"input_id_carga_{st.session_state.upload_key}"
+    )
     
     # Verificação imediata se o código da carga já existe na planilha
     df_existente_check = carregar_dados("cargas")
@@ -89,7 +102,11 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
             carga_ja_existe = True
             st.error(f"🚫 BLOQUEADO! A carga **'{id_limpo}'** já existe no sistema! Para evitar perda de dados, digite um código diferente ou exclua a carga antiga lá embaixo primeiro.")
 
-    arq_pedido = st.file_uploader("Suba o Excel/CSV do seu pedido", type=["xlsx", "xls", "csv"])
+    arq_pedido = st.file_uploader(
+        "Suba o Excel/CSV do seu pedido",
+        type=["xlsx", "xls", "csv"],
+        key=f"uploader_pedido_{st.session_state.upload_key}"
+    )
     
     if arq_pedido and id_limpo and not carga_ja_existe:
         df_ped = pd.read_csv(arq_pedido, sep=None, engine="python", dtype=str) if arq_pedido.name.endswith(".csv") else pd.read_excel(arq_pedido, dtype=str)
@@ -106,7 +123,6 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
 
         if st.button("🚀 Enviar Pedido para o Celular do Conferente", type="primary", use_container_width=True):
             try:
-                # Dupla checagem no momento do clique
                 df_existente = carregar_dados("cargas")
                 if not df_existente.empty and "id_carga" in df_existente.columns:
                     if id_limpo in df_existente["id_carga"].unique().tolist():
@@ -129,7 +145,11 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
                     df_final = base_ped
 
                 salvar_dados(df_final, "cargas")
-                st.success(f"✅ Carga '{id_limpo}' enviada para a nuvem! O conferente já pode iniciar no celular.")
+                
+                # Limpa o arquivo e o campo de texto automaticamente para o próximo envio
+                st.session_state.msg_sucesso_carga = f"✅ Carga '{id_limpo}' enviada para a nuvem! O conferente já pode iniciar no celular."
+                st.session_state.upload_key += 1
+                st.rerun()
             except Exception as e:
                 st.error(f"Erro ao processar arquivo: {e}")
 
