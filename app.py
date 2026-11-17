@@ -103,7 +103,6 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
         key=f"uploader_pedido_{st.session_state.upload_key}"
     )
 
-    # Exibe a mensagem verde exatamente na posição original abaixo do upload
     if st.session_state.msg_sucesso_carga:
         st.success(st.session_state.msg_sucesso_carga)
         st.session_state.msg_sucesso_carga = ""
@@ -146,7 +145,6 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
 
                 salvar_dados(df_final, "cargas")
                 
-                # Limpa o arquivo e o campo de texto automaticamente para o próximo envio
                 st.session_state.msg_sucesso_carga = f"✅ Carga '{id_limpo}' enviada com sucesso! O conferente já pode iniciar a conferência."
                 st.session_state.upload_key += 1
                 st.rerun()
@@ -183,7 +181,7 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# ETAPA 2: CONFERÊNCIA ÀS CEGAS (TELA PADRÃO DO CONFERENTE)
+# ETAPA 2: CONFERÊNCIA ÀS CEGAS (TELA PADRÃO DO CONFERENTE - SEM TEXTOS EXTRAS)
 # ==============================================================================
 elif aba == "2️⃣ [Celular] Bipagem / Digitação":
     st.title("📦 Conferência Física de Carga")
@@ -216,7 +214,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == limpar_id(sku_destino))
 
         if filtro.any():
-            idx = df_banco.index[filtro][0]
+            idx = df_banco.index[filtro]
             df_banco.at[idx, "bipado"] = int(df_banco.at[idx, "bipado"]) + qtd_final
             if obs_tipo == "SUBSTITUIDO":
                 desc_atual = str(df_banco.at[idx, "produto"])
@@ -277,8 +275,6 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
             st.session_state.input_etiqueta = ""
 
     if not st.session_state.etiqueta_validada:
-        st.info("📌 **Passo 1 de 4:** Bipe ou digite a ETIQUETA da caixa/volume.")
-        
         if st.session_state.erro_etiqueta:
             st.error(st.session_state.erro_etiqueta)
 
@@ -349,8 +345,6 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
                     )
 
         else:
-            st.info("📌 **Passos 2, 3 e 4:** Bipe ou digite os dados abaixo e clique em Salvar.")
-
             with st.form("form_itens_etiqueta", clear_on_submit=True):
                 sku_in = st.text_input(
                     "2º SKU / Código do Produto (Bipe ou Digite):", 
@@ -401,8 +395,8 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc[0]
-                idx_bipe = bipes_carga.index[0]
+                ultimo_registro = bipes_carga.iloc
+                idx_bipe = bipes_carga.index
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
@@ -413,7 +407,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
                 filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == ult_sku_alvo)
 
                 if filtro.any():
-                    idx_prod = df_banco.index[filtro][0]
+                    idx_prod = df_banco.index[filtro]
                     nova_qtd = max(0, int(df_banco.at[idx_prod, "bipado"]) - ult_qtd)
                     df_banco.at[idx_prod, "bipado"] = nova_qtd
                     salvar_dados(df_banco, "cargas")
@@ -540,7 +534,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                         df_cargas_adm = carregar_dados("cargas")
                         filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_id) == sku_estornar)
                         if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c][0]
+                            idx_c = df_cargas_adm.index[filtro_c]
                             df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
                             salvar_dados(df_cargas_adm, "cargas")
 
