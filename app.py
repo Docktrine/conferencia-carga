@@ -214,7 +214,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == limpar_id(sku_destino))
 
         if filtro.any():
-            idx = df_banco.index[filtro]
+            idx = df_banco.index[filtro][0]
             df_banco.at[idx, "bipado"] = int(df_banco.at[idx, "bipado"]) + qtd_final
             if obs_tipo == "SUBSTITUIDO":
                 desc_atual = str(df_banco.at[idx, "produto"])
@@ -395,8 +395,8 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc
-                idx_bipe = bipes_carga.index
+                ultimo_registro = bipes_carga.iloc[0]
+                idx_bipe = bipes_carga.index[0]
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
@@ -407,7 +407,7 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
                 filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_id) == ult_sku_alvo)
 
                 if filtro.any():
-                    idx_prod = df_banco.index[filtro]
+                    idx_prod = df_banco.index[filtro][0]
                     nova_qtd = max(0, int(df_banco.at[idx_prod, "bipado"]) - ult_qtd)
                     df_banco.at[idx_prod, "bipado"] = nova_qtd
                     salvar_dados(df_banco, "cargas")
@@ -483,7 +483,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
 
     carga_selecionada = st.selectbox("Selecione a Carga para Auditar:", df_todas_cargas["id_carga"].unique().tolist())
 
-    with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Mandar Rebipar)"):
+    with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Solicitar Rebipagem)"):
         df_bipes_adm = carregar_dados("bipes")
         if not df_bipes_adm.empty and "id_carga" in df_bipes_adm.columns:
             bipes_da_carga = df_bipes_adm[df_bipes_adm["id_carga"] == carga_selecionada].copy()
@@ -523,7 +523,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                             st.error("⚠️ O lote não pode ficar em branco.")
 
                 with col_estorno:
-                    st.markdown("**2️⃣ Estornar Etiqueta (Mandar Rebipar)**")
+                    st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
                     st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
                     confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{registro_alvo['etiqueta']}'", key="chk_estorno_adm")
                     if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
@@ -534,7 +534,7 @@ elif aba == "4️⃣ [PC] Validação Final (Cliente)":
                         df_cargas_adm = carregar_dados("cargas")
                         filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_id) == sku_estornar)
                         if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c]
+                            idx_c = df_cargas_adm.index[filtro_c][0]
                             df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
                             salvar_dados(df_cargas_adm, "cargas")
 
