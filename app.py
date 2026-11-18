@@ -455,7 +455,7 @@ if aba == "📅 Planejamento Logística":
                     else:
                         st.warning("Nenhum pedido novo encontrado (todos já constavam na agenda ou estavam sem Nº Pedido).")
 
-    with st.expander("✏️ Editar ou Excluir Agendamento Existente"):
+    with st.expander("✏️ Editar ou Excluir Pedido"):
         if not df_plan.empty:
             opcoes_plan = {
                 f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Transp: {r['Transportadora']}": idx
