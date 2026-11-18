@@ -157,7 +157,7 @@ with st.sidebar:
                 "1️⃣ Carregar Meu Pedido",
                 "2️⃣ Bipagem / Digitação",
                 "3️⃣ Painel de Acompanhamento",
-                "📊 Status das Cargas",
+                "📊 Gestão de Pedidos",
                 "4️⃣ Validação Final (Cliente)"
             ]
         )
@@ -333,8 +333,8 @@ if aba == "1️⃣ Carregar Meu Pedido":
 # ==============================================================================
 # VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SUSPENSA + EDIÇÃO DO MOTIVO
 # ==============================================================================
-elif aba == "📊 Status das Cargas":
-    st.title("📊 Visão Geral: Pedidos Conferidos x Pendentes")
+elif aba == "📊 Gestão de Pedidos":
+    st.title("📊 Gestão de Pedidos: Pedidos Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
         st.rerun()
