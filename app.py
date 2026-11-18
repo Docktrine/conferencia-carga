@@ -113,7 +113,7 @@ with st.sidebar:
 
     if not st.session_state.admin_autenticado:
         st.info("👷‍♂️ Modo: **Conferente (Às Cegas)**")
-        aba = "2️⃣ [Celular] Bipagem / Digitação"
+        aba = "2️⃣ Bipagem / Digitação"
         
         st.divider()
         with st.expander("🔐 Acesso Administrativo"):
@@ -129,11 +129,11 @@ with st.sidebar:
         aba = st.radio(
             "Escolha a etapa:",
             [
-                "1️⃣ [PC] Carregar Meu Pedido",
-                "2️⃣ [Celular] Bipagem / Digitação",
-                "3️⃣ [PC] Painel: O que falta",
-                "📊 [PC] Status das Cargas",
-                "4️⃣ [PC] Validação Final (Cliente)"
+                "1️⃣ Carregar Meu Pedido",
+                "2️⃣ Bipagem / Digitação",
+                "3️⃣ Painel de Acompanhamento",
+                "📊 Status das Cargas",
+                "4️⃣ Validação Final (Cliente)"
             ]
         )
         st.divider()
@@ -144,9 +144,9 @@ with st.sidebar:
 # ==============================================================================
 # ETAPA 1: IMPORTAR PEDIDO (INDIVIDUAL OU EM MASSA) + EXCLUIR CARGA
 # ==============================================================================
-if aba == "1️⃣ [PC] Carregar Meu Pedido":
+if aba == "1️⃣ Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
-    st.write("Suba um ou vários arquivos de pedido no PC (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
+    st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
     arquivos_pedidos = st.file_uploader(
         "Suba o(s) Excel/CSV do(s) pedido(s)",
@@ -306,9 +306,9 @@ if aba == "1️⃣ [PC] Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# NOVA TELA: VISÃO GERAL DE STATUS DAS CARGAS (COM DETALHES E MOTIVO DO CORTE)
+# VISÃO GERAL DE STATUS DAS CARGAS
 # ==============================================================================
-elif aba == "📊 [PC] Status das Cargas":
+elif aba == "📊 Status das Cargas":
     st.title("📊 Visão Geral: Pedidos Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
@@ -384,9 +384,9 @@ elif aba == "📊 [PC] Status das Cargas":
         st.info("Nenhuma carga atingiu 100% de conclusão ainda.")
 
 # ==============================================================================
-# ETAPA 2: CONFERÊNCIA ÀS CEGAS (CAMPO QUANTIDADE VAZIO POR PADRÃO)
+# ETAPA 2: CONFERÊNCIA ÀS CEGAS
 # ==============================================================================
-elif aba == "2️⃣ [Celular] Bipagem / Digitação":
+elif aba == "2️⃣ Bipagem / Digitação":
     st.title("📦 Conferência Física de Carga")
 
     df_todas_cargas = carregar_dados("cargas")
@@ -651,10 +651,10 @@ elif aba == "2️⃣ [Celular] Bipagem / Digitação":
             st.dataframe(df_carga_bipes.head(10), use_container_width=True, hide_index=True)
 
 # ==============================================================================
-# ETAPA 3: PAINEL DE ACOMPANHAMENTO + CORTE COM MOTIVO (APENAS ADMIN)
+# ETAPA 3: PAINEL DE ACOMPANHAMENTO + CORTE COM MOTIVO
 # ==============================================================================
-elif aba == "3️⃣ [PC] Painel: O que falta":
-    st.title("3️⃣ Acompanhamento em Tempo Real")
+elif aba == "3️⃣ Painel de Acompanhamento":
+    st.title("3️⃣ Painel de Acompanhamento")
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
@@ -752,9 +752,9 @@ elif aba == "3️⃣ [PC] Painel: O que falta":
         st.dataframe(sobras[["codigo", "produto", "pedido_real", "bipado", "Qtd Excedente"]], use_container_width=True, hide_index=True)
 
 # ==============================================================================
-# ETAPA 4: VALIDAÇÃO FINAL (CLIENTE) + CONTROLE ADMINISTRATIVO DE ETIQUETAS
+# ETAPA 4: VALIDAÇÃO FINAL (CLIENTE)
 # ==============================================================================
-elif aba == "4️⃣ [PC] Validação Final (Cliente)":
+elif aba == "4️⃣ Validação Final (Cliente)":
     st.title("4️⃣ Auditoria Final: Pedido x Bipado x Cliente (+ Lotes)")
 
     df_todas_cargas = carregar_dados("cargas")
