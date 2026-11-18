@@ -3,6 +3,8 @@ import pandas as pd
 import io
 import os
 import base64
+import unicodedata
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from streamlit_gsheets import GSheetsConnection
@@ -47,7 +49,54 @@ def limpar_texto(valor):
         texto = texto[:-2]
     return texto
 
-COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote"]
+def normalizar_chave_coluna(nome):
+    txt = str(nome).strip().lower()
+    txt = unicodedata.normalize("NFKD", txt).encode("ASCII", "ignore").decode("ASCII")
+    txt = txt.replace("nº", "numero").replace("no ", "numero ").replace("n.", "numero")
+    txt = re.sub(r"[^a-z0-9\s]", " ", txt)
+    stop_words = {"de", "do", "da", "dos", "das", "o", "a", "os", "as"}
+    palavras = [p for p in txt.split() if p not in stop_words]
+    return " ".join(palavras)
+
+def interpretar_data_br(valor):
+    if pd.isna(valor):
+        return None
+    s = str(valor).strip()
+    if not s or s.upper() in ("NAN", "NONE", "<NA>", "-"):
+        return None
+    parte_data = s.split()[0]
+    for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%d/%m/%y"):
+        try:
+            return datetime.strptime(parte_data, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote", "Nº Pedido", "Ordem de Carregamento", "Placa do veículo"]
+
+COLUNAS_PLANEJAMENTO = [
+    "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
+    "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora", "Placa do veículo",
+    "Tipo de Veículo", "Valor de Frete", "UF", "Cidade", "CIF/FOB",
+    "Veículo compartilhado", "Data da entrega", "Observação"
+]
+
+def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
+    alvo_norm = normalizar_chave_coluna(col_alvo)
+    for c in cols_arquivo:
+        if normalizar_chave_coluna(c) == alvo_norm:
+            return c
+    if col_alvo == "Nº Pedido":
+        for c in cols_arquivo:
+            c_norm = normalizar_chave_coluna(c)
+            if c_norm in ("pedido", "numero pedido", "num pedido", "id carga", "carga"):
+                return c
+    if col_alvo == "Placa do veículo":
+        for c in cols_arquivo:
+            c_norm = normalizar_chave_coluna(c)
+            if "placa" in c_norm:
+                return c
+    return "(Ignorar / Deixar em branco)"
 
 def carregar_dados(aba):
     try:
@@ -119,9 +168,6 @@ def extrair_detalhes_corte(df_carga_especifica):
                 detalhes.append(f"SKU {r['codigo']} - {texto_vol}")
     return " | ".join(detalhes) if detalhes else "-"
 
-# ==============================================================================
-# CONTROLE DE PERFIL + LOGO CENTRALIZADO NO TOPO DO MENU LATERAL
-# ==============================================================================
 with st.sidebar:
     if LOGO_B64:
         st.markdown(
@@ -138,7 +184,7 @@ with st.sidebar:
 
     if not st.session_state.admin_autenticado:
         st.info("👷‍♂️ Modo: **Conferente (Às Cegas)**")
-        aba = "2️⃣ Bipagem / Digitação"
+        aba = "2️⃣ Conferência dos Pedidos"
         
         st.divider()
         with st.expander("🔐 Acesso Administrativo"):
@@ -154,8 +200,9 @@ with st.sidebar:
         aba = st.radio(
             "Escolha a etapa:",
             [
+                "📅 Planejamento Logística",
                 "1️⃣ Carregar Meu Pedido",
-                "2️⃣ Bipagem / Digitação",
+                "2️⃣ Conferência dos Pedidos",
                 "3️⃣ Painel de Acompanhamento",
                 "📊 Gestão de Pedidos",
                 "4️⃣ Validação Final (Cliente)"
@@ -166,10 +213,284 @@ with st.sidebar:
             st.session_state.admin_autenticado = False
             st.rerun()
 
-# ==============================================================================
-# ETAPA 1: IMPORTAR PEDIDO (INDIVIDUAL OU EM MASSA) + EXCLUIR CARGA
-# ==============================================================================
-if aba == "1️⃣ Carregar Meu Pedido":
+if aba == "📅 Planejamento Logística":
+    st.title("📅 Planejamento Logística (Aguardando Entrada)")
+    st.caption("Pedidos cadastrados aqui saem automaticamente desta fila assim que o Nº Pedido for importado na Etapa 1.")
+
+    df_plan = carregar_dados("planejamento")
+    df_cargas_atual = carregar_dados("cargas")
+
+    pedidos_no_sistema = set()
+    if not df_cargas_atual.empty and "id_carga" in df_cargas_atual.columns:
+        pedidos_no_sistema = set(df_cargas_atual["id_carga"].apply(limpar_texto).unique().tolist())
+
+    if df_plan.empty:
+        df_plan = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
+    else:
+        for col in COLUNAS_PLANEJAMENTO:
+            if col not in df_plan.columns:
+                df_plan[col] = ""
+
+    df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
+    df_pendentes_agenda = df_plan[~df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
+    df_ja_importados = df_plan[df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
+
+    c_m1, c_m2, c_m3 = st.columns(3)
+    c_m1.metric("📅 Aguardando Chegada / Importação", len(df_pendentes_agenda))
+    c_m2.metric("✅ Já Importados no Sistema", len(df_ja_importados))
+    c_m3.metric("📋 Total na Planilha de Agenda", len(df_plan))
+
+    st.divider()
+
+    hoje_br = datetime.now(FUSO_BR).date()
+    st.subheader(f"⏳ Radar de Entregas (Base: {hoje_br.strftime('%d/%m/%Y')})")
+
+    lista_alertas_entrega = list()
+    cont_hoje_atraso = 0
+    cont_dias = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+
+    for _, row_p in df_pendentes_agenda.iterrows():
+        dt_ent = interpretar_data_br(row_p.get("Data da entrega", ""))
+        if dt_ent is not None:
+            diff_dias = (dt_ent - hoje_br).days
+            if diff_dias <= 0:
+                cont_hoje_atraso += 1
+                selo_prazo = "🚨 VENCIDO / HOJE" if diff_dias < 0 else "🚨 ENTREGA HOJE"
+            elif diff_dias in cont_dias:
+                cont_dias[diff_dias] += 1
+                icones_dias = {1: "🔴", 2: "🟠", 3: "🟡", 4: "🔵", 5: "🟢"}
+                unidade_dia = "dia" if diff_dias == 1 else "dias"
+                selo_prazo = f"{icones_dias[diff_dias]} Falta {diff_dias} {unidade_dia}"
+            else:
+                continue
+
+            cidade_uf = f"{str(row_p.get('Cidade', '')).strip()} / {str(row_p.get('UF', '')).strip()}".strip(" /")
+            agenda_str = f"{str(row_p.get('Data', '')).strip()} {str(row_p.get('Hora', '')).strip()}".strip()
+
+            lista_alertas_entrega.append({
+                "ordem_dias": diff_dias,
+                "Prazo": selo_prazo,
+                "Data Entrega": dt_ent.strftime("%d/%m/%Y"),
+                "Nº Pedido": row_p.get("Nº Pedido", ""),
+                "Cliente": str(row_p.get("Cliente", "")).strip(),
+                "Cidade / UF": cidade_uf,
+                "Transportadora": str(row_p.get("Transportadora", "")).strip(),
+                "Agenda Carregamento": agenda_str
+            })
+
+    k0, k1, k2, k3, k4, k5 = st.columns(6)
+    k0.metric("🚨 Hoje / Atraso", cont_hoje_atraso)
+    k1.metric("🔴 1 Dia", cont_dias[1])
+    k2.metric("🟠 2 Dias", cont_dias[2])
+    k3.metric("🟡 3 Dias", cont_dias[3])
+    k4.metric("🔵 4 Dias", cont_dias[4])
+    k5.metric("🟢 5 Dias", cont_dias[5])
+
+    if lista_alertas_entrega:
+        df_alertas = pd.DataFrame(lista_alertas_entrega).sort_values(by=["ordem_dias", "Nº Pedido"])
+        df_alertas = df_alertas.drop(columns=["ordem_dias"])
+        st.dataframe(df_alertas, use_container_width=True, hide_index=True)
+    else:
+        st.info("Nenhum pedido pendente com data de entrega nos próximos 5 dias.")
+
+    st.divider()
+
+    st.subheader("🚚 Fila Completa de Pedidos Planejados (Ainda não importados)")
+    mostrar_importados = st.checkbox("Mostrar também pedidos que já entraram no sistema de conferência", value=False)
+    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO] if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO]
+
+    if not df_exibir_plan.empty:
+        st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
+    else:
+        st.success("🎉 Nenhum pedido pendente na agenda! Todos os pedidos planejados já estão no sistema.")
+
+    st.divider()
+
+    with st.expander("➕ Cadastrar Novo Agendamento Manualmente"):
+        with st.form("form_novo_planejamento", clear_on_submit=True):
+            r1c1, r1c2, r1c3, r1c4 = st.columns(4)
+            in_data = r1c1.text_input("Data (DD/MM/AAAA):", placeholder="Ex: 18/11/2026")
+            in_hora = r1c2.text_input("Hora:", placeholder="Ex: 08:30")
+            in_pedido = r1c3.text_input("Nº Pedido (ID da Carga)*:", placeholder="Ex: 106915")
+            in_ordem = r1c4.text_input("Ordem de Carregamento:", placeholder="Ex: OC-450")
+
+            r2c1, r2c2, r2c3, r2c4 = st.columns(4)
+            in_local = r2c1.text_input("Local de Carregamento:", placeholder="Ex: CD Canoas")
+            in_cliente = r2c2.text_input("Cliente:", placeholder="Nome do cliente")
+            in_val_ped = r2c3.text_input("Valor Pedido:", placeholder="Ex: 15.400,00")
+            in_data_ent = r2c4.text_input("Data da entrega (DD/MM/AAAA):", placeholder="Ex: 20/11/2026")
+
+            r3c1, r3c2, r3c3, r3c4 = st.columns(4)
+            in_transp = r3c1.text_input("Transportadora:", placeholder="Nome da transportadora")
+            in_placa = r3c2.text_input("Placa do veículo:", placeholder="Ex: ABC1D23")
+            in_tipo_veic = r3c3.text_input("Tipo de Veículo:", placeholder="Ex: Carreta / Truck")
+            in_val_frete = r3c4.text_input("Valor de Frete:", placeholder="Ex: 2.100,00")
+
+            r4c1, r4c2, r4c3, r4c4 = st.columns(4)
+            in_uf = r4c1.text_input("UF:", placeholder="Ex: RS")
+            in_cidade = r4c2.text_input("Cidade:", placeholder="Ex: Porto Alegre")
+            in_cif_fob = r4c3.selectbox("CIF/FOB:", ["CIF", "FOB"])
+            in_compart = r4c4.selectbox("Veículo compartilhado:", ["NÃO", "SIM"])
+
+            in_obs = st.text_input("Observação:", placeholder="Observações gerais do agendamento...")
+
+            salvar_novo_plan = st.form_submit_button("💾 Salvar na Agenda", type="primary", use_container_width=True)
+
+            if salvar_novo_plan:
+                ped_limpo = limpar_texto(in_pedido)
+                if not ped_limpo:
+                    st.error("⚠️ O campo **Nº Pedido** é obrigatório!")
+                elif ped_limpo in df_plan["Nº Pedido"].values:
+                    st.error(f"🚫 O pedido **'{ped_limpo}'** já está cadastrado na agenda! Use a opção de editar abaixo.")
+                else:
+                    nova_linha_plan = pd.DataFrame([{
+                        "Data": in_data.strip(),
+                        "Hora": in_hora.strip(),
+                        "Local de Carregamento": in_local.strip(),
+                        "Ordem de Carregamento": limpar_texto(in_ordem),
+                        "Nº Pedido": ped_limpo,
+                        "Valor Pedido": in_val_ped.strip(),
+                        "Cliente": in_cliente.strip(),
+                        "Transportadora": in_transp.strip(),
+                        "Placa do veículo": limpar_texto(in_placa),
+                        "Tipo de Veículo": in_tipo_veic.strip(),
+                        "Valor de Frete": in_val_frete.strip(),
+                        "UF": limpar_texto(in_uf),
+                        "Cidade": in_cidade.strip(),
+                        "CIF/FOB": in_cif_fob,
+                        "Veículo compartilhado": in_compart,
+                        "Data da entrega": in_data_ent.strip(),
+                        "Observação": in_obs.strip()
+                    }])
+                    df_plan_atualizado = pd.concat([df_plan, nova_linha_plan], ignore_index=True)
+                    salvar_dados(df_plan_atualizado[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
+                    st.rerun()
+
+    with st.expander("📥 Importar Planilha de Planejamento (.xlsx / .csv)"):
+        st.caption("O sistema reconhece automaticamente colunas mesmo com letras maiúsculas/minúsculas, acentos ou variações (ex: 'Placa Veículo' ou 'Placa do veículo').")
+        arq_plan = st.file_uploader("Selecione o Excel ou CSV de planejamento:", type=["xlsx", "xls", "csv"], key="up_plan_massa")
+        if arq_plan:
+            df_up_plan = pd.read_csv(arq_plan, sep=None, engine="python", dtype=str) if arq_plan.name.endswith(".csv") else pd.read_excel(arq_plan, dtype=str)
+            cols_arquivo = list(df_up_plan.columns)
+            opcoes_mapeamento = ["(Ignorar / Deixar em branco)"] + cols_arquivo
+
+            st.write(f"Linhas encontradas no arquivo: **{len(df_up_plan)}**. Confira o vínculo automático das colunas:")
+            mapeamento_escolhido = {}
+
+            for i in range(0, len(COLUNAS_PLANEJAMENTO), 3):
+                cols_ui = st.columns(3)
+                for j in range(3):
+                    if i + j < len(COLUNAS_PLANEJAMENTO):
+                        col_dest = COLUNAS_PLANEJAMENTO[i + j]
+                        sugestao = encontrar_coluna_correspondente(col_dest, cols_arquivo)
+                        idx_padrao = opcoes_mapeamento.index(sugestao) if sugestao in opcoes_mapeamento else 0
+                        mapeamento_escolhido[col_dest] = cols_ui[j].selectbox(
+                            f"{col_dest}:",
+                            opcoes_mapeamento,
+                            index=idx_padrao,
+                            key=f"map_plan_{col_dest}"
+                        )
+
+            if st.button("🚀 Importar Linhas para a Agenda", type="primary", use_container_width=True):
+                if mapeamento_escolhido["Nº Pedido"] == "(Ignorar / Deixar em branco)":
+                    st.error("⚠️ Selecione qual coluna do seu arquivo corresponde ao **Nº Pedido**!")
+                else:
+                    df_novo_lote = pd.DataFrame()
+                    for col_dest, col_orig in mapeamento_escolhido.items():
+                        if col_orig != "(Ignorar / Deixar em branco)" and col_orig in df_up_plan.columns:
+                            df_novo_lote[col_dest] = df_up_plan[col_orig].fillna("").astype(str).str.strip()
+                        else:
+                            df_novo_lote[col_dest] = ""
+
+                    df_novo_lote["Nº Pedido"] = df_novo_lote["Nº Pedido"].apply(limpar_texto)
+                    df_novo_lote = df_novo_lote[df_novo_lote["Nº Pedido"] != ""]
+                    df_novo_lote = df_novo_lote[~df_novo_lote["Nº Pedido"].isin(df_plan["Nº Pedido"].values)]
+
+                    if not df_novo_lote.empty:
+                        df_plan_comb = pd.concat([df_plan, df_novo_lote], ignore_index=True)
+                        salvar_dados(df_plan_comb[COLUNAS_PLANEJAMENTO], "planejamento")
+                        st.success(f"✅ {len(df_novo_lote)} pedido(s) importado(s) para o planejamento!")
+                        st.rerun()
+                    else:
+                        st.warning("Nenhum pedido novo encontrado (todos já constavam na agenda ou estavam sem Nº Pedido).")
+
+    with st.expander("✏️ Editar ou Excluir Agendamento Existente"):
+        if not df_plan.empty:
+            opcoes_plan = {
+                f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Transp: {r['Transportadora']}": idx
+                for idx, r in df_plan.iterrows()
+            }
+            escolha_plan = st.selectbox("Selecione o agendamento para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
+            idx_plan = opcoes_plan[escolha_plan]
+            reg_plan = df_plan.loc[idx_plan]
+
+            with st.form("form_editar_planejamento"):
+                e1c1, e1c2, e1c3, e1c4 = st.columns(4)
+                ed_data = e1c1.text_input("Data:", value=str(reg_plan["Data"]))
+                ed_hora = e1c2.text_input("Hora:", value=str(reg_plan["Hora"]))
+                ed_pedido = e1c3.text_input("Nº Pedido:", value=str(reg_plan["Nº Pedido"]))
+                ed_ordem = e1c4.text_input("Ordem de Carregamento:", value=str(reg_plan["Ordem de Carregamento"]))
+
+                e2c1, e2c2, e2c3, e2c4 = st.columns(4)
+                ed_local = e2c1.text_input("Local de Carregamento:", value=str(reg_plan["Local de Carregamento"]))
+                ed_cliente = e2c2.text_input("Cliente:", value=str(reg_plan["Cliente"]))
+                ed_val_ped = e2c3.text_input("Valor Pedido:", value=str(reg_plan["Valor Pedido"]))
+                ed_data_ent = e2c4.text_input("Data da entrega:", value=str(reg_plan["Data da entrega"]))
+
+                e3c1, e3c2, e3c3, e3c4 = st.columns(4)
+                ed_transp = e3c1.text_input("Transportadora:", value=str(reg_plan["Transportadora"]))
+                ed_placa = e3c2.text_input("Placa do veículo:", value=str(reg_plan["Placa do veículo"]))
+                ed_tipo_veic = e3c3.text_input("Tipo de Veículo:", value=str(reg_plan["Tipo de Veículo"]))
+                ed_val_frete = e3c4.text_input("Valor de Frete:", value=str(reg_plan["Valor de Frete"]))
+
+                e4c1, e4c2, e4c3, e4c4 = st.columns(4)
+                ed_uf = e4c1.text_input("UF:", value=str(reg_plan["UF"]))
+                ed_cidade = e4c2.text_input("Cidade:", value=str(reg_plan["Cidade"]))
+                ed_cif_fob = e4c3.text_input("CIF/FOB:", value=str(reg_plan["CIF/FOB"]))
+                ed_compart = e4c4.text_input("Veículo compartilhado:", value=str(reg_plan["Veículo compartilhado"]))
+
+                ed_obs = st.text_input("Observação:", value=str(reg_plan["Observação"]))
+
+                c_btn_save, c_btn_del = st.columns(2)
+                btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
+                btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Agendamento", use_container_width=True)
+
+                if btn_atualizar_plan:
+                    df_plan.loc[idx_plan] = {
+                        "Data": ed_data.strip(),
+                        "Hora": ed_hora.strip(),
+                        "Local de Carregamento": ed_local.strip(),
+                        "Ordem de Carregamento": limpar_texto(ed_ordem),
+                        "Nº Pedido": limpar_texto(ed_pedido),
+                        "Valor Pedido": ed_val_ped.strip(),
+                        "Cliente": ed_cliente.strip(),
+                        "Transportadora": ed_transp.strip(),
+                        "Placa do veículo": limpar_texto(ed_placa),
+                        "Tipo de Veículo": ed_tipo_veic.strip(),
+                        "Valor de Frete": ed_val_frete.strip(),
+                        "UF": limpar_texto(ed_uf),
+                        "Cidade": ed_cidade.strip(),
+                        "CIF/FOB": limpar_texto(ed_cif_fob),
+                        "Veículo compartilhado": limpar_texto(ed_compart),
+                        "Data da entrega": ed_data_ent.strip(),
+                        "Observação": ed_obs.strip()
+                    }
+                    salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.success("✅ Agendamento atualizado com sucesso!")
+                    st.rerun()
+
+                if btn_excluir_plan:
+                    df_plan_rest = df_plan.drop(idx_plan)
+                    if df_plan_rest.empty:
+                        df_plan_rest = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
+                    salvar_dados(df_plan_rest[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.warning("🗑️ Agendamento removido da agenda!")
+                    st.rerun()
+        else:
+            st.info("Nenhum agendamento cadastrado na planilha ainda.")
+
+elif aba == "1️⃣ Carregar Meu Pedido":
     st.title("1️⃣ Importar Pedido para Conferência")
     st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
@@ -211,7 +532,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
             st.caption("Informe o código/ID de carga correspondente a cada arquivo selecionado:")
             vistos_na_remessa = set()
             for idx_arq, arq in enumerate(arquivos_pedidos):
-                c_nome, c_id = st.columns([1.2, 1], vertical_alignment="center")
+                c_nome, c_id = st.columns([2, 3], vertical_alignment="center")
                 with c_nome:
                     st.markdown(f"📄 **{arq.name}**")
                 with c_id:
@@ -330,9 +651,6 @@ if aba == "1️⃣ Carregar Meu Pedido":
         else:
             st.info("Nenhuma carga cadastrada no momento.")
 
-# ==============================================================================
-# GESTÃO DE PEDIDOS + DATA DE CONCLUSÃO + CONSULTA SUSPENSA + EDIÇÃO DO MOTIVO
-# ==============================================================================
 elif aba == "📊 Gestão de Pedidos":
     st.title("📊 Gestão de Pedidos: Conferidos x Pendentes")
 
@@ -500,11 +818,8 @@ elif aba == "📊 Gestão de Pedidos":
         else:
             st.info("Nenhum item encontrado neste pedido.")
 
-# ==============================================================================
-# ETAPA 2: CONFERÊNCIA ÀS CEGAS
-# ==============================================================================
-elif aba == "2️⃣ Bipagem / Digitação":
-    st.title("📦 Conferência Física de Carga")
+elif aba == "2️⃣ Conferência dos Pedidos":
+    st.title("📦 Conferência dos Pedidos")
 
     df_todas_cargas = carregar_dados("cargas")
     
@@ -767,9 +1082,6 @@ elif aba == "2️⃣ Bipagem / Digitação":
         else:
             st.dataframe(df_carga_bipes.head(10), use_container_width=True, hide_index=True)
 
-# ==============================================================================
-# ETAPA 3: PAINEL DE ACOMPANHAMENTO + CORTE COM MOTIVO
-# ==============================================================================
 elif aba == "3️⃣ Painel de Acompanhamento":
     st.title("3️⃣ Painel de Acompanhamento")
 
@@ -868,9 +1180,6 @@ elif aba == "3️⃣ Painel de Acompanhamento":
         st.subheader("🚨 Itens Bipados a Mais / Fora do Pedido")
         st.dataframe(sobras[["codigo", "produto", "pedido_real", "bipado", "Qtd Excedente"]], use_container_width=True, hide_index=True)
 
-# ==============================================================================
-# ETAPA 4: VALIDAÇÃO FINAL (CLIENTE)
-# ==============================================================================
 elif aba == "4️⃣ Validação Final (Cliente)":
     st.title("4️⃣ Auditoria Final: Pedido x Bipado x Cliente (+ Lotes)")
 
