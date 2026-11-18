@@ -237,7 +237,7 @@ with st.sidebar:
             st.session_state.admin_autenticado = False
             st.rerun()
 
-if aba == "🚚 Planejamento Logística":
+if aba == "📥 Importação de Pedidos":
     st.title("📡 Monitoramento de Pedidos Pendentes")
     st.caption("Pedidos do monitoramento saem automaticamente desta fila assim que o Nº Pedido for liberado para conferência")
 
