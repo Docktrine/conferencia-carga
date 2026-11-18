@@ -184,7 +184,7 @@ with st.sidebar:
 
     if not st.session_state.admin_autenticado:
         st.info("👷‍♂️ Modo: **Conferente (Às Cegas)**")
-        aba = "2️⃣ Conferência dos Pedidos"
+        aba = "📦 Conferência dos Pedidos"
         
         st.divider()
         with st.expander("🔐 Acesso Administrativo"):
@@ -200,12 +200,12 @@ with st.sidebar:
         aba = st.radio(
             "Escolha a etapa:",
             [
-                "📅 Planejamento Logística",
-                "1️⃣ Importação de Pedidos",
-                "2️⃣ Conferência dos Pedidos",
-                "3️⃣ Painel de Acompanhamento",
-                "📊 Gestão de Pedidos",
-                "4️⃣ Validação Final (Cliente)"
+                "🚚 Planejamento Logística",
+                "📥 Importação de Pedidos",
+                "📦 Conferência dos Pedidos",
+                "📈 Painel de Acompanhamento",
+                "📋 Gestão de Pedidos",
+                "✅ Validação Final (Cliente)"
             ]
         )
         st.divider()
@@ -213,7 +213,7 @@ with st.sidebar:
             st.session_state.admin_autenticado = False
             st.rerun()
 
-if aba == "📅 Planejamento Logística":
+if aba == "🚚 Planejamento Logística":
     st.title("📅 Monitoramento de Pedidos Pendentes")
     st.caption("Pedidos do monitoramento saem automaticamente desta fila assim que o Nº Pedido for liberado para conferência")
 
@@ -530,8 +530,8 @@ if aba == "📅 Planejamento Logística":
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
 
-elif aba == "1️⃣ Importação de Pedidos":
-    st.title("1️⃣ Importar Pedidos para Conferência")
+elif aba == "📥 Importação de Pedidos":
+    st.title("📥 Importar Pedidos para Conferência")
     st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
     arquivos_pedidos = st.file_uploader(
@@ -691,8 +691,8 @@ elif aba == "1️⃣ Importação de Pedidos":
         else:
             st.info("Nenhuma carga cadastrada no momento.")
 
-elif aba == "📊 Gestão de Pedidos":
-    st.title("📊 Gestão de Pedidos: Conferidos x Pendentes")
+elif aba == "📋 Gestão de Pedidos":
+    st.title("📋 Gestão de Pedidos: Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
         st.rerun()
@@ -858,7 +858,7 @@ elif aba == "📊 Gestão de Pedidos":
         else:
             st.info("Nenhum item encontrado neste pedido.")
 
-elif aba == "2️⃣ Conferência dos Pedidos":
+elif aba == "📦 Conferência dos Pedidos":
     st.title("📦 Conferência dos Pedidos")
 
     df_todas_cargas = carregar_dados("cargas")
@@ -1122,8 +1122,8 @@ elif aba == "2️⃣ Conferência dos Pedidos":
         else:
             st.dataframe(df_carga_bipes.head(10), use_container_width=True, hide_index=True)
 
-elif aba == "3️⃣ Painel de Acompanhamento":
-    st.title("3️⃣ Painel de Acompanhamento")
+elif aba == "📈 Painel de Acompanhamento":
+    st.title("📈 Painel de Acompanhamento")
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
@@ -1220,8 +1220,8 @@ elif aba == "3️⃣ Painel de Acompanhamento":
         st.subheader("🚨 Itens Bipados a Mais / Fora do Pedido")
         st.dataframe(sobras[["codigo", "produto", "pedido_real", "bipado", "Qtd Excedente"]], use_container_width=True, hide_index=True)
 
-elif aba == "4️⃣ Validação Final (Cliente)":
-    st.title("4️⃣ Auditoria Final: Pedido x Bipado x Cliente (+ Lotes)")
+elif aba == "✅ Validação Final (Cliente)":
+    st.title("✅ Auditoria Final: Pedido x Bipado x Cliente (+ Lotes)")
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
