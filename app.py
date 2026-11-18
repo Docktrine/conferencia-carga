@@ -554,7 +554,7 @@ if aba == "📥 Importação de Pedidos":
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
 
-elif aba == "📥 Importação de Pedidos":
+elif aba == "🚚 Planejamento Logística":
     st.title("📥 Importar Pedidos para Conferência")
     st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
