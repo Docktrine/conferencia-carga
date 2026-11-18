@@ -110,9 +110,9 @@ def extrair_detalhes_corte(df_carga_especifica):
                 texto_vol = qtd_parte
 
             if motivo_parte:
-                detalhes.append(f"SKU {r['codigo']} ({texto_vol} | Motivo: {motivo_parte})")
+                detalhes.append(f"SKU {r['codigo']} - {texto_vol} | Motivo: {motivo_parte}")
             else:
-                detalhes.append(f"SKU {r['codigo']} ({texto_vol})")
+                detalhes.append(f"SKU {r['codigo']} - {texto_vol}")
     return " | ".join(detalhes) if detalhes else "-"
 
 # ==============================================================================
@@ -828,7 +828,7 @@ elif aba == "3️⃣ Painel de Acompanhamento":
 
             if st.button("✂️ Confirmar Corte no Pedido", type="primary", disabled=not confirma_corte):
                 df_banco_corte = carregar_dados("cargas")
-                filtro_corte = (df_banco_corte["id_carga"] == carga_selecionada) & (df_banco_corte["codigo"].apply(limpar_texto) == limpar_texto(sku_corte))
+                filtro_corte = (df_banco_corte["id_carga"] == carga_selecionada) & (df_banco_edit_corte["codigo"].apply(limpar_texto) == limpar_texto(sku_corte))
                 if filtro_corte.any():
                     idx_ct = df_banco_corte.index[filtro_corte][0]
                     df_banco_corte.at[idx_ct, "pedido_real"] = int(nova_qtd_autorizada)
