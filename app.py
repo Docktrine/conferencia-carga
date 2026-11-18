@@ -295,7 +295,7 @@ if aba == "📅 Planejamento Logística":
 
     st.divider()
 
-    st.subheader("🚚 Fila Completa de Pedidos Planejados (Ainda não importados)")
+    st.subheader("🚚 Fila de Importação Pedidos Planejados")
     mostrar_importados = st.checkbox("Mostrar também pedidos que já entraram no sistema de conferência", value=False)
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO] if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO]
 
