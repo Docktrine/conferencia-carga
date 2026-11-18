@@ -334,7 +334,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
 # VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SUSPENSA + EDIÇÃO DO MOTIVO
 # ==============================================================================
 elif aba == "📊 Gestão de Pedidos":
-    st.title("📊 Gestão de Pedidos: Pedidos Conferidos x Pendentes")
+    st.title("📊 Gestão de Pedidos: Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
         st.rerun()
