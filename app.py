@@ -201,7 +201,7 @@ with st.sidebar:
             "Escolha a etapa:",
             [
                 "📅 Planejamento Logística",
-                "1️⃣ Carregar Meu Pedido",
+                "1️⃣ Importação de Pedidos",
                 "2️⃣ Conferência dos Pedidos",
                 "3️⃣ Painel de Acompanhamento",
                 "📊 Gestão de Pedidos",
@@ -530,7 +530,7 @@ if aba == "📅 Planejamento Logística":
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
 
-elif aba == "1️⃣ Carregar Meu Pedido":
+elif aba == "1️⃣ Importação de Pedidos":
     st.title("1️⃣ Importar Pedido para Conferência")
     st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
