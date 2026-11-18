@@ -91,7 +91,28 @@ def extrair_detalhes_corte(df_carga_especifica):
         prod = str(r["produto"])
         if "[CORTADO:" in prod:
             trecho = prod.split("[CORTADO:")[-1].rstrip("]").strip()
-            detalhes.append(f"SKU {r['codigo']} ({trecho})")
+            if "| Motivo:" in trecho:
+                partes = trecho.split("| Motivo:")
+                qtd_parte = partes[0].strip()
+                motivo_parte = partes[1].strip()
+            else:
+                qtd_parte = trecho
+                motivo_parte = ""
+
+            try:
+                nums = [int(n.strip()) for n in qtd_parte.split("->")]
+                if len(nums) == 2:
+                    vol_cortado = max(0, nums[0] - nums[1])
+                    texto_vol = f"{vol_cortado} volume" if vol_cortado == 1 else f"{vol_cortado} volumes"
+                else:
+                    texto_vol = qtd_parte
+            except Exception:
+                texto_vol = qtd_parte
+
+            if motivo_parte:
+                detalhes.append(f"SKU {r['codigo']} ({texto_vol} | Motivo: {motivo_parte})")
+            else:
+                detalhes.append(f"SKU {r['codigo']} ({texto_vol})")
     return " | ".join(detalhes) if detalhes else "-"
 
 # ==============================================================================
