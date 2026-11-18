@@ -531,7 +531,7 @@ if aba == "📅 Planejamento Logística":
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
 
 elif aba == "1️⃣ Importação de Pedidos":
-    st.title("1️⃣ Importar Pedido para Conferência")
+    st.title("1️⃣ Importar Pedidos para Conferência")
     st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
 
     arquivos_pedidos = st.file_uploader(
