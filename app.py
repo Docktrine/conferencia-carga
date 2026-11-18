@@ -306,7 +306,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# VISÃO GERAL DE STATUS DAS CARGAS
+# VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SIMPLES DO PEDIDO
 # ==============================================================================
 elif aba == "📊 Status das Cargas":
     st.title("📊 Visão Geral: Pedidos Conferidos x Pendentes")
@@ -382,6 +382,45 @@ elif aba == "📊 Status das Cargas":
         st.dataframe(pd.DataFrame(lista_concluidas), use_container_width=True, hide_index=True)
     else:
         st.info("Nenhuma carga atingiu 100% de conclusão ainda.")
+
+    st.divider()
+    with st.expander("🔍 Consultar Itens e Quantidades de uma Carga"):
+        lista_cargas_consulta = df_todas["id_carga"].unique().tolist()
+        carga_detalhe = st.selectbox("Selecione a carga para visualizar o pedido:", lista_cargas_consulta, key="sel_detalhe_status")
+        
+        df_det = df_todas[df_todas["id_carga"] == carga_detalhe].copy()
+        df_det = df_det[(df_det["pedido_real"] > 0) | (df_det["produto"].astype(str).str.contains(r"\[CORTADO:", regex=True))]
+
+        linhas_pedido = list()
+        for _, r in df_det.iterrows():
+            prod_raw = str(r["produto"])
+            if "[CORTADO:" in prod_raw:
+                desc_limpa = prod_raw.split(" [CORTADO:")[0].strip()
+                trecho_corte = prod_raw.split("[CORTADO:")[-1].rstrip("]").strip()
+                if "| Motivo:" in trecho_corte:
+                    partes = trecho_corte.split("| Motivo:")
+                    corte_info = f"✂️ Sim ({partes[0].strip()})"
+                    motivo_info = partes[1].strip()
+                else:
+                    corte_info = f"✂️ Sim ({trecho_corte})"
+                    motivo_info = "-"
+            else:
+                desc_limpa = prod_raw
+                corte_info = "Não"
+                motivo_info = "-"
+
+            linhas_pedido.append({
+                "SKU": r["codigo"],
+                "Descrição": desc_limpa,
+                "Quantidade": int(r["pedido_real"]),
+                "Corte": corte_info,
+                "Motivo do Corte": motivo_info
+            })
+
+        if linhas_pedido:
+            st.dataframe(pd.DataFrame(linhas_pedido), use_container_width=True, hide_index=True)
+        else:
+            st.info("Nenhum item encontrado neste pedido.")
 
 # ==============================================================================
 # ETAPA 2: CONFERÊNCIA ÀS CEGAS
