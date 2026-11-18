@@ -306,7 +306,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SIMPLES DO PEDIDO
+# VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SUSPENSA DO PEDIDO
 # ==============================================================================
 elif aba == "📊 Status das Cargas":
     st.title("📊 Visão Geral: Pedidos Conferidos x Pendentes")
@@ -334,7 +334,6 @@ elif aba == "📊 Status das Cargas":
 
         concluida_100 = verificar_carga_100_concluida(grupo)
         teve_corte = carga_possui_corte(grupo)
-        detalhes_corte_str = extrair_detalhes_corte(grupo)
         selo_corte = " | ✂️ PEDIDO COM CORTE" if teve_corte else ""
 
         if concluida_100:
@@ -343,8 +342,7 @@ elif aba == "📊 Status das Cargas":
                 "Qtd de SKUs": skus_ped,
                 "Volumes Pedidos": tot_ped,
                 "Volumes Bipados": tot_bip,
-                "Situação": f"✅ 100% Conferida{selo_corte}",
-                "Detalhes / Motivo do Corte": detalhes_corte_str
+                "Situação": f"✅ 100% Conferida{selo_corte}"
             })
         else:
             if tot_bip == 0:
@@ -360,8 +358,7 @@ elif aba == "📊 Status das Cargas":
                 "Volumes Pedidos": tot_ped,
                 "Volumes Bipados": tot_bip,
                 "Falta Bipar": falta,
-                "Situação": situacao,
-                "Detalhes / Motivo do Corte": detalhes_corte_str
+                "Situação": situacao
             })
 
     m1, m2, m3 = st.columns(3)
