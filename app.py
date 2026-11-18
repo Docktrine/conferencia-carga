@@ -238,7 +238,7 @@ if aba == "📅 Planejamento Logística":
     c_m1, c_m2, c_m3 = st.columns(3)
     c_m1.metric("📅 Aguardando Importação", len(df_pendentes_agenda))
     c_m2.metric("✅ Já Importados no Sistema", len(df_ja_importados))
-    c_m3.metric("📋 Total na Planilha de Agenda", len(df_plan))
+    c_m3.metric("📋 Total de Pedidos", len(df_plan))
 
     st.divider()
 
