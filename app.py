@@ -214,7 +214,7 @@ with st.sidebar:
             st.rerun()
 
 if aba == "📅 Planejamento Logística":
-    st.title("📅 Planejamento Logística")
+    st.title("📅 Planejamento Logística (Aguardando Importação)")
     st.caption("Pedidos cadastrados aqui saem automaticamente desta fila assim que o Nº Pedido for importado na Etapa 1.")
 
     df_plan = carregar_dados("planejamento")
@@ -236,9 +236,9 @@ if aba == "📅 Planejamento Logística":
     df_ja_importados = df_plan[df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
 
     c_m1, c_m2, c_m3 = st.columns(3)
-    c_m1.metric("📅 Aguardando Chegada Importação", len(df_pendentes_agenda))
+    c_m1.metric("📅 Aguardando Importação", len(df_pendentes_agenda))
     c_m2.metric("✅ Já Importados no Sistema", len(df_ja_importados))
-    c_m3.metric("📋 Total de Pedidos no Sistema", len(df_plan))
+    c_m3.metric("📋 Total na Planilha de Agenda", len(df_plan))
 
     st.divider()
 
@@ -256,11 +256,13 @@ if aba == "📅 Planejamento Logística":
             if diff_dias <= 0:
                 cont_hoje_atraso += 1
                 selo_prazo = "🚨 VENCIDO / HOJE" if diff_dias < 0 else "🚨 ENTREGA HOJE"
+                grupo_filtro = "🚨 Hoje / Atraso"
             elif diff_dias in cont_dias:
                 cont_dias[diff_dias] += 1
                 icones_dias = {1: "🔴", 2: "🟠", 3: "🟡", 4: "🔵", 5: "🟢"}
                 unidade_dia = "dia" if diff_dias == 1 else "dias"
                 selo_prazo = f"{icones_dias[diff_dias]} Falta {diff_dias} {unidade_dia}"
+                grupo_filtro = f"{icones_dias[diff_dias]} {diff_dias} {unidade_dia.capitalize()}"
             else:
                 continue
 
@@ -269,6 +271,7 @@ if aba == "📅 Planejamento Logística":
 
             lista_alertas_entrega.append({
                 "ordem_dias": diff_dias,
+                "grupo_filtro": grupo_filtro,
                 "Prazo": selo_prazo,
                 "Data Entrega": dt_ent.strftime("%d/%m/%Y"),
                 "Nº Pedido": row_p.get("Nº Pedido", ""),
@@ -288,14 +291,34 @@ if aba == "📅 Planejamento Logística":
 
     if lista_alertas_entrega:
         df_alertas = pd.DataFrame(lista_alertas_entrega).sort_values(by=["ordem_dias", "Nº Pedido"])
-        df_alertas = df_alertas.drop(columns=["ordem_dias"])
-        st.dataframe(df_alertas, use_container_width=True, hide_index=True)
+        with st.expander(f"📋 Ver Detalhes dos Pedidos Urgentes ({len(df_alertas)})", expanded=False):
+            opcoes_radar = [
+                "Todos (0 a 5 dias)",
+                "🚨 Hoje / Atraso",
+                "🔴 1 Dia",
+                "🟠 2 Dias",
+                "🟡 3 Dias",
+                "🔵 4 Dias",
+                "🟢 5 Dias"
+            ]
+            filtro_radar = st.selectbox("Filtrar por prazo de entrega:", opcoes_radar, key="sel_filtro_radar")
+            if filtro_radar != "Todos (0 a 5 dias)":
+                df_alertas_filtrado = df_alertas[df_alertas["grupo_filtro"] == filtro_radar]
+            else:
+                df_alertas_filtrado = df_alertas
+
+            df_alertas_exibir = df_alertas_filtrado.drop(columns=["ordem_dias", "grupo_filtro"])
+            if not df_alertas_exibir.empty:
+                st.dataframe(df_alertas_exibir, use_container_width=True, hide_index=True)
+            else:
+                st.info(f"Nenhum pedido encontrado para o filtro **{filtro_radar}**.")
     else:
         st.info("Nenhum pedido pendente com data de entrega nos próximos 5 dias.")
 
     st.divider()
 
-    st.subheader("🚚 Fila de Importação Pedidos Planejados")
+    st.subheader("🚚 Fila de Pedidos Planejados")
+
     mostrar_importados = st.checkbox("Mostrar também pedidos que já entraram no sistema de conferência", value=False)
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO] if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO]
 
