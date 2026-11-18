@@ -130,9 +130,9 @@ with st.sidebar:
             "Escolha a etapa:",
             [
                 "1️⃣ [PC] Carregar Meu Pedido",
-                "📊 [PC] Status das Cargas",
                 "2️⃣ [Celular] Bipagem / Digitação",
                 "3️⃣ [PC] Painel: O que falta",
+                "📊 [PC] Status das Cargas",
                 "4️⃣ [PC] Validação Final (Cliente)"
             ]
         )
