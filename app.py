@@ -236,9 +236,9 @@ if aba == "📅 Planejamento Logística":
     df_ja_importados = df_plan[df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
 
     c_m1, c_m2, c_m3 = st.columns(3)
-    c_m1.metric("📅 Aguardando Chegada / Importação", len(df_pendentes_agenda))
+    c_m1.metric("📅 Aguardando Chegada Importação", len(df_pendentes_agenda))
     c_m2.metric("✅ Já Importados no Sistema", len(df_ja_importados))
-    c_m3.metric("📋 Total na Planilha de Agenda", len(df_plan))
+    c_m3.metric("📋 Total de Pedidos no Sistema", len(df_plan))
 
     st.divider()
 
