@@ -255,89 +255,23 @@ if aba == "🚚 Planejamento Logística":
             if col not in df_plan.columns:
                 df_plan[col] = ""
 
+    df_plan = df_plan.fillna("").astype(object)
+    for col_p in COLUNAS_PLANEJAMENTO:
+        if col_p in df_plan.columns:
+            df_plan[col_p] = df_plan[col_p].apply(
+                lambda v: "" if str(v).strip().upper() in ("NAN", "NONE", "<NA>") else (
+                    str(v).strip()[:-2] if str(v).strip().endswith(".0") else str(v).strip()
+                )
+            )
+    for col_dt in ("Data", "Data da entrega"):
+        if col_dt in df_plan.columns:
+            df_plan[col_dt] = df_plan[col_dt].apply(formatar_data_br_str)
+    for col_vl in ("Valor Pedido", "Valor de Frete"):
+        if col_vl in df_plan.columns:
+            df_plan[col_vl] = df_plan[col_vl].apply(formatar_moeda_br_str)
+
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
     df_pendentes_agenda = df_plan[~df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
-    df_ja_importados = df_plan[df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
-
-    c_m1, c_m2, c_m3 = st.columns(3)
-    c_m1.metric("📅 Aguardando Importação", len(df_pendentes_agenda))
-    c_m2.metric("✅ Já Importados no Sistema", len(df_ja_importados))
-    c_m3.metric("📋 Total de Pedidos", len(df_plan))
-
-    st.divider()
-
-    hoje_br = datetime.now(FUSO_BR).date()
-    st.subheader(f"⏳ Radar de Entregas ({hoje_br.strftime('%d/%m/%Y')})")
-
-    lista_alertas_entrega = list()
-    cont_hoje_atraso = 0
-    cont_dias = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-
-    for _, row_p in df_pendentes_agenda.iterrows():
-        dt_ent = interpretar_data_br(row_p.get("Data da entrega", ""))
-        if dt_ent is not None:
-            diff_dias = (dt_ent - hoje_br).days
-            if diff_dias <= 0:
-                cont_hoje_atraso += 1
-                selo_prazo = "🚨 VENCIDO / HOJE" if diff_dias < 0 else "🚨 ENTREGA HOJE"
-                grupo_filtro = "🚨 Hoje / Atraso"
-            elif diff_dias in cont_dias:
-                cont_dias[diff_dias] += 1
-                icones_dias = {1: "🔴", 2: "🟠", 3: "🟡", 4: "🔵", 5: "🟢"}
-                unidade_dia = "dia" if diff_dias == 1 else "dias"
-                selo_prazo = f"{icones_dias[diff_dias]} Falta {diff_dias} {unidade_dia}"
-                grupo_filtro = f"{icones_dias[diff_dias]} {diff_dias} {unidade_dia.capitalize()}"
-            else:
-                continue
-
-            cidade_uf = f"{str(row_p.get('Cidade', '')).strip()} / {str(row_p.get('UF', '')).strip()}".strip(" /")
-            agenda_str = f"{str(row_p.get('Data', '')).strip()} {str(row_p.get('Hora', '')).strip()}".strip()
-
-            lista_alertas_entrega.append({
-                "ordem_dias": diff_dias,
-                "grupo_filtro": grupo_filtro,
-                "Prazo": selo_prazo,
-                "Data Entrega": dt_ent.strftime("%d/%m/%Y"),
-                "Nº Pedido": row_p.get("Nº Pedido", ""),
-                "Cliente": str(row_p.get("Cliente", "")).strip(),
-                "Cidade / UF": cidade_uf,
-                "Transportadora": str(row_p.get("Transportadora", "")).strip(),
-                "Agenda Carregamento": agenda_str
-            })
-
-    k0, k1, k2, k3, k4, k5 = st.columns(6)
-    k0.metric("🚨 Hoje / Atraso", cont_hoje_atraso)
-    k1.metric("🔴 1 Dia", cont_dias[1])
-    k2.metric("🟠 2 Dias", cont_dias[2])
-    k3.metric("🟡 3 Dias", cont_dias[3])
-    k4.metric("🔵 4 Dias", cont_dias[4])
-    k5.metric("🟢 5 Dias", cont_dias[5])
-
-    if lista_alertas_entrega:
-        df_alertas = pd.DataFrame(lista_alertas_entrega).sort_values(by=["ordem_dias", "Nº Pedido"])
-        with st.expander(f"📋 Ver Detalhes dos Pedidos Urgentes ({len(df_alertas)})", expanded=False):
-            opcoes_radar = [
-                "Todos (0 a 5 dias)",
-                "🚨 Hoje / Atraso",
-                "🔴 1 Dia",
-                "🟠 2 Dias",
-                "🟡 3 Dias",
-                "🔵 4 Dias",
-                "🟢 5 Dias"
-            ]
-            filtro_radar = st.selectbox("Filtrar por prazo de entrega:", opcoes_radar, key="sel_filtro_radar")
-            if filtro_radar != "Todos (0 a 5 dias)":
-                df_alertas_filtrado = df_alertas[df_alertas["grupo_filtro"] == filtro_radar]
-            else:
-                df_alertas_filtrado = df_alertas
-
-            df_alertas_exibir = df_alertas_filtrado.drop(columns=["ordem_dias", "grupo_filtro"])
-            if not df_alertas_exibir.empty:
-                st.dataframe(df_alertas_exibir, use_container_width=True, hide_index=True)
-            else:
-                st.info(f"Nenhum pedido encontrado para o filtro **{filtro_radar}**.")
-    else:
-        st.info("Nenhum pedido pendente com data de entrega nos próximos 5 dias.")
 
     st.divider()
 
@@ -408,22 +342,22 @@ if aba == "🚚 Planejamento Logística":
                     st.error(f"🚫 O pedido **'{ped_limpo}'** já está cadastrado na agenda! Use a opção de editar abaixo.")
                 else:
                     nova_linha_plan = pd.DataFrame([{
-                        "Data": in_data.strip(),
+                        "Data": formatar_data_br_str(in_data),
                         "Hora": in_hora.strip(),
                         "Local de Carregamento": in_local.strip(),
                         "Ordem de Carregamento": limpar_texto(in_ordem),
                         "Nº Pedido": ped_limpo,
-                        "Valor Pedido": in_val_ped.strip(),
+                        "Valor Pedido": formatar_moeda_br_str(in_val_ped),
                         "Cliente": in_cliente.strip(),
                         "Transportadora": in_transp.strip(),
                         "Placa do veículo": limpar_texto(in_placa),
                         "Tipo de Veículo": in_tipo_veic.strip(),
-                        "Valor de Frete": in_val_frete.strip(),
+                        "Valor de Frete": formatar_moeda_br_str(in_val_frete),
                         "UF": limpar_texto(in_uf),
                         "Cidade": in_cidade.strip(),
                         "CIF/FOB": in_cif_fob,
                         "Veículo compartilhado": in_compart,
-                        "Data da entrega": in_data_ent.strip(),
+                        "Data da entrega": formatar_data_br_str(in_data_ent),
                         "Observação": in_obs.strip()
                     }])
                     df_plan_atualizado = pd.concat([df_plan, nova_linha_plan], ignore_index=True)
@@ -468,6 +402,11 @@ if aba == "🚚 Planejamento Logística":
                             df_novo_lote[col_dest] = ""
 
                     df_novo_lote["Nº Pedido"] = df_novo_lote["Nº Pedido"].apply(limpar_texto)
+                    for col_dt in ("Data", "Data da entrega"):
+                        df_novo_lote[col_dt] = df_novo_lote[col_dt].apply(formatar_data_br_str)
+                    for col_vl in ("Valor Pedido", "Valor de Frete"):
+                        df_novo_lote[col_vl] = df_novo_lote[col_vl].apply(formatar_moeda_br_str)
+
                     df_novo_lote = df_novo_lote[df_novo_lote["Nº Pedido"] != ""]
                     df_novo_lote = df_novo_lote[~df_novo_lote["Nº Pedido"].isin(df_plan["Nº Pedido"].values)]
 
@@ -521,25 +460,29 @@ if aba == "🚚 Planejamento Logística":
                 btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Agendamento", use_container_width=True)
 
                 if btn_atualizar_plan:
-                    df_plan.loc[idx_plan] = {
-                        "Data": ed_data.strip(),
+                    dados_editados = {
+                        "Data": formatar_data_br_str(ed_data),
                         "Hora": ed_hora.strip(),
                         "Local de Carregamento": ed_local.strip(),
                         "Ordem de Carregamento": limpar_texto(ed_ordem),
                         "Nº Pedido": limpar_texto(ed_pedido),
-                        "Valor Pedido": ed_val_ped.strip(),
+                        "Valor Pedido": formatar_moeda_br_str(ed_val_ped),
                         "Cliente": ed_cliente.strip(),
                         "Transportadora": ed_transp.strip(),
                         "Placa do veículo": limpar_texto(ed_placa),
                         "Tipo de Veículo": ed_tipo_veic.strip(),
-                        "Valor de Frete": ed_val_frete.strip(),
+                        "Valor de Frete": formatar_moeda_br_str(ed_val_frete),
                         "UF": limpar_texto(ed_uf),
                         "Cidade": ed_cidade.strip(),
                         "CIF/FOB": limpar_texto(ed_cif_fob),
                         "Veículo compartilhado": limpar_texto(ed_compart),
-                        "Data da entrega": ed_data_ent.strip(),
+                        "Data da entrega": formatar_data_br_str(ed_data_ent),
                         "Observação": ed_obs.strip()
                     }
+                    for col_nome, novo_valor in dados_editados.items():
+                        df_plan[col_nome] = df_plan[col_nome].astype(object)
+                        df_plan.at[idx_plan, col_nome] = novo_valor
+
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.success("✅ Agendamento atualizado com sucesso!")
                     st.rerun()
@@ -553,6 +496,7 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
+
 
 elif aba == "📥 Importação de Pedidos":
     st.title("📥 Importar Pedidos para Conferência")
