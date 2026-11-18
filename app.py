@@ -126,8 +126,8 @@ with st.sidebar:
     if LOGO_B64:
         st.markdown(
             f"""
-            <div style="text-align: center; padding-top: 4px; padding-bottom: 10px;">
-                <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 96px; height: 96px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 10px;">
+            <div style="text-align: center; padding-top: 4px; padding-bottom: 12px;">
+                <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 96px; height: 96px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 20px;">
                 <h2 style="margin: 0; padding: 0; font-size: 1.45rem;">Grano Logística</h2>
             </div>
             """,
