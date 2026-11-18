@@ -243,7 +243,7 @@ if aba == "📅 Planejamento Logística":
     st.divider()
 
     hoje_br = datetime.now(FUSO_BR).date()
-    st.subheader(f"⏳ Radar de Entregas (Base: {hoje_br.strftime('%d/%m/%Y')})")
+    st.subheader(f"⏳ Radar de Entregas ({hoje_br.strftime('%d/%m/%Y')})")
 
     lista_alertas_entrega = list()
     cont_hoje_atraso = 0
