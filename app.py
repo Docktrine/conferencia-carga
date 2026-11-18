@@ -72,6 +72,30 @@ def interpretar_data_br(valor):
             continue
     return None
 
+def formatar_data_br_str(valor):
+    dt = interpretar_data_br(valor)
+    if dt is not None:
+        return dt.strftime("%d/%m/%Y")
+    s = str(valor).strip() if pd.notna(valor) else ""
+    return "" if s.upper() in ("NAN", "NONE", "<NA>") else s
+
+def formatar_moeda_br_str(valor):
+    if pd.isna(valor):
+        return ""
+    s = str(valor).strip()
+    if not s or s.upper() in ("NAN", "NONE", "<NA>", "-"):
+        return ""
+    limpo = re.sub(r"[R$\s]", "", s)
+    if "," in limpo and "." in limpo:
+        limpo = limpo.replace(".", "").replace(",", ".")
+    elif "," in limpo:
+        limpo = limpo.replace(",", ".")
+    try:
+        num = float(limpo)
+        return f"{num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except ValueError:
+        return s
+
 COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote", "Nº Pedido", "Ordem de Carregamento", "Placa do veículo"]
 
 COLUNAS_PLANEJAMENTO = [
