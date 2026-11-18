@@ -317,12 +317,29 @@ if aba == "📅 Planejamento Logística":
 
     st.divider()
 
-    st.subheader("🚚 Fila de Pedidos Planejados")
-
+      st.subheader("🚚 Fila de Pedidos Planejados")
     mostrar_importados = st.checkbox("Mostrar também pedidos que já entraram no sistema de conferência", value=False)
-    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO] if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO]
+    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy() if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO].copy()
 
     if not df_exibir_plan.empty:
+        f_col1, f_col2 = st.columns(2)
+        with f_col1:
+            datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
+            filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
+        with f_col2:
+            busca_livre = st.text_input("Buscar Pedido, Cliente ou Placa:", placeholder="Digite para filtrar...", key="filtro_fila_busca")
+
+        if filtro_data_carreg != "Todas as datas":
+            df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
+        if busca_livre.strip():
+            termo = busca_livre.strip().lower()
+            mask_busca = (
+                df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
+                df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
+                df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False)
+            )
+            df_exibir_plan = df_exibir_plan[mask_busca]
+
         st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
     else:
         st.success("🎉 Nenhum pedido pendente na agenda! Todos os pedidos planejados já estão no sistema.")
