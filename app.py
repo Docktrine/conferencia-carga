@@ -168,7 +168,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
         tem_erro_id = False
 
         if len(arquivos_pedidos) == 1:
-            arq_unico = arquivos_pedidos[0]
+            arq_unico = arquivos_pedidos
             id_input = st.text_input(
                 "Identificação da Carga / Pedido (Ex: CARGA-105):",
                 placeholder="Digite um código único para esta carga",
@@ -190,7 +190,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
                 with c_nome:
                     st.markdown(f"📄 **{arq.name}**")
                 with c_id:
-                    sugestao_id = os.path.splitext(arq.name)[0].strip()
+                    sugestao_id = os.path.splitext(arq.name).strip()
                     val_id = st.text_input(
                         f"ID da Carga ({arq.name}):",
                         value=sugestao_id,
@@ -211,7 +211,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
                         vistos_na_remessa.add(val_limpo)
                         ids_informados.append((arq, val_limpo))
 
-        primeiro_arq = arquivos_pedidos[0]
+        primeiro_arq = arquivos_pedidos
         primeiro_arq.seek(0)
         df_amostra = pd.read_csv(primeiro_arq, sep=None, engine="python", dtype=str) if primeiro_arq.name.endswith(".csv") else pd.read_excel(primeiro_arq, dtype=str)
         cols_ped = list(df_amostra.columns)
@@ -266,7 +266,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
                 salvar_dados(df_final, "cargas")
 
                 if len(nomes_enviados) == 1:
-                    st.session_state.msg_sucesso_carga = f"✅ Carga '{nomes_enviados[0]}' enviada com sucesso! O conferente já pode iniciar a conferência."
+                    st.session_state.msg_sucesso_carga = f"✅ Carga '{nomes_enviados}' enviada com sucesso! O conferente já pode iniciar a conferência."
                 else:
                     lista_str = ", ".join(nomes_enviados)
                     st.session_state.msg_sucesso_carga = f"✅ Cargas ({lista_str}) enviadas com sucesso! O conferente já pode iniciar a conferência."
@@ -306,7 +306,7 @@ if aba == "1️⃣ Carregar Meu Pedido":
             st.info("Nenhuma carga cadastrada no momento.")
 
 # ==============================================================================
-# VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SUSPENSA DO PEDIDO
+# VISÃO GERAL DE STATUS DAS CARGAS + CONSULTA SUSPENSA + EDIÇÃO DO MOTIVO
 # ==============================================================================
 elif aba == "📊 Status das Cargas":
     st.title("📊 Visão Geral: Pedidos Conferidos x Pendentes")
@@ -389,22 +389,38 @@ elif aba == "📊 Status das Cargas":
         df_det = df_det[(df_det["pedido_real"] > 0) | (df_det["produto"].astype(str).str.contains(r"\[CORTADO:", regex=True))]
 
         linhas_pedido = list()
+        itens_cortados_edicao = {}
+
         for _, r in df_det.iterrows():
             prod_raw = str(r["produto"])
             if "[CORTADO:" in prod_raw:
-                desc_limpa = prod_raw.split(" [CORTADO:")[0].strip()
+                desc_limpa = prod_raw.split(" [CORTADO:").strip()
                 trecho_corte = prod_raw.split("[CORTADO:")[-1].rstrip("]").strip()
                 if "| Motivo:" in trecho_corte:
                     partes = trecho_corte.split("| Motivo:")
-                    corte_info = f"✂️ Sim ({partes[0].strip()})"
-                    motivo_info = partes[1].strip()
+                    qtd_corte_str = partes.strip()
+                    motivo_info = partes.strip()
                 else:
-                    corte_info = f"✂️ Sim ({trecho_corte})"
-                    motivo_info = "-"
+                    qtd_corte_str = trecho_corte
+                    motivo_info = ""
+
+                try:
+                    nums = [int(n.strip()) for n in qtd_corte_str.split("->")]
+                    qtd_cortada_num = max(0, nums - nums) if len(nums) == 2 else qtd_corte_str
+                except Exception:
+                    qtd_cortada_num = qtd_corte_str
+
+                corte_info = f"✂️ {qtd_cortada_num}"
+                itens_cortados_edicao[f"{r['codigo']} - {desc_limpa} ({qtd_corte_str})"] = {
+                    "codigo": r["codigo"],
+                    "desc_limpa": desc_limpa,
+                    "qtd_corte_str": qtd_corte_str,
+                    "motivo_atual": motivo_info
+                }
             else:
                 desc_limpa = prod_raw
-                corte_info = "Não"
-                motivo_info = "-"
+                corte_info = ""
+                motivo_info = ""
 
             linhas_pedido.append({
                 "SKU": r["codigo"],
@@ -416,6 +432,36 @@ elif aba == "📊 Status das Cargas":
 
         if linhas_pedido:
             st.dataframe(pd.DataFrame(linhas_pedido), use_container_width=True, hide_index=True)
+
+            if itens_cortados_edicao:
+                st.markdown("---")
+                st.markdown("**✏️ Editar Motivo do Corte**")
+                item_edit_label = st.selectbox(
+                    "Selecione o item cortado para alterar o motivo:",
+                    list(itens_cortados_edicao.keys()),
+                    key="sel_edit_motivo_corte"
+                )
+                dados_edit = itens_cortados_edicao[item_edit_label]
+                novo_motivo_corte = st.text_input(
+                    "Novo motivo / observação do corte:",
+                    value=dados_edit["motivo_atual"],
+                    placeholder="Digite o novo motivo do corte...",
+                    key=f"input_edit_motivo_{carga_detalhe}_{dados_edit['codigo']}"
+                )
+                if st.button("💾 Salvar Novo Motivo do Corte", type="primary", key="btn_salvar_motivo_corte"):
+                    df_banco_edit_corte = carregar_dados("cargas")
+                    filtro_ed = (df_banco_edit_corte["id_carga"] == carga_detalhe) & (df_banco_edit_corte["codigo"].apply(limpar_texto) == limpar_texto(dados_edit["codigo"]))
+                    if filtro_ed.any():
+                        idx_ed = df_banco_edit_corte.index[filtro_ed]
+                        motivo_novo_limpo = novo_motivo_corte.strip()
+                        if motivo_novo_limpo:
+                            nova_tag = f" [CORTADO: {dados_edit['qtd_corte_str']} | Motivo: {motivo_novo_limpo}]"
+                        else:
+                            nova_tag = f" [CORTADO: {dados_edit['qtd_corte_str']}]"
+                        df_banco_edit_corte.at[idx_ed, "produto"] = dados_edit["desc_limpa"] + nova_tag
+                        salvar_dados(df_banco_edit_corte, "cargas")
+                        st.success("✅ Motivo do corte atualizado com sucesso!")
+                        st.rerun()
         else:
             st.info("Nenhum item encontrado neste pedido.")
 
@@ -457,7 +503,7 @@ elif aba == "2️⃣ Bipagem / Digitação":
         filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_texto) == limpar_texto(sku_destino))
 
         if filtro.any():
-            idx = df_banco.index[filtro][0]
+            idx = df_banco.index[filtro]
             qtd_pedida_item = int(pd.to_numeric(df_banco.at[idx, "pedido_real"], errors="coerce") or 0)
             qtd_ja_bipada = int(pd.to_numeric(df_banco.at[idx, "bipado"], errors="coerce") or 0)
 
@@ -650,8 +696,8 @@ elif aba == "2️⃣ Bipagem / Digitação":
         if not df_bipes.empty and "id_carga" in df_bipes.columns:
             bipes_carga = df_bipes[df_bipes["id_carga"] == carga_selecionada]
             if not bipes_carga.empty:
-                ultimo_registro = bipes_carga.iloc[0]
-                idx_bipe = bipes_carga.index[0]
+                ultimo_registro = bipes_carga.iloc
+                idx_bipe = bipes_carga.index
                 
                 ult_etiq = str(ultimo_registro["etiqueta"])
                 col_alvo = "codigo_vinculado" if "codigo_vinculado" in ultimo_registro else "codigo"
@@ -662,7 +708,7 @@ elif aba == "2️⃣ Bipagem / Digitação":
                 filtro = (df_banco["id_carga"] == carga_selecionada) & (df_banco["codigo"].apply(limpar_texto) == ult_sku_alvo)
 
                 if filtro.any():
-                    idx_prod = df_banco.index[filtro][0]
+                    idx_prod = df_banco.index[filtro]
                     nova_qtd = max(0, int(df_banco.at[idx_prod, "bipado"]) - ult_qtd)
                     df_banco.at[idx_prod, "bipado"] = nova_qtd
                     salvar_dados(df_banco, "cargas")
@@ -738,7 +784,7 @@ elif aba == "3️⃣ Painel de Acompanhamento":
             item_corte_label = st.selectbox("Selecione o item para registrar corte:", list(opcoes_corte.keys()))
             sku_corte = opcoes_corte[item_corte_label]
             
-            linha_alvo_corte = df[df["codigo"] == sku_corte].iloc[0]
+            linha_alvo_corte = df[df["codigo"] == sku_corte].iloc
             qtd_atual_ped = int(linha_alvo_corte["pedido_real"])
             qtd_atual_bip = int(linha_alvo_corte["bipado"])
 
@@ -763,7 +809,7 @@ elif aba == "3️⃣ Painel de Acompanhamento":
                 df_banco_corte = carregar_dados("cargas")
                 filtro_corte = (df_banco_corte["id_carga"] == carga_selecionada) & (df_banco_corte["codigo"].apply(limpar_texto) == limpar_texto(sku_corte))
                 if filtro_corte.any():
-                    idx_ct = df_banco_corte.index[filtro_corte][0]
+                    idx_ct = df_banco_corte.index[filtro_corte]
                     df_banco_corte.at[idx_ct, "pedido_real"] = int(nova_qtd_autorizada)
                     desc_antiga = str(df_banco_corte.at[idx_ct, "produto"])
                     motivo_limpo = motivo_corte.strip()
@@ -774,7 +820,7 @@ elif aba == "3️⃣ Painel de Acompanhamento":
                     if "[CORTADO:" not in desc_antiga:
                         df_banco_corte.at[idx_ct, "produto"] = desc_antiga + tag_corte
                     else:
-                        base_nome = desc_antiga.split(" [CORTADO:")[0]
+                        base_nome = desc_antiga.split(" [CORTADO:")
                         df_banco_corte.at[idx_ct, "produto"] = base_nome + tag_corte
 
                     salvar_dados(df_banco_corte, "cargas")
@@ -856,7 +902,7 @@ elif aba == "4️⃣ Validação Final (Cliente)":
                         df_cargas_adm = carregar_dados("cargas")
                         filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
                         if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c][0]
+                            idx_c = df_cargas_adm.index[filtro_c]
                             df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
                             salvar_dados(df_cargas_adm, "cargas")
 
