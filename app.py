@@ -109,7 +109,7 @@ def formatar_moeda_br_str(valor):
     except ValueError:
         return s
 
-COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote", "Nº Pedido", "Ordem de Carregamento", "Placa do veículo"]
+COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote", "Nº Pedido", "Ordem de Carregamento", "Placa do veículo", "Lacre"]
 
 COLUNAS_PLANEJAMENTO = [
     "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
@@ -204,6 +204,22 @@ def extrair_detalhes_corte(df_carga_especifica):
             else:
                 detalhes.append(f"SKU {r['codigo']} - {texto_vol}")
     return " | ".join(detalhes) if detalhes else "-"
+def obter_lacre_carga(df_carga_especifica):
+    if df_carga_especifica.empty or "lacre" not in df_carga_especifica.columns:
+        return ""
+    valores = [limpar_texto(v) for v in df_carga_especifica["lacre"] if limpar_texto(v)]
+    return valores[0] if valores else ""
+
+def salvar_lacre_carga(id_carga_alvo, numero_lacre):
+    df_banco_lacre = carregar_dados("cargas")
+    if df_banco_lacre.empty or "id_carga" not in df_banco_lacre.columns:
+        return
+    if "lacre" not in df_banco_lacre.columns:
+        df_banco_lacre["lacre"] = ""
+    df_banco_lacre["lacre"] = df_banco_lacre["lacre"].astype(object)
+    filtro_l = df_banco_lacre["id_carga"] == id_carga_alvo
+    df_banco_lacre.loc[filtro_l, "lacre"] = limpar_texto(numero_lacre)
+    salvar_dados(df_banco_lacre, "cargas")
 
 with st.sidebar:
     if LOGO_B64:
@@ -847,9 +863,28 @@ elif aba == "📦 Conferência dos Pedidos":
     lista_cargas = df_todas_cargas["id_carga"].unique().tolist()
     carga_selecionada = st.selectbox("Selecione a Carga para Conferir:", lista_cargas)
 
-    df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
+        df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
         st.success("✅ Conferência realizada com sucesso!")
+        lacre_atual_conf = obter_lacre_carga(df_carga_selecionada_atual)
+        if lacre_atual_conf:
+            st.info(f"🔒 **Lacre Registrado:** {lacre_atual_conf}")
+        with st.container(border=True):
+            c_lac1, c_lac2 = st.columns([3, 1], vertical_alignment="bottom")
+            novo_lacre_conf = c_lac1.text_input(
+                "🔒 Número do Lacre:",
+                value=lacre_atual_conf,
+                placeholder="Digite ou bipe o número do lacre...",
+                key=f"input_lacre_conf_{carga_selecionada}"
+            )
+            if c_lac2.button("💾 Salvar Lacre", type="primary", use_container_width=True, key=f"btn_lacre_conf_{carga_selecionada}"):
+                if novo_lacre_conf.strip():
+                    salvar_lacre_carga(carga_selecionada, novo_lacre_conf)
+                    st.toast(f"🔒 Lacre '{limpar_texto(novo_lacre_conf)}' salvo com sucesso!", icon="🔒")
+                    st.rerun()
+                else:
+                    st.error("⚠️ Digite o número do lacre antes de salvar.")
+
 
     if "etiqueta_validada" not in st.session_state:
         st.session_state.etiqueta_validada = ""
@@ -1131,6 +1166,27 @@ elif aba == "📈 Painel de Acompanhamento":
 
     progresso = min(1.0, total_bipado / total_pedido) if total_pedido > 0 else (1.0 if verificar_carga_100_concluida(df) else 0)
     st.progress(progresso, text=f"Progresso: {int(progresso * 100)}%")
+
+    lacre_atual_painel = obter_lacre_carga(df)
+    if verificar_carga_100_concluida(df):
+        st.success("✅ Carga 100% concluída!")
+        with st.container(border=True):
+            cp_lac1, cp_lac2 = st.columns([3, 1], vertical_alignment="bottom")
+            novo_lacre_painel = cp_lac1.text_input(
+                "🔒 Número do Lacre da Carga:",
+                value=lacre_atual_painel,
+                placeholder="Digite o número do lacre...",
+                key=f"input_lacre_painel_{carga_selecionada}"
+            )
+            if cp_lac2.button("💾 Salvar Lacre", type="primary", use_container_width=True, key=f"btn_lacre_painel_{carga_selecionada}"):
+                if novo_lacre_painel.strip():
+                    salvar_lacre_carga(carga_selecionada, novo_lacre_painel)
+                    st.success(f"🔒 Lacre '{limpar_texto(novo_lacre_painel)}' registrado com sucesso!")
+                    st.rerun()
+                else:
+                    st.error("⚠️ Digite o número do lacre antes de salvar.")
+    elif lacre_atual_painel:
+        st.info(f"🔒 **Lacre Registrado:** {lacre_atual_painel}")
 
     st.subheader("⚠️ Itens Pendentes")
     pendentes = df[df["Falta Bipar"] > 0][["codigo", "produto", "pedido_real", "bipado", "Falta Bipar"]]
