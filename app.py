@@ -310,7 +310,7 @@ if aba == "🚚 Planejamento Logística":
 
     st.divider()
 
-    st.subheader("Controle de Pedidos Planejados")
+    st.subheader("🖥️ Painel de Expedição")
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
 
     if not df_exibir_plan.empty:
