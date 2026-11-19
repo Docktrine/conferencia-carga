@@ -513,7 +513,7 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
                     
             with st.container(border=True):
-            st.markdown("**🔔 Lançar Notificação no Pedido**")
+                 st.markdown("**🔔 Lançar Notificação no Pedido**")
             nt_c1, nt_c2, nt_c3 = st.columns(3, vertical_alignment="bottom")
             opcoes_notif = {
                 f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
