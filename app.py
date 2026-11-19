@@ -529,7 +529,7 @@ if aba == "🚚 Planejamento Logística":
             in_status = r5c1.selectbox("Status Inicial:", STATUS_PLANEJAMENTO)
             in_obs = r5c2.text_input("Observação:", placeholder="Observações gerais do agendamento...")
 
-            salvar_novo_plan = st.form_submit_button("💾 Salvar na Agenda", type="primary", use_container_width=True)
+            salvar_novo_plan = st.form_submit_button("➕ Incluir Pedido", type="primary", use_container_width=True)
 
             if salvar_novo_plan:
                 ped_limpo = limpar_texto(in_pedido)
