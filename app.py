@@ -170,24 +170,31 @@ def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
                 return c
     return "(Ignorar / Deixar em branco)"
 
+def padronizar_df_maiusculo(df):
+    if df.empty:
+        return df
+    df = df.copy()
+    colunas_nao_alterar = {"pedido_real", "bipado", "quantidade", "Status"}
+    for col in df.columns:
+        if col in COLUNAS_TEXTO:
+            df[col] = df[col].astype(object).apply(limpar_texto)
+        elif col not in colunas_nao_alterar:
+            df[col] = df[col].astype(object).apply(
+                lambda v: "" if (pd.isna(v) or str(v).strip().upper() in ("NAN", "NONE", "<NA>")) else str(v).strip().upper()
+            )
+    return df
+
 def carregar_dados(aba):
     try:
         df = conn.read(worksheet=aba, ttl=0)
         df = df.dropna(how="all")
-        if not df.empty:
-            for col in COLUNAS_TEXTO:
-                if col in df.columns:
-                    df[col] = df[col].astype(object).apply(limpar_texto)
-        return df
+        return padronizar_df_maiusculo(df)
     except Exception:
         return pd.DataFrame()
 
 def salvar_dados(df, aba):
-    if not df.empty:
-        for col in COLUNAS_TEXTO:
-            if col in df.columns:
-                df[col] = df[col].astype(object).apply(limpar_texto)
-    conn.update(worksheet=aba, data=df)
+    df_padronizado = padronizar_df_maiusculo(df)
+    conn.update(worksheet=aba, data=df_padronizado)
 
 def verificar_carga_100_concluida(df_carga_especifica):
     if df_carga_especifica.empty:
