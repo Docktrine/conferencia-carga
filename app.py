@@ -239,7 +239,7 @@ with st.sidebar:
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento de Pedidos Pendentes")
-    st.caption("Controle e programação de carregamentos e pedidos planejados.")
+    st.caption("Controle e programação de carregamentos e pedidos.")
 
     df_plan = carregar_dados("planejamento")
 
