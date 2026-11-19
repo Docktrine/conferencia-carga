@@ -274,6 +274,8 @@ if aba == "🚚 Planejamento Logística":
     for col_dt in ("Data", "Data da entrega"):
         if col_dt in df_plan.columns:
             df_plan[col_dt] = df_plan[col_dt].apply(formatar_data_br_str)
+        if "Hora" in df_plan.columns:
+            df_plan["Hora"] = df_plan["Hora"].apply(formatar_hora_br_str)
     for col_vl in ("Valor Pedido", "Valor de Frete"):
         if col_vl in df_plan.columns:
             df_plan[col_vl] = df_plan[col_vl].apply(formatar_moeda_br_str)
