@@ -108,7 +108,34 @@ def formatar_moeda_br_str(valor):
         return f"{num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     except ValueError:
         return s
+def converter_moeda_para_float(valor):
+    if pd.isna(valor):
+        return 0.0
+    s = str(valor).strip()
+    if not s or s.upper() in ("NAN", "NONE", "<NA>", "-"):
+        return 0.0
+    limpo = re.sub(r"[R$\s]", "", s)
+    if "," in limpo and "." in limpo:
+        limpo = limpo.replace(".", "").replace(",", ".")
+    elif "," in limpo:
+        limpo = limpo.replace(",", ".")
+    try:
+        return float(limpo)
+    except ValueError:
+        return 0.0
 
+def eh_pedido_transferencia(valor_pedido):
+    if pd.isna(valor_pedido):
+        return False
+    s = unicodedata.normalize("NFKD", str(valor_pedido)).encode("ASCII", "ignore").decode("utf-8").upper().strip()
+    if not s:
+        return False
+    if "TRANSF" in s:
+        return True
+    if re.search(r"\bTRF\b", s):
+        return True
+    return False
+    
 COLUNAS_TEXTO = ["id_carga", "codigo", "etiqueta", "codigo_bipado", "codigo_vinculado", "lote", "Nº Pedido", "Ordem de Carregamento", "Placa do veículo", "Lacre"]
 
 COLUNAS_PLANEJAMENTO = [
@@ -307,6 +334,89 @@ if aba == "🚚 Planejamento Logística":
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
     status_padrao = STATUS_PLANEJAMENTO.copy().pop(0)
     df_plan["Status"] = df_plan["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
+        MESES_PT = {
+        "01": "Janeiro", "02": "Fevereiro", "03": "Março", "04": "Abril",
+        "05": "Maio", "06": "Junho", "07": "Julho", "08": "Agosto",
+        "09": "Setembro", "10": "Outubro", "11": "Novembro", "12": "Dezembro"
+    }
+
+    def extrair_mes_ano_label(data_str):
+        s = str(data_str).strip()
+        partes = s.split("/")
+        if len(partes) == 3 and len(partes[1]) == 2 and len(partes[2]) == 4:
+            nome_m = MESES_PT.get(partes[1], partes[1])
+            return f"{partes[1]}/{partes[2]} ({nome_m}/{partes[2]})"
+        return ""
+
+    df_plan["_mes_ano_kpi"] = df_plan["Data"].apply(extrair_mes_ano_label)
+    meses_disponiveis = sorted(
+        [m for m in df_plan["_mes_ano_kpi"].unique() if m != ""],
+        key=lambda x: (x.split("/")[1][:4], x.split("/")[0])
+    )
+
+    col_f_mes, _ = st.columns([2, 3])
+    mes_escolhido = col_f_mes.selectbox(
+        "📅 Filtrar Indicadores por Mês:",
+        ["Todos os meses"] + meses_disponiveis,
+        key="kpi_plan_mes_selecionado"
+    )
+
+    df_kpi_plan = df_plan.copy() if mes_escolhido == "Todos os meses" else df_plan[df_plan["_mes_ano_kpi"] == mes_escolhido].copy()
+
+    total_prog_kpi = len(df_kpi_plan)
+    soma_pedidos_kpi = df_kpi_plan["Valor Pedido"].apply(converter_moeda_para_float).sum()
+    soma_frete_kpi = df_kpi_plan["Valor de Frete"].apply(converter_moeda_para_float).sum()
+    perc_frete_kpi = (soma_frete_kpi / soma_pedidos_kpi * 100) if soma_pedidos_kpi > 0 else 0.0
+
+    fmt_pedidos_kpi = f"R$ {soma_pedidos_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    fmt_frete_kpi = f"R$ {soma_frete_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    k_top1, k_top2, k_top3 = st.columns(3)
+    k_top1.metric("📋 Total Programado", total_prog_kpi)
+    k_top2.metric("💰 Valor Total dos Pedidos", fmt_pedidos_kpi)
+    k_top3.metric("🚛 Valor Total de Frete", fmt_frete_kpi, delta=f"{perc_frete_kpi:.1f}% sobre pedidos".replace(".", ","), delta_color="off")
+
+    c_locais, c_top_clientes = st.columns(2)
+    with c_locais:
+        with st.container(border=True):
+            st.markdown("**🏭 Quantidade por Local de Carregamento**")
+            df_loc_kpi = df_kpi_plan.copy()
+            df_loc_kpi["_loc_limpo"] = df_loc_kpi["Local de Carregamento"].astype(str).str.strip()
+            df_loc_validos = df_loc_kpi[df_loc_kpi["_loc_limpo"] != ""].copy()
+
+            if not df_loc_validos.empty:
+                df_loc_validos["_eh_transf"] = df_loc_validos["Nº Pedido"].apply(eh_pedido_transferencia)
+                linhas_locais = []
+                for loc_nome, grupo_loc in df_loc_validos.groupby("_loc_limpo", sort=False):
+                    qtd_tot_loc = len(grupo_loc)
+                    qtd_tr_loc = int(grupo_loc["_eh_transf"].sum())
+                    detalhe_tr = f" ({qtd_tr_loc} transf.)" if qtd_tr_loc > 0 else ""
+                    linhas_locais.append(f"• **{loc_nome}:** {qtd_tot_loc}{detalhe_tr}")
+
+                linhas_locais.sort(key=lambda t: int(re.search(r":\*\*\s*(\d+)", t).group(1)), reverse=True)
+                st.markdown(" &nbsp;|&nbsp; ".join(linhas_locais))
+            else:
+                st.caption("Nenhum local de carregamento informado neste período.")
+
+    with c_top_clientes:
+        with st.container(border=True):
+            st.markdown("**🏆 Top 3 Clientes Mais Atendidos**")
+            mask_nao_transf = ~df_kpi_plan["Nº Pedido"].apply(eh_pedido_transferencia)
+            clientes_series = df_kpi_plan.loc[mask_nao_transf, "Cliente"].astype(str).str.strip()
+            clientes_validos = clientes_series[clientes_series != ""]
+
+            if not clientes_validos.empty:
+                top3_cli = clientes_validos.value_counts().head(3)
+                medalhas = ["🥇", "🥈", "🥉"]
+                linhas_cli = [
+                    f"{medalhas[idx]} **{cli}:** {qtd} pedido(s)"
+                    for idx, (cli, qtd) in enumerate(top3_cli.items())
+                ]
+                st.markdown(" &nbsp;|&nbsp; ".join(linhas_cli))
+            else:
+                st.caption("Nenhum cliente comercial registrado neste período.")
+
+    df_plan.drop(columns=["_mes_ano_kpi"], inplace=True, errors="ignore")
 
     st.divider()
 
