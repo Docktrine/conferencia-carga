@@ -258,7 +258,7 @@ with st.sidebar:
                 "📦 Conferência dos Pedidos",
                 "📈 Painel de Acompanhamento",
                 "📋 Gestão de Pedidos",
-                "✅ Validação Final"
+                "✅ Auditoria e Ajustes"
             ]
         )
         st.divider()
@@ -1253,8 +1253,8 @@ elif aba == "📈 Painel de Acompanhamento":
         st.subheader("🚨 Itens Bipados a Mais / Fora do Pedido")
         st.dataframe(sobras[["codigo", "produto", "pedido_real", "bipado", "Qtd Excedente"]], use_container_width=True, hide_index=True)
 
-elif aba == "✅ Validação Final":
-    st.title("✅ Auditoria Final: Pedido x Bipado x Cliente (+ Lotes)")
+elif aba == "✅ Auditoria e Ajustes":
+    st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
