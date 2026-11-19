@@ -341,7 +341,7 @@ if aba == "🚚 Planejamento Logística":
         qtd_conferencia = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
         qtd_liberados = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
 
-               qtd_st1 = int((df_exibir_plan["Status"] == "⏳ Aguardando Veículo").sum())
+        qtd_st1 = int((df_exibir_plan["Status"] == "⏳ Aguardando Veículo").sum())
         qtd_st2 = int((df_exibir_plan["Status"] == "🚚 Veículo no Pátio").sum())
         qtd_st3 = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
         qtd_st4 = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
