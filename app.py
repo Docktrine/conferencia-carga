@@ -239,14 +239,9 @@ with st.sidebar:
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento de Pedidos Pendentes")
-    st.caption("Pedidos do monitoramento saem automaticamente desta fila assim que o Nº Pedido for liberado para conferência")
+    st.caption("Controle e programação de carregamentos e pedidos planejados.")
 
     df_plan = carregar_dados("planejamento")
-    df_cargas_atual = carregar_dados("cargas")
-
-    pedidos_no_sistema = set()
-    if not df_cargas_atual.empty and "id_carga" in df_cargas_atual.columns:
-        pedidos_no_sistema = set(df_cargas_atual["id_carga"].apply(limpar_texto).unique().tolist())
 
     if df_plan.empty:
         df_plan = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
@@ -271,13 +266,11 @@ if aba == "🚚 Planejamento Logística":
             df_plan[col_vl] = df_plan[col_vl].apply(formatar_moeda_br_str)
 
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
-    df_pendentes_agenda = df_plan[~df_plan["Nº Pedido"].isin(pedidos_no_sistema)].copy()
 
     st.divider()
 
     st.subheader("🚚 Fila de Pedidos Planejados")
-    mostrar_importados = st.checkbox("Mostrar também pedidos que já entraram no sistema de conferência", value=False)
-    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy() if mostrar_importados else df_pendentes_agenda[COLUNAS_PLANEJAMENTO].copy()
+    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
 
     if not df_exibir_plan.empty:
         f_col1, f_col2 = st.columns(2)
@@ -300,7 +293,7 @@ if aba == "🚚 Planejamento Logística":
 
         st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
     else:
-        st.success("🎉 Nenhum pedido pendente na agenda! Todos os pedidos planejados já estão no sistema.")
+        st.info("Nenhum pedido cadastrado no planejamento ainda.")
 
     st.divider()
 
@@ -424,7 +417,7 @@ if aba == "🚚 Planejamento Logística":
                 f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Transp: {r['Transportadora']}": idx
                 for idx, r in df_plan.iterrows()
             }
-            escolha_plan = st.selectbox("Selecione o agendamento para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
+            escolha_plan = st.selectbox("Selecione o pedido para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
             idx_plan = opcoes_plan[escolha_plan]
             reg_plan = df_plan.loc[idx_plan]
 
@@ -496,6 +489,7 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
+
 
 
 elif aba == "📥 Importação de Pedidos":
