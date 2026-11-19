@@ -115,7 +115,15 @@ COLUNAS_PLANEJAMENTO = [
     "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
     "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora", "Placa do veículo",
     "Tipo de Veículo", "Valor de Frete", "UF", "Cidade", "CIF/FOB",
-    "Veículo compartilhado", "Data da entrega", "Observação"
+    "Veículo compartilhado", "Data da entrega", "Observação", "Status"
+]
+
+STATUS_PLANEJAMENTO = [
+    "⏳ Aguardando Veículo",
+    "🚚 Veículo no Pátio",
+    "📦 Em Conferência",
+    "✅ Carregado / Liberado",
+    "⚠️ Atrasado / Ocorrência"
 ]
 
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
@@ -268,7 +276,7 @@ with st.sidebar:
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento de Pedidos Pendentes")
-    st.caption("Controle e programação de carregamentos dos pedidos.")
+    st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
 
     df_plan = carregar_dados("planejamento")
 
@@ -290,13 +298,15 @@ if aba == "🚚 Planejamento Logística":
     for col_dt in ("Data", "Data da entrega"):
         if col_dt in df_plan.columns:
             df_plan[col_dt] = df_plan[col_dt].apply(formatar_data_br_str)
-        if "Hora" in df_plan.columns:
-            df_plan["Hora"] = df_plan["Hora"].apply(formatar_hora_br_str)
+    if "Hora" in df_plan.columns:
+        df_plan["Hora"] = df_plan["Hora"].apply(formatar_hora_br_str)
     for col_vl in ("Valor Pedido", "Valor de Frete"):
         if col_vl in df_plan.columns:
             df_plan[col_vl] = df_plan[col_vl].apply(formatar_moeda_br_str)
 
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
+    status_padrao = STATUS_PLANEJAMENTO.copy().pop(0)
+    df_plan["Status"] = df_plan["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
 
     st.divider()
 
@@ -304,15 +314,19 @@ if aba == "🚚 Planejamento Logística":
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
 
     if not df_exibir_plan.empty:
-        f_col1, f_col2 = st.columns(2)
+        f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
             datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
             filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
         with f_col2:
+            filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
+        with f_col3:
             busca_livre = st.text_input("Buscar Pedido, Cliente ou Placa:", placeholder="Digite para filtrar...", key="filtro_fila_busca")
 
         if filtro_data_carreg != "Todas as datas":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
+        if filtro_status_plan != "Todos os status":
+            df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"] == filtro_status_plan]
         if busca_livre.strip():
             termo = busca_livre.strip().lower()
             mask_busca = (
@@ -322,7 +336,38 @@ if aba == "🚚 Planejamento Logística":
             )
             df_exibir_plan = df_exibir_plan[mask_busca]
 
+        qtd_total_kpi = len(df_exibir_plan)
+        qtd_aguardando = int(df_exibir_plan["Status"].isin(["⏳ Aguardando Veículo", "🚚 Veículo no Pátio"]).sum())
+        qtd_conferencia = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
+        qtd_liberados = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
+
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("📋 Pedidos na Fila", qtd_total_kpi)
+        k2.metric("⏳ Aguardando / Pátio", qtd_aguardando)
+        k3.metric("📦 Em Conferência", qtd_conferencia)
+        k4.metric("✅ Carregados / Liberados", qtd_liberados)
+
         st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
+
+        with st.container(border=True):
+            st.markdown("**⚡ Atualização Rápida de Status**")
+            st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
+            opcoes_rapidas = {
+                f"Pedido {r['Nº Pedido']} — {r['Cliente']} (Atual: {r['Status']})": idx
+                for idx, r in df_exibir_plan.iterrows()
+            }
+            if opcoes_rapidas:
+                sel_rapida = st_c1.selectbox("Selecione o Pedido:", list(opcoes_rapidas.keys()), key="sel_status_rapido")
+                idx_rapido = opcoes_rapidas[sel_rapida]
+                status_atual_item = df_plan.at[idx_rapido, "Status"]
+                idx_st_padrao = STATUS_PLANEJAMENTO.index(status_atual_item) if status_atual_item in STATUS_PLANEJAMENTO else 0
+                novo_status_rapido = st_c2.selectbox("Novo Status:", STATUS_PLANEJAMENTO, index=idx_st_padrao, key="novo_status_rapido")
+                if st_c3.button("💾 Atualizar", type="primary", use_container_width=True, key="btn_status_rapido"):
+                    df_plan["Status"] = df_plan["Status"].astype(object)
+                    df_plan.at[idx_rapido, "Status"] = novo_status_rapido
+                    salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
+                    st.rerun()
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")
 
@@ -354,7 +399,9 @@ if aba == "🚚 Planejamento Logística":
             in_cif_fob = r4c3.selectbox("CIF/FOB:", ["CIF", "FOB"])
             in_compart = r4c4.selectbox("Veículo compartilhado:", ["NÃO", "SIM"])
 
-            in_obs = st.text_input("Observação:", placeholder="Observações gerais do agendamento...")
+            r5c1, r5c2 = st.columns(2)
+            in_status = r5c1.selectbox("Status Inicial:", STATUS_PLANEJAMENTO)
+            in_obs = r5c2.text_input("Observação:", placeholder="Observações gerais do agendamento...")
 
             salvar_novo_plan = st.form_submit_button("💾 Salvar na Agenda", type="primary", use_container_width=True)
 
@@ -367,7 +414,7 @@ if aba == "🚚 Planejamento Logística":
                 else:
                     nova_linha_plan = pd.DataFrame([{
                         "Data": formatar_data_br_str(in_data),
-                        "Hora": in_hora.strip(),
+                        "Hora": formatar_hora_br_str(in_hora),
                         "Local de Carregamento": in_local.strip(),
                         "Ordem de Carregamento": limpar_texto(in_ordem),
                         "Nº Pedido": ped_limpo,
@@ -382,7 +429,8 @@ if aba == "🚚 Planejamento Logística":
                         "CIF/FOB": in_cif_fob,
                         "Veículo compartilhado": in_compart,
                         "Data da entrega": formatar_data_br_str(in_data_ent),
-                        "Observação": in_obs.strip()
+                        "Observação": in_obs.strip(),
+                        "Status": in_status
                     }])
                     df_plan_atualizado = pd.concat([df_plan, nova_linha_plan], ignore_index=True)
                     salvar_dados(df_plan_atualizado[COLUNAS_PLANEJAMENTO], "planejamento")
@@ -426,8 +474,10 @@ if aba == "🚚 Planejamento Logística":
                             df_novo_lote[col_dest] = ""
 
                     df_novo_lote["Nº Pedido"] = df_novo_lote["Nº Pedido"].apply(limpar_texto)
+                    df_novo_lote["Status"] = df_novo_lote["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
                     for col_dt in ("Data", "Data da entrega"):
                         df_novo_lote[col_dt] = df_novo_lote[col_dt].apply(formatar_data_br_str)
+                    df_novo_lote["Hora"] = df_novo_lote["Hora"].apply(formatar_hora_br_str)
                     for col_vl in ("Valor Pedido", "Valor de Frete"):
                         df_novo_lote[col_vl] = df_novo_lote[col_vl].apply(formatar_moeda_br_str)
 
@@ -445,10 +495,10 @@ if aba == "🚚 Planejamento Logística":
     with st.expander("✏️ Editar ou Excluir Pedido"):
         if not df_plan.empty:
             opcoes_plan = {
-                f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Transp: {r['Transportadora']}": idx
+                f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Status: {r['Status']}": idx
                 for idx, r in df_plan.iterrows()
             }
-            escolha_plan = st.selectbox("Selecione o pedido para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
+            escolha_plan = st.selectbox("Selecione o agendamento para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
             idx_plan = opcoes_plan[escolha_plan]
             reg_plan = df_plan.loc[idx_plan]
 
@@ -477,7 +527,11 @@ if aba == "🚚 Planejamento Logística":
                 ed_cif_fob = e4c3.text_input("CIF/FOB:", value=str(reg_plan["CIF/FOB"]))
                 ed_compart = e4c4.text_input("Veículo compartilhado:", value=str(reg_plan["Veículo compartilhado"]))
 
-                ed_obs = st.text_input("Observação:", value=str(reg_plan["Observação"]))
+                e5c1, e5c2 = st.columns(2)
+                st_atual_ed = str(reg_plan["Status"])
+                idx_ed_st = STATUS_PLANEJAMENTO.index(st_atual_ed) if st_atual_ed in STATUS_PLANEJAMENTO else 0
+                ed_status = e5c1.selectbox("Status:", STATUS_PLANEJAMENTO, index=idx_ed_st)
+                ed_obs = e5c2.text_input("Observação:", value=str(reg_plan["Observação"]))
 
                 c_btn_save, c_btn_del = st.columns(2)
                 btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
@@ -486,7 +540,7 @@ if aba == "🚚 Planejamento Logística":
                 if btn_atualizar_plan:
                     dados_editados = {
                         "Data": formatar_data_br_str(ed_data),
-                        "Hora": ed_hora.strip(),
+                        "Hora": formatar_hora_br_str(ed_hora),
                         "Local de Carregamento": ed_local.strip(),
                         "Ordem de Carregamento": limpar_texto(ed_ordem),
                         "Nº Pedido": limpar_texto(ed_pedido),
@@ -501,7 +555,8 @@ if aba == "🚚 Planejamento Logística":
                         "CIF/FOB": limpar_texto(ed_cif_fob),
                         "Veículo compartilhado": limpar_texto(ed_compart),
                         "Data da entrega": formatar_data_br_str(ed_data_ent),
-                        "Observação": ed_obs.strip()
+                        "Observação": ed_obs.strip(),
+                        "Status": ed_status
                     }
                     for col_nome, novo_valor in dados_editados.items():
                         df_plan[col_nome] = df_plan[col_nome].astype(object)
@@ -520,8 +575,6 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
-
-
 
 elif aba == "📥 Importação de Pedidos":
     st.title("📥 Importar Pedidos para Conferência")
