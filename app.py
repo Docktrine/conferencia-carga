@@ -340,20 +340,22 @@ if aba == "🚚 Planejamento Logística":
         "09": "Setembro", "10": "Outubro", "11": "Novembro", "12": "Dezembro"
     }
 
+    REV_MESES_PT = {v: k for k, v in MESES_PT.items()}
+
     def extrair_mes_ano_label(data_str):
         s = str(data_str).strip()
         partes = s.split("/")
         if len(partes) == 3 and len(partes[1]) == 2 and len(partes[2]) == 4:
             nome_m = MESES_PT.get(partes[1], partes[1])
-            return f"{partes[1]}/{partes[2]} ({nome_m}/{partes[2]})"
+            return f"{nome_m}/{partes[2]}"
         return ""
 
     df_plan["_mes_ano_kpi"] = df_plan["Data"].apply(extrair_mes_ano_label)
     meses_disponiveis = sorted(
         [m for m in df_plan["_mes_ano_kpi"].unique() if m != ""],
-        key=lambda x: (x.split("/")[1][:4], x.split("/")[0])
+        key=lambda x: (x.split("/")[1], REV_MESES_PT.get(x.split("/")[0], "00"))
     )
-
+    
     col_f_mes, _ = st.columns([2, 3])
     mes_escolhido = col_f_mes.selectbox(
         "📅 Filtrar Indicadores por Mês:",
