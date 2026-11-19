@@ -513,30 +513,31 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
                     
             with st.container(border=True):
-                 st.markdown("**🔔 Lançar Notificação no Pedido**")
-            nt_c1, nt_c2, nt_c3 = st.columns(3, vertical_alignment="bottom")
+            st.markdown("**🔔 Lançar Notificação no Pedido**")
             opcoes_notif = {
                 f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
                 for idx, r in df_exibir_plan.iterrows()
             }
             if opcoes_notif:
-                sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()), key="sel_lancar_notif")
-                txt_nova_notif = nt_c2.text_input(
-                    "Mensagem da Notificação:",
-                    placeholder="Ex: PRIORIDADE DE CARREGAMENTO / AGUARDAR LIBERAÇÃO...",
-                    key="input_msg_notif"
-                )
-                if nt_c3.button("🔔 Notificar", type="primary", use_container_width=True, key="btn_lancar_notif"):
-                    if txt_nova_notif.strip():
-                        idx_nt_alvo = opcoes_notif[sel_nt_ped]
-                        df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                        df_plan.at[idx_nt_alvo, "Notificação"] = txt_nova_notif.strip().upper()
-                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                        st.session_state["input_msg_notif"] = ""
-                        st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
-                        st.rerun()
-                    else:
-                        st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+                with st.form("form_lancar_notif", clear_on_submit=True):
+                    nt_c1, nt_c2, nt_c3 = st.columns([2, 3, 1], vertical_alignment="bottom")
+                    sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()))
+                    txt_nova_notif = nt_c2.text_input(
+                        "Mensagem da Notificação:",
+                        placeholder="Ex: PRIORIDADE DE CARREGAMENTO / AGUARDAR LIBERAÇÃO..."
+                    )
+                    btn_enviar_notif = nt_c3.form_submit_button("🔔 Notificar", type="primary", use_container_width=True)
+
+                    if btn_enviar_notif:
+                        if txt_nova_notif.strip():
+                            idx_nt_alvo = opcoes_notif[sel_nt_ped]
+                            df_plan["Notificação"] = df_plan["Notificação"].astype(object)
+                            df_plan.at[idx_nt_alvo, "Notificação"] = txt_nova_notif.strip().upper()
+                            salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                            st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
+                            st.rerun()
+                        else:
+                            st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
                
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")
