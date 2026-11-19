@@ -499,7 +499,7 @@ if aba == "🚚 Planejamento Logística":
 
     st.divider()
 
-    with st.expander("➕ Importar Pedido Manualmente"):
+    with st.expander("➕ Incluir Pedido Manualmente"):
         with st.form("form_novo_planejamento", clear_on_submit=True):
             r1c1, r1c2, r1c3, r1c4 = st.columns(4)
             in_data = r1c1.text_input("Data (DD/MM/AAAA):", placeholder="Ex: 18/11/2026")
