@@ -656,7 +656,7 @@ elif aba == "📥 Importação de Pedidos":
                 st.error(f"Erro ao processar arquivo(s): {e}")
 
     st.divider()
-        with st.expander("✏️ Renomear Carga Existente"):
+    with st.expander("✏️ Renomear Carga Existente"):
         df_cargas_ren = carregar_dados("cargas")
         if not df_cargas_ren.empty and "id_carga" in df_cargas_ren.columns:
             lista_cargas_ren = df_cargas_ren["id_carga"].dropna().unique().tolist()
