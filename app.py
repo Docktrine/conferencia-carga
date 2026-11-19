@@ -12,7 +12,7 @@ from streamlit_gsheets import GSheetsConnection
 ARQUIVO_LOGO = next((f for f in ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"] if os.path.exists(f)), None)
 
 st.set_page_config(
-    page_title="Sistema de Conferência de Carga - Grano",
+    page_title="WMS Grano — Gestão Logística",
     page_icon=ARQUIVO_LOGO if ARQUIVO_LOGO else "📦",
     layout="wide"
 )
