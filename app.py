@@ -302,7 +302,7 @@ with st.sidebar:
             st.rerun()
 
 if aba == "🚚 Planejamento Logística":
-    st.title("📡 Monitoramento de Pedidos Pendentes")
+    st.title("📡 Monitoramento e Indicadores de Pedidos")
     st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
 
     df_plan = carregar_dados("planejamento")
