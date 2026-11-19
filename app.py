@@ -142,7 +142,7 @@ COLUNAS_PLANEJAMENTO = [
     "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
     "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora", "Placa do veículo",
     "Tipo de Veículo", "Valor de Frete", "UF", "Cidade", "CIF/FOB",
-    "Veículo compartilhado", "Data da entrega", "Observação", "Status"
+    "Veículo compartilhado", "Data da entrega", "Observação", "Status", "Notificação"
 ]
 
 STATUS_PLANEJAMENTO = [
@@ -433,6 +433,23 @@ if aba == "🚚 Planejamento Logística":
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
 
     if not df_exibir_plan.empty:
+        df_plan["Notificação"] = df_plan["Notificação"].astype(str).str.strip()
+        df_notif_pendentes = df_plan[df_plan["Notificação"] != ""]
+
+        if not df_notif_pendentes.empty:
+            with st.container(border=True):
+                st.error(f"🔔 **Você tem {len(df_notif_pendentes)} notificação(ões) importante(s)!**")
+                for idx_nt, row_nt in df_notif_pendentes.iterrows():
+                    c_nt_txt, c_nt_btn = st.columns([4, 1], vertical_alignment="center")
+                    c_nt_txt.markdown(
+                        f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} — {row_nt['Data']} {row_nt['Hora']}): **{row_nt['Notificação']}**"
+                    )
+                    if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
+                        df_plan["Notificação"] = df_plan["Notificação"].astype(object)
+                        df_plan.at[idx_nt, "Notificação"] = ""
+                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                        st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
+                        st.rerun()
         f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
             datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
@@ -473,7 +490,7 @@ if aba == "🚚 Planejamento Logística":
         k4.metric("✅ Carregado / Liberado", qtd_st4)
         k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
 
-        st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
+        st.dataframe(df_exibir_plan.drop(columns=["Notificação"], errors="ignore"), use_container_width=True, hide_index=True)
 
         with st.container(border=True):
             st.markdown("**⚡ Atualização Rápida de Status**")
@@ -494,6 +511,33 @@ if aba == "🚚 Planejamento Logística":
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
                     st.rerun()
+                    
+            with st.container(border=True):
+            st.markdown("**🔔 Lançar Notificação no Pedido**")
+            nt_c1, nt_c2, nt_c3 = st.columns(3, vertical_alignment="bottom")
+            opcoes_notif = {
+                f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
+                for idx, r in df_exibir_plan.iterrows()
+            }
+            if opcoes_notif:
+                sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()), key="sel_lancar_notif")
+                txt_nova_notif = nt_c2.text_input(
+                    "Mensagem da Notificação:",
+                    placeholder="Ex: PRIORIDADE DE CARREGAMENTO / AGUARDAR LIBERAÇÃO...",
+                    key="input_msg_notif"
+                )
+                if nt_c3.button("🔔 Notificar", type="primary", use_container_width=True, key="btn_lancar_notif"):
+                    if txt_nova_notif.strip():
+                        idx_nt_alvo = opcoes_notif[sel_nt_ped]
+                        df_plan["Notificação"] = df_plan["Notificação"].astype(object)
+                        df_plan.at[idx_nt_alvo, "Notificação"] = txt_nova_notif.strip().upper()
+                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                        st.session_state["input_msg_notif"] = ""
+                        st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
+                        st.rerun()
+                    else:
+                        st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+               
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")
 
