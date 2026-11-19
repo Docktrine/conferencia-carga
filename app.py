@@ -79,6 +79,19 @@ def formatar_data_br_str(valor):
     s = str(valor).strip() if pd.notna(valor) else ""
     return "" if s.upper() in ("NAN", "NONE", "<NA>") else s
 
+def formatar_hora_br_str(valor):
+    if pd.isna(valor):
+        return ""
+    s = str(valor).strip()
+    if not s or s.upper() in ("NAN", "NONE", "<NA>", "-"):
+        return ""
+    if " " in s:
+        s = s.split()[-1]
+    partes = s.split(":")
+    if len(partes) >= 2 and partes[0].isdigit() and partes[1].isdigit():
+        return f"{int(partes[0]):02d}:{int(partes[1]):02d}"
+    return s
+
 def formatar_moeda_br_str(valor):
     if pd.isna(valor):
         return ""
