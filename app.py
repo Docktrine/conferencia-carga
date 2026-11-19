@@ -728,6 +728,7 @@ elif aba == "📋 Gestão de Pedidos":
                 "Volumes Pedidos": tot_ped,
                 "Volumes Bipados": tot_bip,
                 "Conferido em": data_conclusao,
+                "Lacre": obter_lacre_carga(grupo) or "-",
                 "Situação": f"✅ 100% Conferida{selo_corte}"
             })
         else:
