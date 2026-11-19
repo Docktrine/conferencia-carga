@@ -341,11 +341,18 @@ if aba == "🚚 Planejamento Logística":
         qtd_conferencia = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
         qtd_liberados = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
 
-        k1, k2, k3, k4 = st.columns(4)
-        k1.metric("📋 Pedidos na Fila", qtd_total_kpi)
-        k2.metric("⏳ Aguardando / Pátio", qtd_aguardando)
-        k3.metric("📦 Em Conferência", qtd_conferencia)
-        k4.metric("✅ Carregados / Liberados", qtd_liberados)
+               qtd_st1 = int((df_exibir_plan["Status"] == "⏳ Aguardando Veículo").sum())
+        qtd_st2 = int((df_exibir_plan["Status"] == "🚚 Veículo no Pátio").sum())
+        qtd_st3 = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
+        qtd_st4 = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
+        qtd_st5 = int((df_exibir_plan["Status"] == "⚠️ Atrasado / Ocorrência").sum())
+
+        k1, k2, k3, k4, k5 = st.columns(5)
+        k1.metric("⏳ Aguardando Veículo", qtd_st1)
+        k2.metric("🚚 Veículo no Pátio", qtd_st2)
+        k3.metric("📦 Em Conferência", qtd_st3)
+        k4.metric("✅ Carregado / Liberado", qtd_st4)
+        k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
 
         st.dataframe(df_exibir_plan, use_container_width=True, hide_index=True)
 
