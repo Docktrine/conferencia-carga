@@ -334,7 +334,7 @@ if aba == "🚚 Planejamento Logística":
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
     status_padrao = STATUS_PLANEJAMENTO.copy().pop(0)
     df_plan["Status"] = df_plan["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
-        MESES_PT = {
+    MESES_PT = {
         "01": "Janeiro", "02": "Fevereiro", "03": "Março", "04": "Abril",
         "05": "Maio", "06": "Junho", "07": "Julho", "08": "Agosto",
         "09": "Setembro", "10": "Outubro", "11": "Novembro", "12": "Dezembro"
