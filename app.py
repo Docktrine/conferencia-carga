@@ -863,7 +863,7 @@ elif aba == "📦 Conferência dos Pedidos":
     lista_cargas = df_todas_cargas["id_carga"].unique().tolist()
     carga_selecionada = st.selectbox("Selecione a Carga para Conferir:", lista_cargas)
 
-        df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
+    df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
         st.success("✅ Conferência realizada com sucesso!")
         lacre_atual_conf = obter_lacre_carga(df_carga_selecionada_atual)
