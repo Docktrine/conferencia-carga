@@ -513,7 +513,7 @@ if aba == "🚚 Planejamento Logística":
                     st.rerun()
                     
             with st.container(border=True):
-            st.markdown("**🔔 Lançar Notificação no Pedido**")
+                 st.markdown("**🔔 Lançar Notificação no Pedido**")
             opcoes_notif = {
                 f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
                 for idx, r in df_exibir_plan.iterrows()
