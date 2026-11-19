@@ -656,6 +656,42 @@ elif aba == "📥 Importação de Pedidos":
                 st.error(f"Erro ao processar arquivo(s): {e}")
 
     st.divider()
+        with st.expander("✏️ Renomear Carga Existente"):
+        df_cargas_ren = carregar_dados("cargas")
+        if not df_cargas_ren.empty and "id_carga" in df_cargas_ren.columns:
+            lista_cargas_ren = df_cargas_ren["id_carga"].dropna().unique().tolist()
+            if lista_cargas_ren:
+                carga_antiga = st.selectbox("Selecione a carga que deseja renomear:", lista_cargas_ren, key="sel_renomear_carga")
+                novo_nome_input = st.text_input(
+                    "Novo código / nome da carga:",
+                    placeholder="Digite o novo ID da carga...",
+                    key="input_novo_nome_carga"
+                )
+                novo_nome_limpo = limpar_texto(novo_nome_input)
+
+                if st.button("💾 Salvar Novo Nome da Carga", type="primary", disabled=not bool(novo_nome_limpo)):
+                    if novo_nome_limpo == carga_antiga:
+                        st.warning("⚠️ O novo nome é igual ao nome atual.")
+                    elif novo_nome_limpo in lista_cargas_ren:
+                        st.error(f"🚫 BLOQUEADO! Já existe uma carga cadastrada com o nome '{novo_nome_limpo}'.")
+                    else:
+                        df_cargas_ren["id_carga"] = df_cargas_ren["id_carga"].astype(object)
+                        df_cargas_ren.loc[df_cargas_ren["id_carga"] == carga_antiga, "id_carga"] = novo_nome_limpo
+                        salvar_dados(df_cargas_ren, "cargas")
+
+                        df_bipes_ren = carregar_dados("bipes")
+                        if not df_bipes_ren.empty and "id_carga" in df_bipes_ren.columns:
+                            df_bipes_ren["id_carga"] = df_bipes_ren["id_carga"].astype(object)
+                            df_bipes_ren.loc[df_bipes_ren["id_carga"] == carga_antiga, "id_carga"] = novo_nome_limpo
+                            salvar_dados(df_bipes_ren, "bipes")
+
+                        st.success(f"✅ Carga '{carga_antiga}' renomeada para '{novo_nome_limpo}' com sucesso!")
+                        st.rerun()
+            else:
+                st.info("Nenhuma carga cadastrada no momento.")
+        else:
+            st.info("Nenhuma carga cadastrada no momento.")
+
     with st.expander("🗑️ Gerenciar / Excluir Carga Existente"):
         df_cargas_ger = carregar_dados("cargas")
         if not df_cargas_ger.empty and "id_carga" in df_cargas_ger.columns:
