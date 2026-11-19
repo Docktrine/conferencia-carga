@@ -1289,23 +1289,55 @@ elif aba == "✅ Validação Final (Cliente)":
                 col_edit, col_estorno = st.columns(2)
 
                 with col_edit:
-                    st.markdown("**1️⃣ Corrigir Apenas o Lote**")
-                    novo_lote_input = st.text_input(
-                        "Digite o Lote correto:",
+                    st.markdown("**1️⃣ Corrigir Lote e/ou Quantidade**")
+                    qtd_atual_etiq = int(float(registro_alvo["quantidade"])) if pd.notna(registro_alvo["quantidade"]) else 1
+                    c_ed_lote, c_ed_qtd = st.columns(2)
+                    novo_lote_input = c_ed_lote.text_input(
+                        "Lote correto:",
                         value=limpar_texto(registro_alvo["lote"]),
                         key="adm_novo_lote"
                     )
-                    if st.button("💾 Atualizar Lote", use_container_width=True):
-                        if novo_lote_input.strip():
+                    nova_qtd_input = c_ed_qtd.number_input(
+                        "Quantidade correta:",
+                        min_value=1,
+                        value=max(1, qtd_atual_etiq),
+                        step=1,
+                        key="adm_nova_qtd"
+                    )
+                    if st.button("💾 Atualizar Lote e Quantidade", use_container_width=True):
+                        if not novo_lote_input.strip():
+                            st.error("⚠️ O lote não pode ficar em branco.")
+                        else:
+                            col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
+                            sku_alvo_ed = limpar_texto(registro_alvo[col_alvo_sku])
+                            diff_qtd = int(nova_qtd_input) - qtd_atual_etiq
+
+                            df_cargas_adm = carregar_dados("cargas")
+                            filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_alvo_ed)
+
+                            if filtro_c.any() and diff_qtd != 0:
+                                idx_c = df_cargas_adm.index[filtro_c][0]
+                                qtd_ped_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "pedido_real"], errors="coerce") or 0)
+                                qtd_bip_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "bipado"], errors="coerce") or 0)
+                                novo_total_bip = qtd_bip_sku + diff_qtd
+
+                                if qtd_ped_sku > 0 and novo_total_bip > qtd_ped_sku:
+                                    st.error(f"🚫 BLOQUEADO! Essa alteração deixaria o SKU '{sku_alvo_ed}' com {novo_total_bip} un., ultrapassando o pedido ({qtd_ped_sku} un.).")
+                                    st.stop()
+
+                                df_cargas_adm.at[idx_c, "bipado"] = max(0, novo_total_bip)
+                                salvar_dados(df_cargas_adm, "cargas")
+
                             df_bipes_adm["lote"] = df_bipes_adm["lote"].astype(object)
+                            df_bipes_adm["quantidade"] = pd.to_numeric(df_bipes_adm["quantidade"], errors="coerce").fillna(0).astype(int)
                             df_bipes_adm.at[idx_selecionado, "lote"] = limpar_texto(novo_lote_input)
+                            df_bipes_adm.at[idx_selecionado, "quantidade"] = int(nova_qtd_input)
                             salvar_dados(df_bipes_adm, "bipes")
+
                             if "relatorio_final" in st.session_state:
                                 del st.session_state.relatorio_final
-                            st.success(f"✅ Lote da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizado para '{limpar_texto(novo_lote_input)}'!")
+                            st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
                             st.rerun()
-                        else:
-                            st.error("⚠️ O lote não pode ficar em branco.")
 
                 with col_estorno:
                     st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
