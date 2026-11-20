@@ -2046,7 +2046,9 @@ elif aba == "👥 Central de Usuários":
                 default=list()
             )
 
-            if st.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
+            _, col_btn_nu, _ = st.columns()
+            if col_btn_nu.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
+
                 login_novo = limpar_texto(nu_login).replace(" ", "")
                 nome_novo = limpar_texto(nu_nome)
                 if not login_novo or not nome_novo or len(nu_senha.strip()) < 4:
