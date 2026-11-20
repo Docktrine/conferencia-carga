@@ -885,9 +885,13 @@ if aba == "🚚 Planejamento Logística":
                 ed_status = e5c1.selectbox("Status:", STATUS_PLANEJAMENTO, index=idx_ed_st)
                 ed_obs = e5c2.text_input("Observação:", value=str(reg_plan["Observação"]))
 
-                c_btn_save, c_btn_del = st.columns(2)
-                btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
-                btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
+             if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
+                 c_btn_save, c_btn_del = st.columns(2)
+                 btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
+                 btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
+             else:
+                 btn_atualizar_plan = st.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
+                 btn_excluir_plan = False
 
                 if btn_atualizar_plan:
                     dados_editados = {
@@ -1097,7 +1101,8 @@ elif aba == "📥 Importação de Pedidos":
         else:
             st.info("Nenhuma carga cadastrada no momento.")
 
-    with st.expander("🗑️ Gerenciar / Excluir Carga Existente"):
+ if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
+     with st.expander("🗑️ Gerenciar / Excluir Carga Existente"):
         df_cargas_ger = carregar_dados("cargas")
         if not df_cargas_ger.empty and "id_carga" in df_cargas_ger.columns:
             lista_cargas_ex = df_cargas_ger["id_carga"].dropna().unique().tolist()
@@ -1262,7 +1267,7 @@ elif aba == "📋 Gestão de Pedidos":
         if linhas_pedido:
             st.dataframe(pd.DataFrame(linhas_pedido), use_container_width=True, hide_index=True)
 
-            if itens_cortados_edicao:
+            if itens_cortados_edicao and tem_permissao("✂️ Gerar e Editar Cortes"):
                 st.markdown("---")
                 st.markdown("**✏️ Editar Motivo do Corte**")
                 item_edit_label = st.selectbox(
@@ -1621,7 +1626,7 @@ elif aba == "📦 Conferência dos Pedidos":
         if "quantidade" in df_carga_bipes.columns:
             df_carga_bipes["quantidade"] = pd.to_numeric(df_carga_bipes["quantidade"], errors="coerce").fillna(0).astype(int)
 
-        if st.session_state.admin_autenticado:
+        if tem_permissao("👁️ Ver Conferência Completa (Supervisão)"):
             st.dataframe(df_carga_bipes, use_container_width=True, hide_index=True, height=385)
         else:
             st.dataframe(df_carga_bipes.head(10), use_container_width=True, hide_index=True)
@@ -1687,58 +1692,59 @@ elif aba == "📈 Painel de Acompanhamento":
         st.success("🎉 Todos os itens do pedido foram bipados!")
     else:
         st.dataframe(pendentes, use_container_width=True, hide_index=True)
-
-        with st.expander("✂️ Administrativo: Gerar Corte em Item Pendente"):
-            st.caption("Use esta opção quando um item do pedido foi cortado (totalmente ou parcialmente) e não será embarcado.")
-            opcoes_corte = {
-                f"{row['codigo']} - {row['produto']} (Pedido atual: {row['pedido_real']} | Bipado: {row['bipado']})": row['codigo']
-                for _, row in pendentes.iterrows()
-            }
-            item_corte_label = st.selectbox("Selecione o item para registrar corte:", list(opcoes_corte.keys()))
-            sku_corte = opcoes_corte[item_corte_label]
-            
-            linha_alvo_corte = df[df["codigo"] == sku_corte].iloc[0]
-            qtd_atual_ped = int(linha_alvo_corte["pedido_real"])
-            qtd_atual_bip = int(linha_alvo_corte["bipado"])
-
-            nova_qtd_autorizada = st.number_input(
-                f"Nova quantidade final após o corte (mínimo {qtd_atual_bip}, máximo {qtd_atual_ped - 1}):",
-                min_value=qtd_atual_bip,
-                max_value=max(qtd_atual_bip, qtd_atual_ped - 1),
-                value=qtd_atual_bip,
-                step=1
-            )
-
-            motivo_corte = st.text_input(
-                "Motivo / Observação do Corte (Opcional):",
-                placeholder="Ex: Falta em estoque, avaria no lote, corte comercial..."
-            )
-
-            confirma_corte = st.checkbox(
-                f"Confirmo o corte do SKU '{sku_corte}' de {qtd_atual_ped} para {nova_qtd_autorizada} unidades (o pedido ficará marcado com corte)."
-            )
-
-            if st.button("✂️ Confirmar Corte no Pedido", type="primary", disabled=not confirma_corte):
-                df_banco_corte = carregar_dados("cargas")
-                filtro_corte = (df_banco_corte["id_carga"] == carga_selecionada) & (df_banco_corte["codigo"].apply(limpar_texto) == limpar_texto(sku_corte))
-                if filtro_corte.any():
-                    idx_ct = df_banco_corte.index[filtro_corte][0]
-                    df_banco_corte.at[idx_ct, "pedido_real"] = int(nova_qtd_autorizada)
-                    desc_antiga = str(df_banco_corte.at[idx_ct, "produto"])
-                    motivo_limpo = motivo_corte.strip()
-                    if motivo_limpo:
-                        tag_corte = f" [CORTADO: {qtd_atual_ped} -> {int(nova_qtd_autorizada)} | Motivo: {motivo_limpo}]"
-                    else:
-                        tag_corte = f" [CORTADO: {qtd_atual_ped} -> {int(nova_qtd_autorizada)}]"
-                    if "[CORTADO:" not in desc_antiga:
-                        df_banco_corte.at[idx_ct, "produto"] = desc_antiga + tag_corte
-                    else:
-                        base_nome = desc_antiga.split(" [CORTADO:")[0]
-                        df_banco_corte.at[idx_ct, "produto"] = base_nome + tag_corte
-
-                    salvar_dados(df_banco_corte, "cargas")
-                    st.success(f"✂️ Corte registrado com sucesso! O pedido '{carga_selecionada}' agora está sinalizado com corte.")
-                    st.rerun()
+        
+        if tem_permissao("✂️ Gerar e Editar Cortes"):
+            with st.expander("✂️ Administrativo: Gerar Corte em Item Pendente"):
+                st.caption("Use esta opção quando um item do pedido foi cortado (totalmente ou parcialmente) e não será embarcado.")
+                opcoes_corte = {
+                    f"{row['codigo']} - {row['produto']} (Pedido atual: {row['pedido_real']} | Bipado: {row['bipado']})": row['codigo']
+                    for _, row in pendentes.iterrows()
+                }
+                item_corte_label = st.selectbox("Selecione o item para registrar corte:", list(opcoes_corte.keys()))
+                sku_corte = opcoes_corte[item_corte_label]
+                
+                linha_alvo_corte = df[df["codigo"] == sku_corte].iloc[0]
+                qtd_atual_ped = int(linha_alvo_corte["pedido_real"])
+                qtd_atual_bip = int(linha_alvo_corte["bipado"])
+    
+                nova_qtd_autorizada = st.number_input(
+                    f"Nova quantidade final após o corte (mínimo {qtd_atual_bip}, máximo {qtd_atual_ped - 1}):",
+                    min_value=qtd_atual_bip,
+                    max_value=max(qtd_atual_bip, qtd_atual_ped - 1),
+                    value=qtd_atual_bip,
+                    step=1
+                )
+    
+                motivo_corte = st.text_input(
+                    "Motivo / Observação do Corte (Opcional):",
+                    placeholder="Ex: Falta em estoque, avaria no lote, corte comercial..."
+                )
+    
+                confirma_corte = st.checkbox(
+                    f"Confirmo o corte do SKU '{sku_corte}' de {qtd_atual_ped} para {nova_qtd_autorizada} unidades (o pedido ficará marcado com corte)."
+                )
+    
+                if st.button("✂️ Confirmar Corte no Pedido", type="primary", disabled=not confirma_corte):
+                    df_banco_corte = carregar_dados("cargas")
+                    filtro_corte = (df_banco_corte["id_carga"] == carga_selecionada) & (df_banco_corte["codigo"].apply(limpar_texto) == limpar_texto(sku_corte))
+                    if filtro_corte.any():
+                        idx_ct = df_banco_corte.index[filtro_corte][0]
+                        df_banco_corte.at[idx_ct, "pedido_real"] = int(nova_qtd_autorizada)
+                        desc_antiga = str(df_banco_corte.at[idx_ct, "produto"])
+                        motivo_limpo = motivo_corte.strip()
+                        if motivo_limpo:
+                            tag_corte = f" [CORTADO: {qtd_atual_ped} -> {int(nova_qtd_autorizada)} | Motivo: {motivo_limpo}]"
+                        else:
+                            tag_corte = f" [CORTADO: {qtd_atual_ped} -> {int(nova_qtd_autorizada)}]"
+                        if "[CORTADO:" not in desc_antiga:
+                            df_banco_corte.at[idx_ct, "produto"] = desc_antiga + tag_corte
+                        else:
+                            base_nome = desc_antiga.split(" [CORTADO:")[0]
+                            df_banco_corte.at[idx_ct, "produto"] = base_nome + tag_corte
+    
+                        salvar_dados(df_banco_corte, "cargas")
+                        st.success(f"✂️ Corte registrado com sucesso! O pedido '{carga_selecionada}' agora está sinalizado com corte.")
+                        st.rerun()
 
     sobras = df[df["Falta Bipar"] < 0].copy()
     if not sobras.empty:
@@ -1759,78 +1765,79 @@ elif aba == "✅ Auditoria e Ajustes":
     df_carga_aud = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if carga_possui_corte(df_carga_aud):
         st.warning(f"✂️ **OBSERVAÇÃO:** Este pedido foi gerado/finalizado **COM CORTE**: **{extrair_detalhes_corte(df_carga_aud)}**")
-
-    with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Solicitar Rebipagem)"):
-        df_bipes_adm = carregar_dados("bipes")
-        if not df_bipes_adm.empty and "id_carga" in df_bipes_adm.columns:
-            bipes_da_carga = df_bipes_adm[df_bipes_adm["id_carga"] == carga_selecionada].copy()
-            
-            if not bipes_da_carga.empty:
-                opcoes_etiq = {}
-                for idx_row, r in bipes_da_carga.iterrows():
-                    etiq_str = limpar_texto(r["etiqueta"])
-                    sku_str = limpar_texto(r["codigo_bipado"])
-                    lote_str = limpar_texto(r["lote"])
-                    qtd_str = str(int(float(r["quantidade"]))) if pd.notna(r["quantidade"]) else "0"
-                    label = f"Etiqueta: {etiq_str} | SKU: {sku_str} | Lote atual: {lote_str} | Qtd: {qtd_str}"
-                    opcoes_etiq[label] = idx_row
-
-                escolha_adm = st.selectbox("Selecione a etiqueta bipada para corrigir ou estornar:", list(opcoes_etiq.keys()))
-                idx_selecionado = opcoes_etiq[escolha_adm]
-                registro_alvo = df_bipes_adm.loc[idx_selecionado]
-
-                col_edit, col_estorno = st.columns(2)
-
-                with col_edit:
-                    st.markdown("**1️⃣ Corrigir Lote e/ou Quantidade**")
-                    qtd_atual_etiq = int(float(registro_alvo["quantidade"])) if pd.notna(registro_alvo["quantidade"]) else 1
-                    c_ed_lote, c_ed_qtd = st.columns(2)
-                    novo_lote_input = c_ed_lote.text_input(
-                        "Lote correto:",
-                        value=limpar_texto(registro_alvo["lote"]),
-                        key="adm_novo_lote"
-                    )
-                    nova_qtd_input = c_ed_qtd.number_input(
-                        "Quantidade correta:",
-                        min_value=1,
-                        value=max(1, qtd_atual_etiq),
-                        step=1,
-                        key="adm_nova_qtd"
-                    )
-                    if st.button("💾 Atualizar Lote e Quantidade", use_container_width=True):
-                        if not novo_lote_input.strip():
-                            st.error("⚠️ O lote não pode ficar em branco.")
-                        else:
-                            col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
-                            sku_alvo_ed = limpar_texto(registro_alvo[col_alvo_sku])
-                            diff_qtd = int(nova_qtd_input) - qtd_atual_etiq
-
-                            df_cargas_adm = carregar_dados("cargas")
-                            filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_alvo_ed)
-
-                            if filtro_c.any() and diff_qtd != 0:
-                                idx_c = df_cargas_adm.index[filtro_c][0]
-                                qtd_ped_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "pedido_real"], errors="coerce") or 0)
-                                qtd_bip_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "bipado"], errors="coerce") or 0)
-                                novo_total_bip = qtd_bip_sku + diff_qtd
-
-                                if qtd_ped_sku > 0 and novo_total_bip > qtd_ped_sku:
-                                    st.error(f"🚫 BLOQUEADO! Essa alteração deixaria o SKU '{sku_alvo_ed}' com {novo_total_bip} un., ultrapassando o pedido ({qtd_ped_sku} un.).")
-                                    st.stop()
-
-                                df_cargas_adm.at[idx_c, "bipado"] = max(0, novo_total_bip)
-                                salvar_dados(df_cargas_adm, "cargas")
-
-                            df_bipes_adm["lote"] = df_bipes_adm["lote"].astype(object)
-                            df_bipes_adm["quantidade"] = pd.to_numeric(df_bipes_adm["quantidade"], errors="coerce").fillna(0).astype(int)
-                            df_bipes_adm.at[idx_selecionado, "lote"] = limpar_texto(novo_lote_input)
-                            df_bipes_adm.at[idx_selecionado, "quantidade"] = int(nova_qtd_input)
-                            salvar_dados(df_bipes_adm, "bipes")
-
-                            if "relatorio_final" in st.session_state:
-                                del st.session_state.relatorio_final
-                            st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
-                            st.rerun()
+        
+    if tem_permissao("↩️ Estornar Etiquetas e Corrigir Lotes"):
+        with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Solicitar Rebipagem)"):
+            df_bipes_adm = carregar_dados("bipes")
+            if not df_bipes_adm.empty and "id_carga" in df_bipes_adm.columns:
+                bipes_da_carga = df_bipes_adm[df_bipes_adm["id_carga"] == carga_selecionada].copy()
+                
+                if not bipes_da_carga.empty:
+                    opcoes_etiq = {}
+                    for idx_row, r in bipes_da_carga.iterrows():
+                        etiq_str = limpar_texto(r["etiqueta"])
+                        sku_str = limpar_texto(r["codigo_bipado"])
+                        lote_str = limpar_texto(r["lote"])
+                        qtd_str = str(int(float(r["quantidade"]))) if pd.notna(r["quantidade"]) else "0"
+                        label = f"Etiqueta: {etiq_str} | SKU: {sku_str} | Lote atual: {lote_str} | Qtd: {qtd_str}"
+                        opcoes_etiq[label] = idx_row
+    
+                    escolha_adm = st.selectbox("Selecione a etiqueta bipada para corrigir ou estornar:", list(opcoes_etiq.keys()))
+                    idx_selecionado = opcoes_etiq[escolha_adm]
+                    registro_alvo = df_bipes_adm.loc[idx_selecionado]
+    
+                    col_edit, col_estorno = st.columns(2)
+    
+                    with col_edit:
+                        st.markdown("**1️⃣ Corrigir Lote e/ou Quantidade**")
+                        qtd_atual_etiq = int(float(registro_alvo["quantidade"])) if pd.notna(registro_alvo["quantidade"]) else 1
+                        c_ed_lote, c_ed_qtd = st.columns(2)
+                        novo_lote_input = c_ed_lote.text_input(
+                            "Lote correto:",
+                            value=limpar_texto(registro_alvo["lote"]),
+                            key="adm_novo_lote"
+                        )
+                        nova_qtd_input = c_ed_qtd.number_input(
+                            "Quantidade correta:",
+                            min_value=1,
+                            value=max(1, qtd_atual_etiq),
+                            step=1,
+                            key="adm_nova_qtd"
+                        )
+                        if st.button("💾 Atualizar Lote e Quantidade", use_container_width=True):
+                            if not novo_lote_input.strip():
+                                st.error("⚠️ O lote não pode ficar em branco.")
+                            else:
+                                col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
+                                sku_alvo_ed = limpar_texto(registro_alvo[col_alvo_sku])
+                                diff_qtd = int(nova_qtd_input) - qtd_atual_etiq
+    
+                                df_cargas_adm = carregar_dados("cargas")
+                                filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_alvo_ed)
+    
+                                if filtro_c.any() and diff_qtd != 0:
+                                    idx_c = df_cargas_adm.index[filtro_c][0]
+                                    qtd_ped_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "pedido_real"], errors="coerce") or 0)
+                                    qtd_bip_sku = int(pd.to_numeric(df_cargas_adm.at[idx_c, "bipado"], errors="coerce") or 0)
+                                    novo_total_bip = qtd_bip_sku + diff_qtd
+    
+                                    if qtd_ped_sku > 0 and novo_total_bip > qtd_ped_sku:
+                                        st.error(f"🚫 BLOQUEADO! Essa alteração deixaria o SKU '{sku_alvo_ed}' com {novo_total_bip} un., ultrapassando o pedido ({qtd_ped_sku} un.).")
+                                        st.stop()
+    
+                                    df_cargas_adm.at[idx_c, "bipado"] = max(0, novo_total_bip)
+                                    salvar_dados(df_cargas_adm, "cargas")
+    
+                                df_bipes_adm["lote"] = df_bipes_adm["lote"].astype(object)
+                                df_bipes_adm["quantidade"] = pd.to_numeric(df_bipes_adm["quantidade"], errors="coerce").fillna(0).astype(int)
+                                df_bipes_adm.at[idx_selecionado, "lote"] = limpar_texto(novo_lote_input)
+                                df_bipes_adm.at[idx_selecionado, "quantidade"] = int(nova_qtd_input)
+                                salvar_dados(df_bipes_adm, "bipes")
+    
+                                if "relatorio_final" in st.session_state:
+                                    del st.session_state.relatorio_final
+                                st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
+                                st.rerun()
 
                 with col_estorno:
                     st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
