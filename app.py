@@ -72,19 +72,21 @@ st.markdown(
         border-color: rgba(76, 175, 80, 0.4) !important;
         border-radius: 8px !important;
     }
-        /* Campos de senha escuros e botão do olhinho claro */
+        /* Campos de senha com fundo off-white claro e letra escura */
     section[data-testid="stSidebar"] input,
     section[data-testid="stSidebar"] div[data-baseweb="input"],
     section[data-testid="stSidebar"] div[data-baseweb="input"] > div,
     section[data-testid="stSidebar"] div[data-baseweb="base-input"] {
-        background-color: #141A16 !important;
-        color: #E6E1D6 !important;
-        border-color: rgba(76, 175, 80, 0.5) !important;
+        background-color: #EAE7E0 !important;
+        color: #141A16 !important;
+        caret-color: #141A16 !important;
+        border-color: #4CAF50 !important;
     }
     section[data-testid="stSidebar"] div[data-baseweb="input"] button {
         background-color: #EAE7E0 !important;
     }
-    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg {
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg,
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg path {
         fill: #141A16 !important;
         color: #141A16 !important;
     }
