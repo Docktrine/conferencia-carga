@@ -295,7 +295,7 @@ TODAS_PERMISSOES_CRITICAS = [
     "👁️ Ver Conferência Completa (Supervisão)"
 ]
 
-COLUNAS_USUARIOS = ["login", "nome", "senha", "perfil", "modulos_liberados", "permissoes", "ativo","foto_b64"]
+COLUNAS_USUARIOS = ["login", "nome", "senha", "perfil", "modulos_liberados", "permissoes", "ativo","foto_b64", "ultimo_acesso"]
 
 def gerar_hash_senha(senha_plana):
     return hashlib.sha256(str(senha_plana).strip().encode("utf-8")).hexdigest()
@@ -317,7 +317,10 @@ def carregar_usuarios_sistema():
             "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
             "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
             "ativo": "SIM",
-            "foto_b64": ""
+            "foto_b64": "",
+            "ativo": "SIM",
+            "foto_b64": "",
+            "ultimo_acesso": ""
         }])
         
         salvar_dados(df_init, "usuarios")
@@ -779,8 +782,62 @@ with st.sidebar:
                         st.success("✅ Senha alterada com sucesso!")
 
     if st.button("🚪 Sair / Trocar Usuário", use_container_width=True):
+        df_u_out = carregar_usuarios_sistema()
+        mask_out = df_u_out["login"].apply(limpar_texto) == st.session_state.login_usuario
+        if mask_out.any():
+            df_u_out.loc[mask_out, "ultimo_acesso"] = ""
+            salvar_dados(df_u_out[COLUNAS_USUARIOS], "usuarios")
+            st.cache_data.clear()
         st.session_state.usuario_autenticado = False
         st.rerun()
+agora_ping = agora_br()
+ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
+if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 60:
+    df_u_ping = carregar_usuarios_sistema()
+    mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
+    if mask_ping.any():
+        df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
+        salvar_dados(df_u_ping[COLUNAS_USUARIOS], "usuarios")
+        st.cache_data.clear()
+    st.session_state.ultimo_ping_ts = agora_ping
+
+df_u_online = carregar_dados("usuarios")
+avatares_online_html = ""
+qtd_online = 0
+if not df_u_online.empty and "ultimo_acesso" in df_u_online.columns:
+    for idx_on, r_on in df_u_online.iterrows():
+        ts_str = str(r_on.get("ultimo_acesso", "")).strip()
+        if ts_str and ts_str.lower() not in ("nan", "none", "null"):
+            try:
+                dt_acesso = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+                if dt_acesso.tzinfo is None and agora_ping.tzinfo is not None:
+                    dt_acesso = dt_acesso.replace(tzinfo=agora_ping.tzinfo)
+                if (agora_ping - dt_acesso).total_seconds() <= 600:
+                    qtd_online += 1
+                    l_on = limpar_texto(r_on.get("login", ""))
+                    n_on = str(r_on.get("nome", l_on)).strip()
+                    p_on = str(r_on.get("perfil", "")).strip()
+                    ini_on = "".join(p[:1] for p in n_on.split()[:2]).upper() if n_on else "U"
+                    foto_on = carregar_foto_usuario(l_on)
+                    ml_style = "margin-left: -10px;" if qtd_online > 1 else ""
+                    if foto_on:
+                        bolinha = f'<img src="data:image/png;base64,{foto_on}" title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #1F2922; {ml_style}">'
+                    else:
+                        bolinha = f'<div title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; background-color: #1B5E20; color: #E6E1D6; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; border: 2px solid #4CAF50; {ml_style}">{ini_on}</div>'
+                    avatares_online_html += bolinha
+            except Exception:
+                pass
+
+if qtd_online > 0:
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: -10px; padding-top: 4px;">
+            <div style="display: flex; align-items: center;">{avatares_online_html}</div>
+            <span style="font-size: 0.78rem; color: #2E7D32; font-weight: 600; background-color: rgba(76, 175, 80, 0.14); padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(76, 175, 80, 0.4);">🟢 {qtd_online} online agora</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
