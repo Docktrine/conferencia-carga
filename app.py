@@ -23,7 +23,8 @@ st.markdown(
     <style>
     div[data-testid="stStatusWidget"],
     div[data-testid="stSpinner"],
-    .stSpinner {
+    .stSpinner,
+    [data-stale="true"] {
         display: none !important;
         visibility: hidden !important;
     }
