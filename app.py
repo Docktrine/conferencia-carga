@@ -107,13 +107,6 @@ st.markdown(
         background-color: #FFFFFF !important;
         border-color: #1B5E20 !important;
     }
-
-    /* Cores dos ícones e selos bem mais escuras e fortes */
-    .stMarkdown p,
-    .stMarkdown span,
-    [data-testid="stAlert"] {
-        filter: saturate(2.4) brightness(0.78) contrast(1.25);
-    }
     </style>
     """,
     unsafe_allow_html=True
