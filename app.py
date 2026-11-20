@@ -911,7 +911,7 @@ if qtd_online > 0:
     )
 if aba == "📊 Análise de Pedidos":
     st.title("📊 Análise de Pedidos & Lead Time")
-    st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação e envio ao Planejamento.")
+    st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação, valor, volume e envio ao Planejamento.")
 
     def achar_col_bi(lista_cols, palavras_chave):
         for p in palavras_chave:
@@ -925,6 +925,22 @@ if aba == "📊 Análise de Pedidos":
                 if p_l in limpar_texto(c):
                     return c
         return None
+
+    def limpar_numero_bi(val_raw):
+        s = str(val_raw).strip().replace("R$", "").replace(" ", "")
+        if not s or s.lower() in ("nan", "none", "-"):
+            return 0.0
+        if "," in s and "." in s:
+            if s.rfind(",") > s.rfind("."):
+                s = s.replace(".", "").replace(",", ".")
+            else:
+                s = s.replace(",", "")
+        elif "," in s:
+            s = s.replace(",", ".")
+        try:
+            return float(s)
+        except Exception:
+            return 0.0
 
     df_lt = carregar_dados("lead time")
     mapa_lt = {}
@@ -967,16 +983,20 @@ if aba == "📊 Análise de Pedidos":
                     return cols_bi.index(c_enc) if c_enc in cols_bi else 0
 
                 with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
-                    m1, m2, m3 = st.columns(3)
+                    m1, m2, m3, m4 = st.columns(4)
                     col_ped_bi = m1.selectbox("Número do Pedido / Carga:", cols_bi, index=achar_idx_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO")))
                     cli_enc = achar_col_bi(cols_bi, ("CLIENTE", "DESTINATARIO", "RAZAO"))
                     col_cli_bi = m2.selectbox("Cliente (Opcional):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(cli_enc) + 1) if cli_enc in cols_bi else 0)
                     col_uf_bi = m3.selectbox("Estado (UF):", cols_bi, index=achar_idx_bi(("UF", "ESTADO")))
-
-                    m4, m5, m6 = st.columns(3)
                     col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(("CIDADE", "MUNICIPIO")))
-                    col_dt_cria = m5.selectbox("Data de Criação do Pedido:", cols_bi, index=achar_idx_bi(("CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA")))
+
+                    m5, m6, m7, m8 = st.columns(4)
+                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", cols_bi, index=achar_idx_bi(("LANCAMENTO", "CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA")))
                     col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO")))
+                    val_enc = achar_col_bi(cols_bi, ("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
+                    col_val_bi = m7.selectbox("Valor do Pedido (R$):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(val_enc) + 1) if val_enc in cols_bi else 0)
+                    vol_enc = achar_col_bi(cols_bi, ("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
+                    col_vol_bi = m8.selectbox("Qtd de Volumes:", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(vol_enc) + 1) if vol_enc in cols_bi else 0)
 
                 df_plan_exist = carregar_dados("planejamento")
                 ids_no_wms = set()
@@ -994,6 +1014,8 @@ if aba == "📊 Análise de Pedidos":
                     cli_val = str(r_bi[col_cli_bi]).strip() if col_cli_bi != "(Nenhum)" else ""
                     uf_val = limpar_texto(r_bi[col_uf_bi])
                     cid_val = limpar_texto(r_bi[col_cid_bi])
+                    valor_num = limpar_numero_bi(r_bi[col_val_bi]) if col_val_bi != "(Nenhum)" else 0.0
+                    vol_num = int(round(limpar_numero_bi(r_bi[col_vol_bi]))) if col_vol_bi != "(Nenhum)" else 0
 
                     dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce")
                     dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce")
@@ -1026,6 +1048,7 @@ if aba == "📊 Análise de Pedidos":
                         ordem_prio = 4
 
                     ja_wms = "🚚 Já no Planejamento" if limpar_texto(ped_val) in ids_no_wms else "🆕 Novo (Fora do WMS)"
+                    valor_fmt = f"R$ {valor_num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
                     linhas_analise.append({
                         "Prioridade": ordem_prio,
@@ -1034,6 +1057,9 @@ if aba == "📊 Análise de Pedidos":
                         "Cliente": cli_val,
                         "Cidade": cid_val,
                         "UF": uf_val,
+                        "Valor_Num": valor_num,
+                        "Valor (R$)": valor_fmt,
+                        "Volumes": vol_num,
                         "Criação": dt_c.strftime("%d/%m/%Y") if pd.notna(dt_c) else "-",
                         "Entrega": dt_e.strftime("%d/%m/%Y") if pd.notna(dt_e) else "-",
                         "Prazo Total (d)": prazo_total,
@@ -1050,18 +1076,21 @@ if aba == "📊 Análise de Pedidos":
                     if cidades_sem_lt:
                         st.warning(f"⚠️ **{len(cidades_sem_lt)} cidade(s)** não encontrada(s) na aba `lead time`: {', '.join(sorted(list(cidades_sem_lt))[:10])}")
 
-                    k1, k2, k3, k4 = st.columns(4)
-                    k1.metric("📦 Total Analisado", len(df_res_bi))
-                    k2.metric("🔴 Críticos / Inviáveis", int((df_res_bi["Prioridade"] == 1).sum()))
-                    k3.metric("🟡 Atenção / Urgentes", int((df_res_bi["Prioridade"] == 2).sum()))
-                    k4.metric("🟢 Viáveis / No Prazo", int((df_res_bi["Prioridade"] == 3).sum()))
+                    k1, k2, k3, k4, k5, k6 = st.columns(6)
+                    k1.metric("📦 Total Pedidos", len(df_res_bi))
+                    k2.metric("🔴 Críticos", int((df_res_bi["Prioridade"] == 1).sum()))
+                    k3.metric("🟡 Urgentes", int((df_res_bi["Prioridade"] == 2).sum()))
+                    k4.metric("🟢 Viáveis", int((df_res_bi["Prioridade"] == 3).sum()))
+                    tot_val_str = f"R$ {df_res_bi['Valor_Num'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                    k5.metric("💰 Valor Carteira", tot_val_str)
+                    k6.metric("🧊 Total Volumes", f"{int(df_res_bi['Volumes'].sum()):,}".replace(",", "."))
 
                     filtro_sla = st.multiselect(
                         "Filtrar por Indicador de Prazo:",
                         options=df_res_bi["Status SLA"].unique().tolist(),
                         default=df_res_bi["Status SLA"].unique().tolist()
                     )
-                    df_exib_bi = df_res_bi[df_res_bi["Status SLA"].isin(filtro_sla)].drop(columns=["Prioridade"])
+                    df_exib_bi = df_res_bi[df_res_bi["Status SLA"].isin(filtro_sla)].drop(columns=["Prioridade", "Valor_Num"])
 
                     st.dataframe(df_exib_bi, use_container_width=True, hide_index=True)
 
@@ -1082,13 +1111,13 @@ if aba == "📊 Análise de Pedidos":
 
                         novos_plan = list()
                         for p_esc in pedidos_escolhidos:
-                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc
+                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc[0]
                             nova_l = {c_p: "" for c_p in df_p_atual.columns}
                             nova_l["id_carga"] = r_esc["Pedido"]
                             nova_l["cliente"] = f"{r_esc['Cliente']} ({r_esc['Cidade']}/{r_esc['UF']})".strip(" ()/")
                             nova_l["data_carregamento"] = r_esc["Data Limite Expedição"] if r_esc["Data Limite Expedição"] != "-" else ""
                             nova_l["status"] = "🟡 Programado / Aguardando"
-                            nova_l["observacoes"] = f"SLA BI | Entrega: {r_esc['Entrega']} | Janela: {r_esc['Janela p/ Expedir (d)']}d | LT: {r_esc['Lead Time (d)']}d"
+                            nova_l["observacoes"] = f"SLA BI | {r_esc['Valor (R$)']} | {r_esc['Volumes']} vol | Entrega: {r_esc['Entrega']} | Janela: {r_esc['Janela p/ Expedir (d)']}d"
                             novos_plan.append(nova_l)
 
                         df_p_atual = pd.concat([df_p_atual, pd.DataFrame(novos_plan)], ignore_index=True)
