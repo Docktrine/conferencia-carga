@@ -132,42 +132,51 @@ st.markdown(
         background-color: #C2BBA9 !important;
         border-color: #1B5E20 !important;
         }
-        
-        /* Cartão da Tela de Login no mesmo tom escuro (#141A16) do painel lateral */
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #141A16 !important;
-        border: 2px solid #1B5E20 !important;
-        border-radius: 14px !important;
-    }
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) h1,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) h2,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) h3,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) p,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) label,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) span {
-        color: #E6E1D6 !important;
-    }
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-testid="stForm"] {
-        background-color: #1F2922 !important;
-        border: 1px solid rgba(76, 175, 80, 0.45) !important;
-        border-radius: 10px !important;
-    }
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) input,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="input"],
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="input"] > div,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="base-input"],
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="input"] button {
-        background-color: #EAE7E0 !important;
-        color: #141A16 !important;
-        caret-color: #141A16 !important;
-    }
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="input"] button svg,
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-baseweb="input"] button svg path {
-        fill: #141A16 !important;
-        color: #141A16 !important;
-    }
-    [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-testid="InputInstructions"]::after {
-        color: rgba(230, 225, 214, 0.55) !important;
+if not st.session_state.usuario_autenticado:
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stMainBlockContainer"] div[data-testid="stVerticalBlock"] > div[style*="border"] {
+            background-color: #141A16 !important;
+            border: 2px solid #1B5E20 !important;
+            border-radius: 14px !important;
+        }
+        div[data-testid="stMainBlockContainer"] h1,
+        div[data-testid="stMainBlockContainer"] h2,
+        div[data-testid="stMainBlockContainer"] h3,
+        div[data-testid="stMainBlockContainer"] p,
+        div[data-testid="stMainBlockContainer"] label,
+        div[data-testid="stMainBlockContainer"] span {
+            color: #E6E1D6 !important;
+        }
+        div[data-testid="stForm"] {
+            background-color: #1F2922 !important;
+            border: 1px solid rgba(76, 175, 80, 0.45) !important;
+            border-radius: 10px !important;
+        }
+        div[data-testid="stForm"] input,
+        div[data-testid="stForm"] div[data-baseweb="input"],
+        div[data-testid="stForm"] div[data-baseweb="input"] > div,
+        div[data-testid="stForm"] div[data-baseweb="base-input"],
+        div[data-testid="stForm"] div[data-baseweb="input"] button {
+            background-color: #EAE7E0 !important;
+            color: #141A16 !important;
+            caret-color: #141A16 !important;
+        }
+        div[data-testid="stForm"] div[data-baseweb="input"] button svg,
+        div[data-testid="stForm"] div[data-baseweb="input"] button svg path {
+            fill: #141A16 !important;
+            color: #141A16 !important;
+        }
+        div[data-testid="stForm"] div[data-testid="InputInstructions"]::after {
+            color: rgba(230, 225, 214, 0.55) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    col_l1, col_l2, col_l3 = st.columns([2.2, 2.6, 2.2])
+
     }
     </style>
     """,
