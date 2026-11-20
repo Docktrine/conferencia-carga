@@ -634,7 +634,8 @@ if aba == "🚚 Planejamento Logística":
                         "Veículo compartilhado": in_compart,
                         "Data da entrega": formatar_data_br_str(in_data_ent),
                         "Observação": in_obs.strip(),
-                        "Status": in_status
+                        "Status": in_status,
+                        "Notificação": ""
                     }])
                     df_plan_atualizado = pd.concat([df_plan, nova_linha_plan], ignore_index=True)
                     salvar_dados(df_plan_atualizado[COLUNAS_PLANEJAMENTO], "planejamento")
