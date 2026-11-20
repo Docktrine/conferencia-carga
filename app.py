@@ -6,6 +6,7 @@ import base64
 import unicodedata
 import re
 import time
+import hashlib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from streamlit_gsheets import GSheetsConnection
@@ -165,6 +166,53 @@ STATUS_PLANEJAMENTO = [
     "⚠️ Atrasado / Ocorrência"
 ]
 
+TODOS_MODULOS_SISTEMA = [
+    "🚚 Planejamento Logística",
+    "📥 Importação de Pedidos",
+    "📦 Conferência dos Pedidos",
+    "📈 Painel de Acompanhamento",
+    "📋 Gestão de Pedidos",
+    "✅ Auditoria e Ajustes",
+    "👥 Central de Usuários"
+]
+
+TODAS_PERMISSOES_CRITICAS = [
+    "✂️ Gerar e Editar Cortes",
+    "↩️ Estornar Etiquetas e Corrigir Lotes",
+    "🗑️ Excluir Cargas e Pedidos",
+    "🔔 Lançar Notificações",
+    "👁️ Ver Conferência Completa (Supervisão)"
+]
+
+COLUNAS_USUARIOS = ["login", "nome", "senha", "perfil", "modulos_liberados", "permissoes", "ativo"]
+
+def gerar_hash_senha(senha_plana):
+    return hashlib.sha256(str(senha_plana).strip().encode("utf-8")).hexdigest()
+
+def tem_permissao(nome_permissao):
+    if st.session_state.get("perfil_usuario") == "ADMIN":
+        return True
+    return nome_permissao in st.session_state.get("permissoes_usuario", list())
+
+def carregar_usuarios_sistema():
+    df_u = carregar_dados("usuarios")
+    if df_u.empty or "login" not in df_u.columns:
+        df_init = pd.DataFrame([{
+            "login": "ADMIN",
+            "nome": "ADMINISTRADOR MASTER",
+            "senha": gerar_hash_senha("grano2026"),
+            "perfil": "ADMIN",
+            "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
+            "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
+            "ativo": "SIM"
+        }])
+        salvar_dados(df_init, "usuarios")
+        return df_init
+    for col in COLUNAS_USUARIOS:
+        if col not in df_u.columns:
+            df_u[col] = ""
+    return df_u
+
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
     alvo_norm = normalizar_chave_coluna(col_alvo)
     for c in cols_arquivo:
@@ -186,7 +234,7 @@ def padronizar_df_maiusculo(df):
     if df.empty:
         return df
     df = df.copy()
-    colunas_nao_alterar = {"pedido_real", "bipado", "quantidade", "Status"}
+    colunas_nao_alterar = {"pedido_real", "bipado", "quantidade", "Status", "senha", "modulos_liberados", "permissoes"}
     for col in df.columns:
         if col in COLUNAS_TEXTO:
             df[col] = df[col].astype(object).apply(limpar_texto)
@@ -296,50 +344,122 @@ def salvar_lacre_carga(id_carga_alvo, numero_lacre):
     df_banco_lacre.loc[filtro_l, "lacre"] = limpar_texto(numero_lacre)
     salvar_dados(df_banco_lacre, "cargas")
 
+for chave_sessao, valor_padrao in [
+    ("usuario_autenticado", False),
+    ("login_usuario", ""),
+    ("nome_usuario", ""),
+    ("perfil_usuario", ""),
+    ("modulos_usuario", list()),
+    ("permissoes_usuario", list())
+]:
+    if chave_sessao not in st.session_state:
+        st.session_state[chave_sessao] = valor_padrao
+
+if not st.session_state.usuario_autenticado:
+    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    with col_l2:
+        with st.container(border=True):
+            if LOGO_B64:
+                st.markdown(
+                    f"""
+                    <div style="text-align: center; padding-top: 8px; padding-bottom: 12px;">
+                        <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 100px; height: 100px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 14px;">
+                        <h2 style="margin: 0; padding: 0;">WMS Grano</h2>
+                        <p style="color: gray; margin-top: 4px;">Acesso Restrito — Identifique-se para continuar</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.title("📦 WMS Grano")
+                st.caption("Identifique-se para continuar")
+
+            with st.form("form_login_wms"):
+                in_login = st.text_input("👤 Usuário (Login):", placeholder="Ex: JOAO.SILVA")
+                in_senha = st.text_input("🔑 Senha:", type="password", placeholder="Digite sua senha...")
+                btn_entrar = st.form_submit_button("🚀 Entrar no Sistema", type="primary", use_container_width=True)
+
+                if btn_entrar:
+                    login_limpo = limpar_texto(in_login)
+                    senha_hash = gerar_hash_senha(in_senha)
+                    df_users = carregar_usuarios_sistema()
+                    user_match = df_users[
+                        (df_users["login"].apply(limpar_texto) == login_limpo) &
+                        (df_users["senha"].astype(str).str.strip() == senha_hash)
+                    ]
+                    if user_match.empty:
+                        st.error("🚫 Usuário ou senha inválidos.")
+                    else:
+                        u_row = user_match.iloc[0]
+                        if limpar_texto(u_row["ativo"]) != "SIM":
+                            st.error("🔒 Este usuário está INATIVO. Procure o administrador.")
+                        else:
+                            mods = [m.strip() for m in str(u_row["modulos_liberados"]).split("|") if m.strip() in TODOS_MODULOS_SISTEMA]
+                            perms = [p.strip() for p in str(u_row["permissoes"]).split("|") if p.strip() in TODAS_PERMISSOES_CRITICAS]
+                            if limpar_texto(u_row["perfil"]) == "ADMIN":
+                                mods = TODOS_MODULOS_SISTEMA.copy()
+                                perms = TODAS_PERMISSOES_CRITICAS.copy()
+
+                            st.session_state.usuario_autenticado = True
+                            st.session_state.login_usuario = login_limpo
+                            st.session_state.nome_usuario = limpar_texto(u_row["nome"])
+                            st.session_state.perfil_usuario = limpar_texto(u_row["perfil"])
+                            st.session_state.modulos_usuario = mods
+                            st.session_state.permissoes_usuario = perms
+                            st.rerun()
+    st.stop()
+
 with st.sidebar:
     if LOGO_B64:
         st.markdown(
             f"""
             <div style="text-align: center; padding-top: 4px; padding-bottom: 12px;">
-                <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 96px; height: 96px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 20px;">
-                <h2 style="margin: 0; padding: 0; font-size: 1.45rem;">Grano Logística</h2>
+                <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 96px; height: 96px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 16px;">
+                <h2 style="margin: 0; padding: 0; font-size: 1.45rem;">WMS Grano</h2>
             </div>
             """,
             unsafe_allow_html=True
         )
     else:
-        st.title("📦 Grano Logística")
+        st.title("📦 WMS Grano")
 
-    if not st.session_state.admin_autenticado:
-        st.info("👷‍♂️ Modo: **Conferente (Às Cegas)**")
-        aba = "📦 Conferência dos Pedidos"
-        
-        st.divider()
-        with st.expander("🔐 Acesso Administrativo"):
-            senha_digitada = st.text_input("Senha do Administrativo:", type="password", key="input_senha_adm")
-            if st.button("Entrar como Admin", use_container_width=True):
-                if senha_digitada == SENHA_ADMIN:
-                    st.session_state.admin_autenticado = True
-                    st.rerun()
-                else:
-                    st.error("Senha incorreta.")
-    else:
-        st.success("👔 Modo: **Administrativo**")
-        aba = st.radio(
-            "Escolha a etapa:",
-            [
-                "🚚 Planejamento Logística",
-                "📥 Importação de Pedidos",
-                "📦 Conferência dos Pedidos",
-                "📈 Painel de Acompanhamento",
-                "📋 Gestão de Pedidos",
-                "✅ Auditoria e Ajustes"
-            ]
-        )
-        st.divider()
-        if st.button("🔒 Sair do Modo Admin", use_container_width=True):
-            st.session_state.admin_autenticado = False
+    st.success(f"👤 **{st.session_state.nome_usuario}**\n\n🏷️ Perfil: **{st.session_state.perfil_usuario}**")
+
+    modulos_disponiveis = st.session_state.modulos_usuario
+    if not modulos_disponiveis:
+        st.warning("⚠️ Nenhum módulo liberado para seu usuário. Solicite ao administrador.")
+        if st.button("🚪 Sair", use_container_width=True):
+            st.session_state.usuario_autenticado = False
             st.rerun()
+        st.stop()
+
+    aba = st.radio("Escolha a etapa:", modulos_disponiveis)
+
+    st.divider()
+    with st.expander("🔑 Alterar Minha Senha"):
+        with st.form("form_trocar_propria_senha", clear_on_submit=True):
+            s_atual = st.text_input("Senha Atual:", type="password")
+            s_nova = st.text_input("Nova Senha:", type="password")
+            s_conf = st.text_input("Confirmar Nova Senha:", type="password")
+            if st.form_submit_button("💾 Atualizar Senha", use_container_width=True):
+                df_u_alt = carregar_usuarios_sistema()
+                idx_u = df_u_alt.index[df_u_alt["login"].apply(limpar_texto) == st.session_state.login_usuario]
+                if not idx_u.empty:
+                    i_u = idx_u[0]
+                    if str(df_u_alt.at[i_u, "senha"]).strip() != gerar_hash_senha(s_atual):
+                        st.error("Senha atual incorreta.")
+                    elif len(s_nova.strip()) < 4:
+                        st.error("A nova senha deve ter pelo menos 4 caracteres.")
+                    elif s_nova != s_conf:
+                        st.error("A confirmação não confere.")
+                    else:
+                        df_u_alt.at[i_u, "senha"] = gerar_hash_senha(s_nova)
+                        salvar_dados(df_u_alt[COLUNAS_USUARIOS], "usuarios")
+                        st.success("✅ Senha alterada com sucesso!")
+
+    if st.button("🚪 Sair / Trocar Usuário", use_container_width=True):
+        st.session_state.usuario_autenticado = False
+        st.rerun()
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
@@ -1801,3 +1921,115 @@ elif aba == "✅ Auditoria e Ajustes":
             file_name=f"validacao_{carga_selecionada}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+elif aba == "👥 Central de Usuários":
+    st.title("👥 Central de Usuários e Permissões")
+    st.caption("Gerencie logins, perfis, módulos liberados e travas de ações críticas da equipe.")
+
+    df_usuarios = carregar_usuarios_sistema()
+
+    u_m1, u_m2, u_m3 = st.columns(3)
+    u_m1.metric("👥 Total de Usuários", len(df_usuarios))
+    u_m2.metric("✅ Ativos", int((df_usuarios["ativo"].apply(limpar_texto) == "SIM").sum()))
+    u_m3.metric("🔒 Inativos", int((df_usuarios["ativo"].apply(limpar_texto) != "SIM").sum()))
+
+    st.divider()
+
+    st.subheader("📋 Usuários Cadastrados")
+    df_vis_users = df_usuarios[["login", "nome", "perfil", "modulos_liberados", "permissoes", "ativo"]].copy()
+    st.dataframe(df_vis_users, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    with st.expander("➕ Cadastrar Novo Usuário", expanded=True):
+        with st.form("form_novo_usuario", clear_on_submit=True):
+            nu_c1, nu_c2, nu_c3, nu_c4 = st.columns(4)
+            nu_nome = nu_c1.text_input("Nome Completo*:", placeholder="Ex: JOÃO SILVA")
+            nu_login = nu_c2.text_input("Login de Acesso*:", placeholder="Ex: JOAO.SILVA")
+            nu_senha = nu_c3.text_input("Senha Inicial*:", type="password", placeholder="Mínimo 4 caracteres")
+            nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "PLANEJAMENTO", "SUPERVISOR", "AUDITOR", "ADMIN"])
+
+            nu_mods = st.multiselect(
+                "📂 Módulos / Telas Liberadas:",
+                TODOS_MODULOS_SISTEMA,
+                default=["📦 Conferência dos Pedidos"]
+            )
+            nu_perms = st.multiselect(
+                "🛡️ Permissões de Ações Críticas:",
+                TODAS_PERMISSOES_CRITICAS,
+                default=list()
+            )
+
+            if st.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
+                login_novo = limpar_texto(nu_login).replace(" ", "")
+                nome_novo = limpar_texto(nu_nome)
+                if not login_novo or not nome_novo or len(nu_senha.strip()) < 4:
+                    st.error("⚠️ Preencha Nome, Login e uma Senha com pelo menos 4 caracteres.")
+                elif login_novo in df_usuarios["login"].apply(limpar_texto).values:
+                    st.error(f"🚫 O login **'{login_novo}'** já está cadastrado!")
+                else:
+                    mods_salvar = TODOS_MODULOS_SISTEMA if nu_perfil == "ADMIN" else nu_mods
+                    perms_salvar = TODAS_PERMISSOES_CRITICAS if nu_perfil == "ADMIN" else nu_perms
+                    novo_u = pd.DataFrame([{
+                        "login": login_novo,
+                        "nome": nome_novo,
+                        "senha": gerar_hash_senha(nu_senha),
+                        "perfil": nu_perfil,
+                        "modulos_liberados": " | ".join(mods_salvar),
+                        "permissoes": " | ".join(perms_salvar),
+                        "ativo": "SIM"
+                    }])
+                    df_u_final = pd.concat([df_usuarios, novo_u], ignore_index=True)
+                    salvar_dados(df_u_final[COLUNAS_USUARIOS], "usuarios")
+                    st.success(f"✅ Usuário **{nome_novo}** (`{login_novo}`) criado com sucesso!")
+                    st.rerun()
+
+    with st.expander("✏️ Editar Permissões, Resetar Senha ou Bloquear Usuário"):
+        opcoes_u = {
+            f"{r['nome']} ({r['login']}) — Perfil: {r['perfil']} [{r['ativo']}]": idx
+            for idx, r in df_usuarios.iterrows()
+        }
+        sel_u_label = st.selectbox("Selecione o usuário para editar:", list(opcoes_u.keys()), key="sel_edit_usuario")
+        idx_u_edit = opcoes_u[sel_u_label]
+        reg_u = df_usuarios.loc[idx_u_edit]
+
+        mods_atuais = [m.strip() for m in str(reg_u["modulos_liberados"]).split("|") if m.strip() in TODOS_MODULOS_SISTEMA]
+        perms_atuais = [p.strip() for p in str(reg_u["permissoes"]).split("|") if p.strip() in TODAS_PERMISSOES_CRITICAS]
+        perfis_lista = ["CONFERENTE", "PLANEJAMENTO", "SUPERVISOR", "AUDITOR", "ADMIN"]
+        idx_perf = perfis_lista.index(limpar_texto(reg_u["perfil"])) if limpar_texto(reg_u["perfil"]) in perfis_lista else 0
+
+        with st.form("form_editar_usuario"):
+            eu_c1, eu_c2, eu_c3, eu_c4 = st.columns(4)
+            eu_nome = eu_c1.text_input("Nome Completo:", value=str(reg_u["nome"]))
+            eu_perfil = eu_c2.selectbox("Perfil Base:", perfis_lista, index=idx_perf)
+            eu_ativo = eu_c3.selectbox("Status de Acesso:", ["SIM", "NÃO"], index=0 if limpar_texto(reg_u["ativo"]) == "SIM" else 1)
+            eu_nova_senha = eu_c4.text_input("Nova Senha (deixe vazio para manter):", type="password")
+
+            eu_mods = st.multiselect("📂 Módulos / Telas Liberadas:", TODOS_MODULOS_SISTEMA, default=mods_atuais)
+            eu_perms = st.multiselect("🛡️ Permissões de Ações Críticas:", TODAS_PERMISSOES_CRITICAS, default=perms_atuais)
+
+            if st.form_submit_button("💾 Salvar Alterações do Usuário", type="primary", use_container_width=True):
+                mods_ed = TODOS_MODULOS_SISTEMA if eu_perfil == "ADMIN" else eu_mods
+                perms_ed = TODAS_PERMISSOES_CRITICAS if eu_perfil == "ADMIN" else eu_perms
+
+                df_usuarios["nome"] = df_usuarios["nome"].astype(object)
+                df_usuarios["perfil"] = df_usuarios["perfil"].astype(object)
+                df_usuarios["ativo"] = df_usuarios["ativo"].astype(object)
+                df_usuarios["modulos_liberados"] = df_usuarios["modulos_liberados"].astype(object)
+                df_usuarios["permissoes"] = df_usuarios["permissoes"].astype(object)
+
+                df_usuarios.at[idx_u_edit, "nome"] = limpar_texto(eu_nome)
+                df_usuarios.at[idx_u_edit, "perfil"] = eu_perfil
+                df_usuarios.at[idx_u_edit, "ativo"] = eu_ativo
+                df_usuarios.at[idx_u_edit, "modulos_liberados"] = " | ".join(mods_ed)
+                df_usuarios.at[idx_u_edit, "permissoes"] = " | ".join(perms_ed)
+
+                if eu_nova_senha.strip():
+                    if len(eu_nova_senha.strip()) < 4:
+                        st.error("⚠️ A nova senha deve ter pelo menos 4 caracteres.")
+                        st.stop()
+                    df_usuarios["senha"] = df_usuarios["senha"].astype(object)
+                    df_usuarios.at[idx_u_edit, "senha"] = gerar_hash_senha(eu_nova_senha)
+
+                salvar_dados(df_usuarios[COLUNAS_USUARIOS], "usuarios")
+                st.success(f"✅ Permissões e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
+                st.rerun()
