@@ -21,10 +21,11 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    div[data-testid="stStatusWidget"] {
-        visibility: hidden;
-        height: 0%;
-        position: fixed;
+    div[data-testid="stStatusWidget"],
+    div[data-testid="stSpinner"],
+    .stSpinner {
+        display: none !important;
+        visibility: hidden !important;
     }
     </style>
     """,
