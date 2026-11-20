@@ -1166,9 +1166,13 @@ if aba == "📊 Análise de Pedidos":
                                 df_p_atual[c_p] = ""
 
                         novos_plan = list()
+                        novos_plan = list()
                         for p_esc in pedidos_escolhidos:
-                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc
-                            nova_l = {c_p: "" for c_p in df_p_atual.columns}
+                            linhas_match = df_res_bi[df_res_bi["Pedido"] == p_esc].to_dict(orient="records")
+                            if not linhas_match:
+                                continue
+                            r_esc = linhas_match.pop(0)
+                            nova_l = {c_p: "" for c_p in COLUNAS_PLANEJAMENTO}
                             nova_l["Data"] = r_esc["Data Limite Expedição"] if r_esc["Data Limite Expedição"] != "-" else ""
                             nova_l["Nº Pedido"] = r_esc["Pedido"]
                             nova_l["Valor Pedido"] = r_esc["Valor (R$)"]
@@ -1178,7 +1182,7 @@ if aba == "📊 Análise de Pedidos":
                             nova_l["Data da entrega"] = r_esc["Entrega"] if r_esc["Entrega"] != "-" else ""
                             nova_l["Observação"] = f"SLA BI | {r_esc['Volumes']} vol | Janela: {r_esc['Janela p/ Expedir (d)']}d | LT: {r_esc['Lead Time (d)']}d"
                             nova_l["Status"] = "⏳ Aguardando Veículo"
-                            nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc["NF_Raw"] else ""
+                            nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
                             novos_plan.append(nova_l)
 
                         df_p_atual = pd.concat([df_p_atual, pd.DataFrame(novos_plan)], ignore_index=True)
