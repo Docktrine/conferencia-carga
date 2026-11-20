@@ -887,7 +887,7 @@ if not df_u_online.empty and "ultimo_acesso" in df_u_online.columns:
 if qtd_online > 0:
     st.markdown(
         f"""
-        <div style="position: fixed; top: 12px; right: 200px; z-index: 999999; display: flex; align-items: center;">
+        <div style="position: fixed; top: 12px; right: 210px; z-index: 999999; display: flex; align-items: center;">
             <div style="display: flex; align-items: center;">{avatares_online_html}</div>
         </div>
         """,
