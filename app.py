@@ -28,10 +28,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
