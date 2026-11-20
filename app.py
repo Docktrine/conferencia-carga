@@ -34,7 +34,7 @@ st.markdown(
         color: rgba(28, 36, 30, 0.55);
     }
     div[data-testid="stVerticalBlockBorderWrapper"],
-    details[data-testid="stExpander"] {
+    div[data-testid="stExpander"] {
         border-color: rgba(27, 94, 32, 0.45) !important;
         border-radius: 10px !important;
     }
@@ -47,55 +47,52 @@ st.markdown(
         border-color: #1B5E20 !important;
         box-shadow: 0 0 0 1px #1B5E20 !important;
     }
+
+    /* === PAINEL LATERAL ESCURO === */
     section[data-testid="stSidebar"] {
         background-color: #141A16 !important;
         border-right: 2px solid #1B5E20 !important;
     }
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] span,
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] summary,
-    section[data-testid="stSidebar"] summary * {
+    section[data-testid="stSidebar"] * {
         color: #E6E1D6 !important;
     }
-    section[data-testid="stSidebar"] div[data-testid="stAlert"] {
+    /* Cartão do Usuário Logado */
+    section[data-testid="stSidebar"] div[data-testid="stAlert"],
+    section[data-testid="stSidebar"] div[data-testid="stAlertContainer"] {
         background-color: #1F2922 !important;
-        border: 1px solid rgba(27, 94, 32, 0.7) !important;
+        border: 1px solid rgba(76, 175, 80, 0.45) !important;
         border-radius: 10px !important;
     }
-    section[data-testid="stSidebar"] details[data-testid="stExpander"] {
-        background-color: #1A221C !important;
-        border: 1px solid rgba(27, 94, 32, 0.55) !important;
-    }
-    section[data-testid="stSidebar"] details[data-testid="stExpander"] summary {
+    /* Caixa Alterar Senha (fechada e aberta) */
+    section[data-testid="stSidebar"] div[data-testid="stExpander"],
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] details,
+    section[data-testid="stSidebar"] div[data-testid="stExpander"] summary,
+    section[data-testid="stSidebar"] div[data-testid="stExpanderDetails"] {
         background-color: #1F2922 !important;
+        border-color: rgba(76, 175, 80, 0.4) !important;
         border-radius: 8px !important;
     }
-    section[data-testid="stSidebar"] div[data-baseweb="input"] > div {
-        background-color: #1F2922 !important;
-        border-color: rgba(27, 94, 32, 0.6) !important;
-    }
-    section[data-testid="stSidebar"] input,
+    /* Campos de senha e botão do olhinho */
+    section[data-testid="stSidebar"] div[data-baseweb="input"],
+    section[data-testid="stSidebar"] div[data-baseweb="input"] > div,
+    section[data-testid="stSidebar"] div[data-baseweb="base-input"],
     section[data-testid="stSidebar"] div[data-baseweb="input"] button {
+        background-color: #141A16 !important;
+        border-color: rgba(76, 175, 80, 0.5) !important;
+    }
+    section[data-testid="stSidebar"] div[data-baseweb="input"] svg {
+        fill: #E6E1D6 !important;
+    }
+    /* Todos os botões do menu lateral (Atualizar Senha e Sair) */
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"],
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"] {
         background-color: #1F2922 !important;
-        color: #E6E1D6 !important;
+        border: 1px solid rgba(76, 175, 80, 0.55) !important;
     }
-    section[data-testid="stSidebar"] button[kind="secondary"] {
-        background-color: #1F2922 !important;
-        color: #E6E1D6 !important;
-        border: 1px solid rgba(27, 94, 32, 0.65) !important;
-    }
-    section[data-testid="stSidebar"] button[kind="secondary"]:hover {
-        border-color: #4CAF50 !important;
-        background-color: #253129 !important;
-    }
-    section[data-testid="stSidebar"] button[kind="primary"] {
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover,
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #1B5E20 !important;
-        color: #E6E1D6 !important;
-        border-color: #1B5E20 !important;
+        border-color: #4CAF50 !important;
     }
     </style>
     """,
