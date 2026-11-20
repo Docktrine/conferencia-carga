@@ -529,6 +529,22 @@ for chave_sessao, valor_padrao in [
     if chave_sessao not in st.session_state:
         st.session_state[chave_sessao] = valor_padrao
 if not st.session_state.usuario_autenticado:
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #C9C5BA !important;
+        }
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background-color: #DCD9D0 !important;
+            border-radius: 14px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
     col_l1, col_l2, col_l3 = st.columns([2.2, 1.6, 2.2])
     with col_l2:
         with st.container(border=True):
