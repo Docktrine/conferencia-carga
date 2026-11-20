@@ -1158,14 +1158,17 @@ if aba == "📊 Análise de Pedidos":
                     pedidos_escolhidos = st.multiselect("Pedidos selecionados para programar:", options=opcoes_envio)
 
                     if st.button("🚚 Imputar Selecionados no Planejamento Logística", type="primary", disabled=(len(pedidos_escolhidos) == 0)):
+                        st.cache_data.clear()
                         df_p_atual = carregar_dados("planejamento")
-                        if df_p_atual.empty:
-                            df_p_atual = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
+                        if df_p_atual is None:
+                            st.error("⚠️ Falha temporária ao ler a aba 'planejamento' no Google Sheets. Tente clicar novamente em 3 segundos (nenhum dado foi alterado).")
+                            st.stop()
+
                         for c_p in COLUNAS_PLANEJAMENTO:
                             if c_p not in df_p_atual.columns:
                                 df_p_atual[c_p] = ""
 
-                        novos_plan = list()
+                        df_p_atual = df_p_atual.dropna(how="all").fillna("")
                         novos_plan = list()
                         for p_esc in pedidos_escolhidos:
                             linhas_match = df_res_bi[df_res_bi["Pedido"] == p_esc].to_dict(orient="records")
@@ -1185,11 +1188,11 @@ if aba == "📊 Análise de Pedidos":
                             nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
                             novos_plan.append(nova_l)
 
-                        df_p_atual = pd.concat([df_p_atual, pd.DataFrame(novos_plan)], ignore_index=True)
-                        salvar_dados(df_p_atual[COLUNAS_PLANEJAMENTO], "planejamento")
-                        st.cache_data.clear()
-                        st.success(f"🎉 {len(novos_plan)} pedido(s) enviado(s) com sucesso para o Planejamento Logística!")
-                        st.rerun()
+                        if novos_plan:
+                            df_p_final = pd.concat([df_p_atual[COLUNAS_PLANEJAMENTO], pd.DataFrame(novos_plan)], ignore_index=True)
+                            salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
+                            st.cache_data.clear()
+                            st.success(f"🎉 {len(novos_plan)} pedido(s) adicionado(s) ao Planejamento sem alterar os existentes!")
 
                     buf_bi = io.BytesIO()
                     with pd.ExcelWriter(buf_bi, engine="openpyxl") as writer:
