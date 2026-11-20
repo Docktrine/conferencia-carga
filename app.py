@@ -322,6 +322,18 @@ def carregar_usuarios_sistema():
         if col not in df_u.columns:
             df_u[col] = ""
     return df_u
+def processar_foto_avatar(arquivo_upload):
+    if arquivo_upload is None:
+        return ""
+    img = Image.open(arquivo_upload).convert("RGB")
+    largura, altura = img.size
+    lado = min(largura, altura)
+    left = (largura - lado) // 2
+    top = (altura - lado) // 2
+    img = img.crop((left, top, left + lado, top + lado)).resize((140, 140), Image.Resampling.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=75)
+    return base64.b64encode(buf.getvalue()).decode("utf-8")    
 
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
     alvo_norm = normalizar_chave_coluna(col_alvo)
