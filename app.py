@@ -1414,18 +1414,25 @@ elif aba == "🚚 Planejamento Logística":
                 st.markdown(
                     """
                     <style>
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button {
+                   st.markdown(
+                    """
+                    <style>
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button {
                         background-color: #C65353 !important;
                         border: 1px solid #A83E3E !important;
                         color: #FFFFFF !important;
                     }
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button p {
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button p {
                         color: #FFFFFF !important;
                         font-weight: 600 !important;
                     }
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button:hover {
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button:hover {
                         background-color: #B24343 !important;
                     }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
                     </style>
                     """,
                     unsafe_allow_html=True
