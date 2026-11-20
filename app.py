@@ -773,7 +773,7 @@ with st.sidebar:
             st.rerun()
         st.stop()
 
-    st.markdown("<div style='font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #81C784; font-weight: 700; margin-bottom: 8px;'>MÓDULOS DO SISTEMA</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #81C784; font-weight: 700; margin-top: 22px; margin-bottom: 10px;'>MÓDULOS DO SISTEMA</div>", unsafe_allow_html=True)
     st.markdown(
         """
         <style>
