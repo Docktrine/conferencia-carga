@@ -1318,7 +1318,7 @@ elif aba == "📋 Gestão de Pedidos":
 
     st.divider()
 
-    st.subheader("⏳ Pedidos que Faltam Conferir")
+    st.subheader("⏳ Pedidos Aguardando Conferir")
     if lista_pendentes:
         st.dataframe(pd.DataFrame(lista_pendentes), use_container_width=True, hide_index=True)
     else:
