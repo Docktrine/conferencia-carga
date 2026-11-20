@@ -25,6 +25,14 @@ st.markdown(
     div[data-testid="stStatusWidget"] {
         display: none !important;
     }
+    div[data-testid="InputInstructions"] {
+        font-size: 0 !important;
+    }
+    div[data-testid="InputInstructions"]::after {
+        content: "Press Enter";
+        font-size: 0.75rem !important;
+        color: rgba(250, 250, 250, 0.5);
+    }
     </style>
     """,
     unsafe_allow_html=True
