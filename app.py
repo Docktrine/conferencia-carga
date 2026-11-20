@@ -305,6 +305,7 @@ def tem_permissao(nome_permissao):
     return nome_permissao in st.session_state.get("permissoes_usuario", list())
 
 def carregar_usuarios_sistema():
+    st.cache_data.clear()
     df_u = carregar_dados("usuarios")
     if df_u.empty or "login" not in df_u.columns:
         df_init = pd.DataFrame([{
@@ -2403,5 +2404,6 @@ elif aba == "👥 Central de Usuários":
                     df_usuarios.at[idx_u_edit, "senha"] = gerar_hash_senha(eu_nova_senha)
 
                 salvar_dados(df_usuarios[COLUNAS_USUARIOS], "usuarios")
+                st.cache_data.clear()
                 st.success(f"✅ Permissões e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
                 st.rerun()
