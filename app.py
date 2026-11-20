@@ -1141,7 +1141,6 @@ elif aba == "📦 Conferência dos Pedidos":
             if c_lac2.button("💾 Salvar Lacre", type="primary", use_container_width=True, key=f"btn_lacre_conf_{carga_selecionada}"):
                 if novo_lacre_conf.strip():
                     salvar_lacre_carga(carga_selecionada, novo_lacre_conf)
-                    st.session_state[f"input_lacre_conf_{carga_selecionada}"] = ""
                     st.toast(f"🔒 Lacre '{limpar_texto(novo_lacre_conf)}' salvo com sucesso!", icon="🔒")
                     st.rerun()
                 else:
@@ -1443,7 +1442,6 @@ elif aba == "📈 Painel de Acompanhamento":
             if cp_lac2.button("💾 Salvar Lacre", type="primary", use_container_width=True, key=f"btn_lacre_painel_{carga_selecionada}"):
                 if novo_lacre_painel.strip():
                     salvar_lacre_carga(carga_selecionada, novo_lacre_painel)
-                    st.session_state[f"input_lacre_painel_{carga_selecionada}"] = ""
                     st.success(f"🔒 Lacre '{limpar_texto(novo_lacre_painel)}' registrado com sucesso!")
                     st.rerun()
                 else:
