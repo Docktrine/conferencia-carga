@@ -11,6 +11,7 @@ import hashlib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from streamlit_gsheets import GSheetsConnection
+from PIL import Image
 
 ARQUIVO_LOGO = next((f for f in ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"] if os.path.exists(f)), None)
 
@@ -2263,7 +2264,8 @@ elif aba == "👥 Central de Usuários":
             nu_login = nu_c2.text_input("Login de Acesso*:", placeholder="Ex: JOAO.SILVA")
             nu_senha = nu_c3.text_input("Senha Inicial*:", type="password", placeholder="Mínimo 4 caracteres")
             nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"])
-
+            nu_foto = st.file_uploader("📷 Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
+            
             nu_mods = st.multiselect(
                 "📂 Módulos / Telas Liberadas:",
                 TODOS_MODULOS_SISTEMA,
@@ -2293,7 +2295,8 @@ elif aba == "👥 Central de Usuários":
                         "perfil": nu_perfil,
                         "modulos_liberados": " | ".join(mods_salvar),
                         "permissoes": " | ".join(perms_salvar),
-                        "ativo": "SIM"
+                        "ativo": "SIM",
+                        "foto_b64": processar_foto_avatar(nu_foto)
                     }])
                     df_u_final = pd.concat([df_usuarios, novo_u], ignore_index=True)
                     salvar_dados(df_u_final[COLUNAS_USUARIOS], "usuarios")
@@ -2320,6 +2323,7 @@ elif aba == "👥 Central de Usuários":
             eu_perfil = eu_c2.selectbox("Perfil Base:", perfis_lista, index=idx_perf)
             eu_ativo = eu_c3.selectbox("Status de Acesso:", ["SIM", "NÃO"], index=0 if limpar_texto(reg_u["ativo"]) == "SIM" else 1)
             eu_nova_senha = eu_c4.text_input("Nova Senha (deixe vazio para manter):", type="password")
+            ed_foto = st.file_uploader("📷 Alterar Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key=f"ed_foto_{idx_u_edit}")
 
             eu_mods = st.multiselect("📂 Módulos / Telas Liberadas:", TODOS_MODULOS_SISTEMA, default=mods_atuais)
             eu_perms = st.multiselect("🛡️ Permissões de Ações Críticas:", TODAS_PERMISSOES_CRITICAS, default=perms_atuais)
@@ -2339,6 +2343,12 @@ elif aba == "👥 Central de Usuários":
                 df_usuarios.at[idx_u_edit, "ativo"] = eu_ativo
                 df_usuarios.at[idx_u_edit, "modulos_liberados"] = " | ".join(mods_ed)
                 df_usuarios.at[idx_u_edit, "permissoes"] = " | ".join(perms_ed)
+                if ed_foto is not None:
+                        nova_foto_b64 = processar_foto_avatar(ed_foto)
+                        df_usuarios["foto_b64"] = df_usuarios["foto_b64"].astype(object)
+                        df_usuarios.at[idx_u_edit, "foto_b64"] = nova_foto_b64
+                        if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
+                            st.session_state.foto_usuario = nova_foto_b64
 
                 if eu_nova_senha.strip():
                     if len(eu_nova_senha.strip()) < 4:
