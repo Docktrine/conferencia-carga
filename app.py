@@ -1411,7 +1411,25 @@ elif aba == "🚚 Planejamento Logística":
                         f"<span style='color: #1B5E20; font-weight: bold;'>{msg_exibir}</span>",
                         unsafe_allow_html=True
                     )
-                    
+                st.markdown(
+                    """
+                    <style>
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button {
+                        background-color: #C65353 !important;
+                        border: 1px solid #A83E3E !important;
+                        color: #FFFFFF !important;
+                    }
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button p {
+                        color: #FFFFFF !important;
+                        font-weight: 600 !important;
+                    }
+                    div[data-testid="stVerticalBlockBorderWrapper"]:has(.stAlert) div.stButton > button:hover {
+                        background-color: #B24343 !important;
+                    }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )                    
                     if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
                         df_plan["Notificação"] = df_plan["Notificação"].astype(object)
                         df_plan.at[idx_nt, "Notificação"] = ""
