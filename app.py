@@ -131,6 +131,8 @@ st.markdown(
     [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #C2BBA9 !important;
         border-color: #1B5E20 !important;
+        }
+        
         /* Cartão da Tela de Login no mesmo tom escuro (#141A16) do painel lateral */
     [data-testid="stAppViewContainer"]:not(:has(section[data-testid="stSidebar"])) div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #141A16 !important;
