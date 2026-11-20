@@ -776,6 +776,9 @@ with st.sidebar:
     st.markdown(
         """
         <style>
+        section[data-testid="stSidebar"] [data-testid="stRadio"] {
+            width: 100% !important;
+        }
         section[data-testid="stSidebar"] [data-testid="stRadio"] > label {
             font-size: 0.72rem !important;
             text-transform: uppercase !important;
@@ -811,11 +814,9 @@ with st.sidebar:
             border-left: 4px solid #4CAF50 !important;
             font-weight: 600 !important;
         }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-of-type {
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:has(input),
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label input {
             display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
             font-size: 0.85rem !important;
