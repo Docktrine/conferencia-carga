@@ -106,6 +106,28 @@ st.markdown(
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #FFFFFF !important;
         border-color: #1B5E20 !important;
+    /* Escurece levemente as caixas de aviso (st.success / st.info) e botões secundários na tela principal */
+    section[data-testid="stMain"] div[data-testid="stAlert"],
+    section[data-testid="stMain"] div[data-testid="stAlertContainer"] {
+        background-color: #C7D1C5 !important;
+        border: 1px solid rgba(27, 94, 32, 0.55) !important;
+        border-radius: 10px !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stAlert"] p,
+    section[data-testid="stMain"] div[data-testid="stAlertContainer"] p {
+        color: #141A16 !important;
+        font-weight: 500 !important;
+    }
+    section[data-testid="stMain"] button[data-testid="stBaseButton-secondary"],
+    section[data-testid="stMain"] button[data-testid="stBaseButton-secondaryFormSubmit"] {
+        background-color: #CFC9BC !important;
+        color: #141A16 !important;
+        border: 1px solid rgba(27, 94, 32, 0.55) !important;
+    }
+    section[data-testid="stMain"] button[data-testid="stBaseButton-secondary"]:hover,
+    section[data-testid="stMain"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+        background-color: #C2BBA9 !important;
+        border-color: #1B5E20 !important;
     }
     </style>
     """,
