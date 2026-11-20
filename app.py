@@ -47,11 +47,37 @@ st.markdown(
         border-color: #1B5E20 !important;
         box-shadow: 0 0 0 1px #1B5E20 !important;
     }
+    section[data-testid="stSidebar"] {
+        background-color: #141A16 !important;
+        border-right: 2px solid #1B5E20 !important;
+    }
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] summary {
+        color: #E6E1D6 !important;
+    }
+    section[data-testid="stSidebar"] input {
+        background-color: #1F2922 !important;
+        color: #E6E1D6 !important;
+    }
+    section[data-testid="stSidebar"] button {
+        background-color: #1F2922 !important;
+        color: #E6E1D6 !important;
+        border-color: rgba(230, 225, 214, 0.25) !important;
+    }
+    section[data-testid="stSidebar"] button[kind="primary"] {
+        background-color: #1B5E20 !important;
+        color: #E6E1D6 !important;
+        border-color: #1B5E20 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 FUSO_BR = ZoneInfo("America/Sao_Paulo")
