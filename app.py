@@ -2635,6 +2635,10 @@ elif aba == "👥 Central de Usuários":
                 mods_ed = TODOS_MODULOS_SISTEMA if eu_perfil == "ADMIN" else eu_mods
                 perms_ed = TODAS_PERMISSOES_CRITICAS if eu_perfil == "ADMIN" else eu_perms
 
+                    if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
+                        st.session_state.nome_usuario = eu_nome.strip().upper()
+                        st.session_state.perfil_usuario = eu_perfil                
+
                 df_usuarios["nome"] = df_usuarios["nome"].astype(object)
                 df_usuarios["perfil"] = df_usuarios["perfil"].astype(object)
                 df_usuarios["ativo"] = df_usuarios["ativo"].astype(object)
