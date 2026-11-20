@@ -1101,7 +1101,7 @@ elif aba == "📥 Importação de Pedidos":
         else:
             st.info("Nenhuma carga cadastrada no momento.")
 
-     if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
+    if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
      with st.expander("🗑️ Gerenciar / Excluir Carga Existente"):
         df_cargas_ger = carregar_dados("cargas")
         if not df_cargas_ger.empty and "id_carga" in df_cargas_ger.columns:
