@@ -372,7 +372,7 @@ if not st.session_state.usuario_autenticado:
                 st.caption("Identifique-se para continuar")
 
             with st.form("form_login_wms"):
-                in_login = st.text_input("👤 Usuário (Login):", placeholder="Ex: JOAO.SILVA")
+                in_login = st.text_input("👤 Usuário (Login):", placeholder="Ex: GRANO.LOG")
                 in_senha = st.text_input("🔑 Senha:", type="password", placeholder="Digite sua senha...")
                 btn_entrar = st.form_submit_button("Login", type="primary", use_container_width=True)
 
