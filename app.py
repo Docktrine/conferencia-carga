@@ -790,7 +790,7 @@ with st.sidebar:
             st.cache_data.clear()
         st.session_state.usuario_autenticado = False
         st.rerun()
-agora_ping = datetime.utcnow() - timedelta(hours=3)
+agora_ping = datetime.now()
 ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
 if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 60:
     df_u_ping = carregar_usuarios_sistema()
