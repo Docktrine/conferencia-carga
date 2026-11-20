@@ -361,7 +361,7 @@ for chave_sessao, valor_padrao in [
         st.session_state[chave_sessao] = valor_padrao
 
 if not st.session_state.usuario_autenticado:
-    col_l1, col_l2, col_l3 = st.columns([1.3, 1.4, 1.3])
+    col_l1, col_l2, col_l3 = st.columns([2.2, 1.6, 2.2])
     with col_l2:
         with st.container(border=True):
             if LOGO_B64:
