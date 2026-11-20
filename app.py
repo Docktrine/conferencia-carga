@@ -294,7 +294,7 @@ TODAS_PERMISSOES_CRITICAS = [
     "👁️ Ver Conferência Completa (Supervisão)"
 ]
 
-COLUNAS_USUARIOS = ["login", "nome", "senha", "perfil", "modulos_liberados", "permissoes", "ativo"]
+COLUNAS_USUARIOS = ["login", "nome", "senha", "perfil", "modulos_liberados", "permissoes", "ativo","foto_b64"]
 
 def gerar_hash_senha(senha_plana):
     return hashlib.sha256(str(senha_plana).strip().encode("utf-8")).hexdigest()
