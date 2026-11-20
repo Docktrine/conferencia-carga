@@ -593,7 +593,7 @@ if not st.session_state.usuario_autenticado:
         </div>
         """,
         unsafe_allow_html=True
-    )                        st.rerun()
+    )
     st.stop()
 
 with st.sidebar:
