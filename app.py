@@ -2451,7 +2451,7 @@ elif aba == "✅ Auditoria e Ajustes":
         else:
             if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):
                 df_plan_salvar = carregar_dados("planejamento")
-                agora_val = agora_br().strftime("%d/%m/%Y %H:%M")
+                agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
                 carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
 
                 if df_plan_salvar.empty or "id_carga" not in df_plan_salvar.columns:
