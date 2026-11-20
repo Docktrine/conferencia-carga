@@ -1864,10 +1864,10 @@ elif aba == "✅ Auditoria e Ajustes":
                             del st.session_state.relatorio_final
                         st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
                         st.rerun()
-                else:
-                    st.info("Nenhuma etiqueta bipada nesta carga ainda.")
-            else:
-                st.info("Nenhuma etiqueta bipada nesta carga ainda.")s
+                            else:
+                                st.info("Nenhuma etiqueta bipada nesta carga ainda.")
+                        else:
+                            st.info("Nenhuma etiqueta bipada nesta carga ainda.")
 
     st.divider()
     arq_cliente = st.file_uploader("Suba o Excel/CSV enviado pelo cliente", type=["xlsx", "xls", "csv"])
