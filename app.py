@@ -315,8 +315,6 @@ def carregar_usuarios_sistema():
             "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
             "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
             "ativo": "SIM"
-            "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
-            "ativo": "SIM",
             "foto_b64": ""
         }])
         
