@@ -2359,6 +2359,8 @@ elif aba == "👥 Central de Usuários":
                 df_usuarios.at[idx_u_edit, "permissoes"] = " | ".join(perms_ed)
                 if ed_foto is not None:
                         nova_foto_b64 = processar_foto_avatar(ed_foto)
+                        if "foto_b64" not in df_usuarios.columns:
+                            df_usuarios["foto_b64"] = ""                    
                         df_usuarios["foto_b64"] = df_usuarios["foto_b64"].astype(object)
                         df_usuarios.at[idx_u_edit, "foto_b64"] = nova_foto_b64
                         if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
