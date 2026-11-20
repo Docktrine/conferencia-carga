@@ -314,7 +314,7 @@ def carregar_usuarios_sistema():
             "perfil": "ADMIN",
             "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
             "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
-            "ativo": "SIM"
+            "ativo": "SIM",
             "foto_b64": ""
         }])
         
