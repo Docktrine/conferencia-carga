@@ -1316,7 +1316,45 @@ elif aba == "📦 Conferência dos Pedidos":
         st.stop()
 
     carga_selecionada = st.selectbox("Selecione a Carga Pendente para Conferir:", cargas_pendentes_conf)
+    df_plan_conf = carregar_dados("planejamento")
+    if not df_plan_conf.empty and "Nº Pedido" in df_plan_conf.columns and "Notificação" in df_plan_conf.columns:
+        df_plan_conf["Nº Pedido"] = df_plan_conf["Nº Pedido"].apply(limpar_texto)
+        df_plan_conf["Notificação"] = df_plan_conf["Notificação"].astype(str).str.strip()
+        login_conf_nt = st.session_state.get("login_usuario", "")
+        nome_conf_nt = st.session_state.get("nome_usuario", "")
+        carga_alvo_limpa = limpar_texto(carga_selecionada)
 
+        def notif_conf_para_mim(row_p):
+            ped_plan_txt = limpar_texto(row_p["Nº Pedido"])
+            if not ped_plan_txt or not carga_alvo_limpa:
+                return False
+            if ped_plan_txt != carga_alvo_limpa and not re.search(rf"\b{re.escape(carga_alvo_limpa)}\b", ped_plan_txt):
+                return False
+            txt_nt = str(row_p["Notificação"]).strip()
+            if not txt_nt:
+                return False
+            if "[PARA:" not in txt_nt:
+                return True
+            destino = txt_nt.split("[PARA:")[1].split("]")[0].strip()
+            return destino in ("TODOS", login_conf_nt, nome_conf_nt)
+
+        df_notifs_carga_conf = df_plan_conf[df_plan_conf.apply(notif_conf_para_mim, axis=1)]
+        if not df_notifs_carga_conf.empty:
+            with st.container(border=True):
+                st.error(f"🔔 **ATENÇÃO NESTA CARGA ({carga_selecionada}):**")
+                for idx_nc, row_nc in df_notifs_carga_conf.iterrows():
+                    cc_txt, cc_btn = st.columns([4, 1], vertical_alignment="center")
+                    msg_nc = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", str(row_nc["Notificação"]).strip()).replace("(DE: ", "(")
+                    cc_txt.markdown(
+                        f"📌 <span style='color: #38BDF8; font-weight: bold;'>{msg_nc}</span>",
+                        unsafe_allow_html=True
+                    )
+                    if cc_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_conf_{idx_nc}", use_container_width=True):
+                        df_plan_conf["Notificação"] = df_plan_conf["Notificação"].astype(object)
+                        df_plan_conf.at[idx_nc, "Notificação"] = ""
+                        salvar_dados(df_plan_conf[COLUNAS_PLANEJAMENTO], "planejamento")
+                        st.toast("✔️ Notificação confirmada como lida!", icon="✔️")
+                        st.rerun()
     df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
         st.success("✅ Conferência realizada com sucesso!")
