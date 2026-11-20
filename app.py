@@ -777,8 +777,7 @@ with st.sidebar:
     st.markdown(
         """
         <style>
-        section[data-testid="stSidebar"] button[kind="secondary"],
-        section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] {
+        section[data-testid="stSidebar"] div.stButton > button {
             background-color: transparent !important;
             border: 1px solid transparent !important;
             color: #E6E1D6 !important;
@@ -787,27 +786,22 @@ with st.sidebar:
             border-radius: 8px !important;
             box-shadow: none !important;
         }
-        section[data-testid="stSidebar"] button[kind="secondary"] > div,
-        section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] > div,
-        section[data-testid="stSidebar"] button[kind="primary"] > div,
-        section[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] > div {
+        section[data-testid="stSidebar"] div.stButton > button > div {
             justify-content: flex-start !important;
             width: 100% !important;
         }
-        section[data-testid="stSidebar"] button[kind="secondary"]:hover,
-        section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover {
+        section[data-testid="stSidebar"] div.stButton > button:hover {
             background-color: rgba(76, 175, 80, 0.14) !important;
             border-color: rgba(76, 175, 80, 0.35) !important;
+            color: #FFFFFF !important;
         }
-        section[data-testid="stSidebar"] button[kind="primary"],
-        section[data-testid="stSidebar"] button[data-testid="stBaseButton-primary"] {
+        section[data-testid="stSidebar"] div.stButton > button[kind="primary"],
+        section[data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-primary"] {
             background-color: #243329 !important;
             border: 1px solid rgba(76, 175, 80, 0.65) !important;
             border-left: 4px solid #4CAF50 !important;
             color: #FFFFFF !important;
-            justify-content: flex-start !important;
-            padding: 8px 12px !important;
-            border-radius: 8px !important;
+            font-weight: 600 !important;
         }
         </style>
         """,
