@@ -861,7 +861,7 @@ if aba == "🚚 Planejamento Logística":
         with f_col2:
             filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
         with f_col3:
-            busca_livre = st.text_input("Buscar Pedido, Cliente, Placa ou Transportadora:", placeholder="Ex: 303820, Zaffari, ABC1D23 ou Transportadora...")S
+            busca_livre = st.text_input("Buscar Pedido, Cliente, Placa ou Transportadora:", placeholder="Ex: 303820, Zaffari, ABC1D23 ou Transportadora...")
 
         if filtro_data_carreg != "Todas as datas":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
