@@ -2531,10 +2531,10 @@ elif aba == "👥 Central de Usuários":
                 df_usuarios.at[idx_u_edit, "ativo"] = eu_ativo
                 df_usuarios.at[idx_u_edit, "modulos_liberados"] = " | ".join(mods_ed)
                 df_usuarios.at[idx_u_edit, "permissoes"] = " | ".join(perms_ed)
-                    if ed_foto is not None:
-                        ok_gh, msg_gh = salvar_foto_github(reg_u["login"], ed_foto)
-                        if not ok_gh:
-                            st.warning(f"⚠️ Dados salvos, mas houve falha ao enviar a foto: {msg_gh}")                
+                if ed_foto is not None:
+                    ok_gh, msg_gh = salvar_foto_github(reg_u["login"], ed_foto)
+                    if not ok_gh:
+                        st.warning(f"⚠️ Dados salvos, mas houve falha ao enviar a foto: {msg_gh}")                
 
                 if eu_nova_senha.strip():
                     if len(eu_nova_senha.strip()) < 4:
