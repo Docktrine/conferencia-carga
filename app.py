@@ -523,68 +523,109 @@ if not st.session_state.usuario_autenticado:
             background: transparent;
             overflow: hidden;
         }
-        @keyframes rodarCaminhao {
-            0%   { transform: translateX(48px); opacity: 0; }
-            10%  { opacity: 1; }
-            88%  { opacity: 1; }
-            100% { transform: translateX(395px); opacity: 0; }
+        /* Caminhão entra, para na doca no centro (30% a 65%), carrega e sai para entrega */
+        @keyframes trajetoCarregamento {
+            0%   { transform: translateX(-85px); opacity: 0; }
+            8%   { opacity: 1; }
+            28%  { transform: translateX(205px); }
+            66%  { transform: translateX(205px); }
+            92%  { opacity: 1; }
+            100% { transform: translateX(485px); opacity: 0; }
         }
-        @keyframes girarRoda {
-            100% { transform: rotate(360deg); }
+        /* Rodas giram apenas enquanto o caminhão está andando */
+        @keyframes girarRodasComPausa {
+            0%   { transform: rotate(0deg); }
+            28%  { transform: rotate(540deg); }
+            66%  { transform: rotate(540deg); }
+            100% { transform: rotate(1080deg); }
         }
-        .cena-entrega-wrapper {
+        /* Caixa subindo para dentro do baú durante a parada na doca */
+        @keyframes carregarCaixa {
+            0%, 30%  { transform: translate(0px, 8px); opacity: 0; }
+            38%      { transform: translate(0px, 0px); opacity: 1; }
+            52%      { transform: translate(-18px, -12px); opacity: 1; }
+            60%      { transform: translate(-24px, -12px); opacity: 0; }
+            100%     { opacity: 0; }
+        }
+        /* Selo verde de conferido piscando ao terminar o carregamento */
+        @keyframes sinalConferido {
+            0%, 56%  { opacity: 0; transform: scale(0.6); }
+            61%, 68% { opacity: 1; transform: scale(1.1); }
+            74%, 100%{ opacity: 0; transform: scale(0.8); }
+        }
+        .cena-cd-wrapper {
             width: 100%;
-            max-width: 520px;
-            margin: 10px auto 0 auto;
+            max-width: 560px;
+            margin: 8px auto 0 auto;
             overflow: hidden;
             position: relative;
-            height: 76px;
+            height: 86px;
         }
-        .caminhao-animado {
+        .caminhao-cd {
             position: absolute;
             bottom: 14px;
             left: 0;
-            animation: rodarCaminhao 6.5s linear infinite;
+            animation: trajetoCarregamento 8.5s ease-in-out infinite;
         }
-        .roda-spin {
+        .roda-cd {
             transform-box: fill-box;
             transform-origin: center;
-            animation: girarRoda 0.85s linear infinite;
+            animation: girarRodasComPausa 8.5s ease-in-out infinite;
+        }
+        .caixa-carga {
+            animation: carregarCaixa 8.5s ease-in-out infinite;
+        }
+        .check-cd {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: sinalConferido 8.5s ease-in-out infinite;
         }
         </style>
 
-        <div class="cena-entrega-wrapper">
-            <svg width="100%" height="76" viewBox="0 0 520 76" fill="none" xmlns="http://w3.org">
-                <!-- Fábrica / CD (Origem à esquerda) -->
-                <path d="M14 62 V34 L28 42 V34 L42 42 V62" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="20" y="50" width="6" height="12" stroke="#141A16" stroke-width="1.4"/>
-                <rect x="31" y="48" width="5" height="5" stroke="#141A16" stroke-width="1.3"/>
+        <div class="cena-cd-wrapper">
+            <svg width="100%" height="86" viewBox="0 0 560 86" fill="none" xmlns="http://w3.org">
+                <!-- Galpão / CD Grano no Centro -->
+                <path d="M215 72 V34 L245 20 L275 34 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Doca de Carregamento -->
+                <rect x="230" y="44" width="30" height="28" stroke="#141A16" stroke-width="1.4" stroke-dasharray="3 2"/>
+                <!-- Detalhe verde no topo do CD -->
+                <line x1="236" y1="32" x2="254" y2="32" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
 
-                <!-- Estrada tracejada -->
-                <line x1="8" y1="62" x2="512" y2="62" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                <line x1="56" y1="68" x2="464" y2="68" stroke="#141A16" stroke-width="1.3" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.5"/>
+                <!-- Estrada principal e tracejado -->
+                <line x1="10" y1="72" x2="550" y2="72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                <line x1="24" y1="78" x2="536" y2="78" stroke="#141A16" stroke-width="1.2" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.45"/>
 
-                <!-- Ponto de Entrega / Cliente (Destino à direita) -->
-                <path d="M482 62 V42 L495 32 L508 42 V62" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="491" y="50" width="8" height="12" stroke="#141A16" stroke-width="1.4"/>
-                <circle cx="495" cy="24" r="3" stroke="#1B5E20" stroke-width="1.8"/>
+                <!-- Cliente / Destino à direita -->
+                <path d="M516 72 V50 L530 40 L544 50 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="526" y="59" width="8" height="13" stroke="#141A16" stroke-width="1.4"/>
+                <circle cx="530" cy="32" r="3" stroke="#1B5E20" stroke-width="1.8"/>
+
+                <!-- Caixinha sendo carregada na doca -->
+                <g class="caixa-carga">
+                    <rect x="258" y="52" width="11" height="11" rx="1.5" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.7"/>
+                    <line x1="263.5" y1="52" x2="263.5" y2="63" stroke="#1B5E20" stroke-width="1.2"/>
+                </g>
+
+                <!-- Check verde de conferência concluída acima do CD -->
+                <g class="check-cd">
+                    <circle cx="245" cy="11" r="7" fill="#1B5E20"/>
+                    <path d="M241.5 11 L244 13.5 L248.5 8.5" stroke="#EAE7E0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
             </svg>
 
-            <!-- Caminhão Black Line em movimento -->
-            <div class="caminhao-animado">
+            <!-- Caminhão Black Line -->
+            <div class="caminhao-cd">
                 <svg width="86" height="44" viewBox="0 0 86 44" fill="none" xmlns="http://w3.org">
-                    <line x1="2" y1="16" x2="11" y2="16" stroke="#141A16" stroke-width="1.4" stroke-linecap="round" opacity="0.65"/>
-                    <line x1="5" y1="22" x2="12" y2="22" stroke="#141A16" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/>
                     <rect x="15" y="8" width="42" height="24" rx="2" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
                     <line x1="22" y1="14" x2="50" y2="14" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                     <path d="M57 15 H68 L76 23 V32 H57 V15 Z" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
                     <path d="M60 18 H66.5 L72 23.5 H60 V18 Z" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     <line x1="13" y1="32" x2="78" y2="32" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <g class="roda-spin">
+                    <g class="roda-cd">
                         <circle cx="27" cy="34" r="5.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
                         <circle cx="27" cy="34" r="1.8" fill="#141A16"/>
                     </g>
-                    <g class="roda-spin">
+                    <g class="roda-cd">
                         <circle cx="66" cy="34" r="5.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
                         <circle cx="66" cy="34" r="1.8" fill="#141A16"/>
                     </g>
@@ -592,9 +633,9 @@ if not st.session_state.usuario_autenticado:
             </div>
         </div>
         """,
-        height=95
+        height=100
     )
-    
+  
     st.stop()
 
 with st.sidebar:
