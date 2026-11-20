@@ -1292,7 +1292,7 @@ elif aba == "📋 Gestão de Pedidos":
                 "Conferido em": data_conclusao,
                 "Conferido por": conferentes_por_carga.get(cid, "-"),
                 "Lacre": obter_lacre_carga(grupo) or "-",
-                "Situação": f"✅ 100% Conferida{selo_corte}"
+                "Situação": f"🟢 100% Conferida{selo_corte}"
             })
         else:
             if tot_bip == 0:
@@ -1314,7 +1314,7 @@ elif aba == "📋 Gestão de Pedidos":
     m1, m2, m3 = st.columns(3)
     m1.metric("Total de Cargas", len(lista_pendentes) + len(lista_concluidas))
     m2.metric("⏳ Faltam Conferir", len(lista_pendentes))
-    m3.metric("✅ Conferidas (100%)", len(lista_concluidas))
+    m3.metric("🟢 Conferidas (100%)", len(lista_concluidas))
 
     st.divider()
 
