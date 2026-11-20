@@ -18,6 +18,19 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown(
+    """
+    <style>
+    div[data-testid="stStatusWidget"] {
+        visibility: hidden;
+        height: 0%;
+        position: fixed;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 SENHA_ADMIN = "grano2026"
