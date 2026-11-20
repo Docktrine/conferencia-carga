@@ -812,6 +812,7 @@ with st.sidebar:
         </style>
         """,
         unsafe_allow_html=True
+    )
     if "aba_ativa" not in st.session_state or st.session_state.aba_ativa not in modulos_disponiveis:
         st.session_state.aba_ativa = next(iter(modulos_disponiveis))
 
