@@ -785,17 +785,21 @@ with st.sidebar:
             margin-bottom: 6px !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] {
-            gap: 4px !important;
+            gap: 5px !important;
+            width: 100% !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
             background-color: transparent !important;
             border: 1px solid transparent !important;
             border-radius: 8px !important;
-            padding: 8px 10px !important;
+            padding: 8px 12px !important;
             margin: 0 !important;
             transition: all 0.15s ease !important;
             cursor: pointer !important;
-            width: 100% !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
             background-color: rgba(76, 175, 80, 0.14) !important;
@@ -807,17 +811,22 @@ with st.sidebar:
             border-left: 4px solid #4CAF50 !important;
             font-weight: 600 !important;
         }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-of-type {
             display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
-            font-size: 0.86rem !important;
+            font-size: 0.85rem !important;
             white-space: nowrap !important;
+            margin: 0 !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
+    
     aba = st.radio("Módulos do Sistema", modulos_disponiveis)
 
     st.divider()
