@@ -2449,7 +2449,9 @@ elif aba == "✅ Auditoria e Ajustes":
         if ja_esta_validada:
             st.info(f"✅ Esta carga (**{carga_selecionada}**) já foi validada e liberada para expedição.")
         else:
-            if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):
+            if erro_skus > 0:
+                st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
+            if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True, disabled=(erro_skus > 0)):
                 df_plan_salvar = carregar_dados("planejamento")
                 agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
                 carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
