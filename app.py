@@ -106,26 +106,29 @@ st.markdown(
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #FFFFFF !important;
         border-color: #1B5E20 !important;
-    /* Escurece levemente as caixas de aviso (st.success / st.info) e botões secundários na tela principal */
-    section[data-testid="stMain"] div[data-testid="stAlert"],
-    section[data-testid="stMain"] div[data-testid="stAlertContainer"] {
+    /* Escurece as caixas de aviso (st.success / st.info / st.warning) e botões secundários */
+    [data-testid="stAppViewContainer"] div[role="alert"],
+    [data-testid="stAppViewContainer"] div[data-testid="stAlert"],
+    [data-testid="stAppViewContainer"] div[data-testid="stAlertContainer"],
+    [data-testid="stAppViewContainer"] div[data-testid="stNotification"] {
         background-color: #C7D1C5 !important;
-        border: 1px solid rgba(27, 94, 32, 0.55) !important;
+        border: 1px solid rgba(27, 94, 32, 0.6) !important;
         border-radius: 10px !important;
     }
-    section[data-testid="stMain"] div[data-testid="stAlert"] p,
-    section[data-testid="stMain"] div[data-testid="stAlertContainer"] p {
+    [data-testid="stAppViewContainer"] div[role="alert"] *,
+    [data-testid="stAppViewContainer"] div[data-testid="stAlert"] *,
+    [data-testid="stAppViewContainer"] div[data-testid="stAlertContainer"] * {
         color: #141A16 !important;
         font-weight: 500 !important;
     }
-    section[data-testid="stMain"] button[data-testid="stBaseButton-secondary"],
-    section[data-testid="stMain"] button[data-testid="stBaseButton-secondaryFormSubmit"] {
+    [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondary"],
+    [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondaryFormSubmit"] {
         background-color: #CFC9BC !important;
         color: #141A16 !important;
         border: 1px solid rgba(27, 94, 32, 0.55) !important;
     }
-    section[data-testid="stMain"] button[data-testid="stBaseButton-secondary"]:hover,
-    section[data-testid="stMain"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+    [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondary"]:hover,
+    [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #C2BBA9 !important;
         border-color: #1B5E20 !important;
     }
