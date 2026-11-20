@@ -523,31 +523,28 @@ if not st.session_state.usuario_autenticado:
             background: transparent;
             overflow: hidden;
         }
-        /* Caminhão entra, para na doca no centro (30% a 65%), carrega e sai para entrega */
+        /* Caminhão entra pela esquerda, para na doca no centro (30% a 65%), carrega e cruza até o cliente */
         @keyframes trajetoCarregamento {
             0%   { transform: translateX(-85px); opacity: 0; }
-            8%   { opacity: 1; }
-            28%  { transform: translateX(205px); }
-            66%  { transform: translateX(205px); }
-            92%  { opacity: 1; }
-            100% { transform: translateX(485px); opacity: 0; }
+            6%   { opacity: 1; }
+            30%  { transform: translateX(455px); }
+            65%  { transform: translateX(455px); }
+            94%  { opacity: 1; }
+            100% { transform: translateX(975px); opacity: 0; }
         }
-        /* Rodas giram apenas enquanto o caminhão está andando */
         @keyframes girarRodasComPausa {
             0%   { transform: rotate(0deg); }
-            28%  { transform: rotate(540deg); }
-            66%  { transform: rotate(540deg); }
-            100% { transform: rotate(1080deg); }
+            30%  { transform: rotate(900deg); }
+            65%  { transform: rotate(900deg); }
+            100% { transform: rotate(1800deg); }
         }
-        /* Caixa subindo para dentro do baú durante a parada na doca */
         @keyframes carregarCaixa {
-            0%, 30%  { transform: translate(0px, 8px); opacity: 0; }
-            38%      { transform: translate(0px, 0px); opacity: 1; }
-            52%      { transform: translate(-18px, -12px); opacity: 1; }
-            60%      { transform: translate(-24px, -12px); opacity: 0; }
+            0%, 31%  { transform: translate(0px, 8px); opacity: 0; }
+            39%      { transform: translate(0px, 0px); opacity: 1; }
+            53%      { transform: translate(-18px, -12px); opacity: 1; }
+            61%      { transform: translate(-24px, -12px); opacity: 0; }
             100%     { opacity: 0; }
         }
-        /* Selo verde de conferido piscando ao terminar o carregamento */
         @keyframes sinalConferido {
             0%, 56%  { opacity: 0; transform: scale(0.6); }
             61%, 68% { opacity: 1; transform: scale(1.1); }
@@ -555,8 +552,8 @@ if not st.session_state.usuario_autenticado:
         }
         .cena-cd-wrapper {
             width: 100%;
-            max-width: 560px;
-            margin: 8px auto 0 auto;
+            max-width: 1050px;
+            margin: 12px auto 0 auto;
             overflow: hidden;
             position: relative;
             height: 86px;
@@ -565,51 +562,51 @@ if not st.session_state.usuario_autenticado:
             position: absolute;
             bottom: 14px;
             left: 0;
-            animation: trajetoCarregamento 8.5s ease-in-out infinite;
+            animation: trajetoCarregamento 10.5s ease-in-out infinite;
         }
         .roda-cd {
             transform-box: fill-box;
             transform-origin: center;
-            animation: girarRodasComPausa 8.5s ease-in-out infinite;
+            animation: girarRodasComPausa 10.5s ease-in-out infinite;
         }
         .caixa-carga {
-            animation: carregarCaixa 8.5s ease-in-out infinite;
+            animation: carregarCaixa 10.5s ease-in-out infinite;
         }
         .check-cd {
             transform-box: fill-box;
             transform-origin: center;
-            animation: sinalConferido 8.5s ease-in-out infinite;
+            animation: sinalConferido 10.5s ease-in-out infinite;
         }
         </style>
 
         <div class="cena-cd-wrapper">
-            <svg width="100%" height="86" viewBox="0 0 560 86" fill="none" xmlns="http://w3.org">
-                <!-- Galpão / CD Grano no Centro -->
-                <path d="M215 72 V34 L245 20 L275 34 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="100%" height="86" viewBox="0 0 1050 86" fill="none" xmlns="http://w3.org">
+                <!-- Galpão / CD Grano bem no Centro -->
+                <path d="M465 72 V34 L495 20 L525 34 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 <!-- Doca de Carregamento -->
-                <rect x="230" y="44" width="30" height="28" stroke="#141A16" stroke-width="1.4" stroke-dasharray="3 2"/>
+                <rect x="480" y="44" width="30" height="28" stroke="#141A16" stroke-width="1.4" stroke-dasharray="3 2"/>
                 <!-- Detalhe verde no topo do CD -->
-                <line x1="236" y1="32" x2="254" y2="32" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
+                <line x1="486" y1="32" x2="504" y2="32" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
 
-                <!-- Estrada principal e tracejado -->
-                <line x1="10" y1="72" x2="550" y2="72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                <line x1="24" y1="78" x2="536" y2="78" stroke="#141A16" stroke-width="1.2" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.45"/>
+                <!-- Estrada longa de ponta a ponta -->
+                <line x1="12" y1="72" x2="1038" y2="72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                <line x1="28" y1="78" x2="1022" y2="78" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" stroke-linecap="round" opacity="0.45"/>
 
-                <!-- Cliente / Destino à direita -->
-                <path d="M516 72 V50 L530 40 L544 50 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="526" y="59" width="8" height="13" stroke="#141A16" stroke-width="1.4"/>
-                <circle cx="530" cy="32" r="3" stroke="#1B5E20" stroke-width="1.8"/>
+                <!-- Cliente / Destino na ponta direita -->
+                <path d="M1002 72 V50 L1016 40 L1030 50 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="1012" y="59" width="8" height="13" stroke="#141A16" stroke-width="1.4"/>
+                <circle cx="1016" cy="32" r="3" stroke="#1B5E20" stroke-width="1.8"/>
 
                 <!-- Caixinha sendo carregada na doca -->
                 <g class="caixa-carga">
-                    <rect x="258" y="52" width="11" height="11" rx="1.5" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.7"/>
-                    <line x1="263.5" y1="52" x2="263.5" y2="63" stroke="#1B5E20" stroke-width="1.2"/>
+                    <rect x="508" y="52" width="11" height="11" rx="1.5" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.7"/>
+                    <line x1="513.5" y1="52" x2="513.5" y2="63" stroke="#1B5E20" stroke-width="1.2"/>
                 </g>
 
                 <!-- Check verde de conferência concluída acima do CD -->
                 <g class="check-cd">
-                    <circle cx="245" cy="11" r="7" fill="#1B5E20"/>
-                    <path d="M241.5 11 L244 13.5 L248.5 8.5" stroke="#EAE7E0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="495" cy="11" r="7" fill="#1B5E20"/>
+                    <path d="M491.5 11 L494 13.5 L498.5 8.5" stroke="#EAE7E0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </g>
             </svg>
 
@@ -635,7 +632,7 @@ if not st.session_state.usuario_autenticado:
         """,
         height=100
     )
-  
+    
     st.stop()
 
 with st.sidebar:
