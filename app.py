@@ -1408,7 +1408,7 @@ elif aba == "🚚 Planejamento Logística":
                     msg_exibir = msg_exibir.replace("(DE: ", "(")
                     c_nt_txt.markdown(
                         f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} — {row_nt['Data']} {row_nt['Hora']}): "
-                        f"<span style='color: #38BDF8; font-weight: bold;'>{msg_exibir}</span>",
+                        f"<span style='color: #1B5E20; font-weight: bold;'>{msg_exibir}</span>",
                         unsafe_allow_html=True
                     )
                     
