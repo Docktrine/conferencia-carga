@@ -773,61 +773,48 @@ with st.sidebar:
             st.rerun()
         st.stop()
 
+    st.markdown("<div style='font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #81C784; font-weight: 700; margin-bottom: 8px;'>MÓDULOS DO SISTEMA</div>", unsafe_allow_html=True)
     st.markdown(
         """
         <style>
-        section[data-testid="stSidebar"] [data-testid="stRadio"] {
-            width: 100% !important;
-        }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] > label {
-            font-size: 0.72rem !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.08em !important;
-            color: #81C784 !important;
-            font-weight: 700 !important;
-            margin-bottom: 6px !important;
-        }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] {
-            gap: 5px !important;
-            width: 100% !important;
-        }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
-            display: flex !important;
-            align-items: center !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
+        section[data-testid="stSidebar"] button[kind="secondary"] {
             background-color: transparent !important;
             border: 1px solid transparent !important;
-            border-radius: 8px !important;
+            color: #E6E1D6 !important;
+            justify-content: flex-start !important;
+            text-align: left !important;
             padding: 8px 12px !important;
-            margin: 0 !important;
-            transition: all 0.15s ease !important;
-            cursor: pointer !important;
+            border-radius: 8px !important;
         }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
+        section[data-testid="stSidebar"] button[kind="secondary"]:hover {
             background-color: rgba(76, 175, 80, 0.14) !important;
             border-color: rgba(76, 175, 80, 0.35) !important;
         }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+        section[data-testid="stSidebar"] button[kind="primary"] {
             background-color: #243329 !important;
             border: 1px solid rgba(76, 175, 80, 0.65) !important;
             border-left: 4px solid #4CAF50 !important;
-            font-weight: 600 !important;
-        }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:not(:has([data-testid="stMarkdownContainer"])) {
-            display: none !important;
-        }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
-            font-size: 0.85rem !important;
-            white-space: nowrap !important;
-            margin: 0 !important;
+            color: #FFFFFF !important;
+            justify-content: flex-start !important;
+            text-align: left !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
-    
-    aba = st.radio("Módulos do Sistema", modulos_disponiveis)
+
+    if "aba_ativa" not in st.session_state or st.session_state.aba_ativa not in modulos_disponiveis:
+        st.session_state.aba_ativa = next(iter(modulos_disponiveis))
+
+    for mod_item in modulos_disponiveis:
+        eh_ativo = (st.session_state.aba_ativa == mod_item)
+        if st.button(mod_item, key=f"nav_{mod_item}", use_container_width=True, type="primary" if eh_ativo else "secondary"):
+            st.session_state.aba_ativa = mod_item
+            st.rerun()
+
+    aba = st.session_state.aba_ativa
 
     st.divider()
     st.markdown(
