@@ -1430,12 +1430,12 @@ elif aba == "🚚 Planejamento Logística":
                     """,
                     unsafe_allow_html=True
                 )                    
-                    if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
-                        df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                        df_plan.at[idx_nt, "Notificação"] = ""
-                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                        st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
-                        st.rerun()
+            if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
+                df_plan["Notificação"] = df_plan["Notificação"].astype(object)
+                df_plan.at[idx_nt, "Notificação"] = ""
+                salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
+                st.rerun()        
 
         f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
