@@ -833,7 +833,6 @@ if qtd_online > 0:
         f"""
         <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: -10px; padding-top: 4px;">
             <div style="display: flex; align-items: center;">{avatares_online_html}</div>
-            <span style="font-size: 0.78rem; color: #2E7D32; font-weight: 600; background-color: rgba(76, 175, 80, 0.14); padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(76, 175, 80, 0.4);">🟢 {qtd_online} online agora</span>
         </div>
         """,
         unsafe_allow_html=True
