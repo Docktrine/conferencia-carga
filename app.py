@@ -345,6 +345,9 @@ with st.sidebar:
             st.session_state.admin_autenticado = False
             st.rerun()
 
+for _aba_preload in ("planejamento", "cargas", "bipes"):
+    carregar_dados(_aba_preload)
+
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
     st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
