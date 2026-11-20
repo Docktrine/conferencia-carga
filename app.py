@@ -2074,6 +2074,44 @@ elif aba == "✅ Auditoria e Ajustes":
     todas_cargas_lista = df_todas_cargas["id_carga"].unique().tolist()
     mostrar_validadas = st.checkbox("👁️ Mostrar também cargas já validadas", value=False)
     cargas_disponiveis_aud = todas_cargas_lista if mostrar_validadas else [c for c in todas_cargas_lista if limpar_texto(c) not in cargas_ja_validadas]
+    if cargas_disponiveis_aud and st.session_state.perfil_usuario == "ADMIN":
+        with st.expander("⚙️ Baixa em Lote: Marcar Pedidos Selecionados como Auditados"):
+            st.caption("Selecione os pedidos já expedidos que deseja marcar como auditados no histórico.")
+            selecionar_todos_lote = st.checkbox("Selecionar todos os pedidos listados acima", value=False)
+            cargas_lote_escolhidas = st.multiselect(
+                "Pedidos para marcar como Auditado (Histórico):",
+                options=cargas_disponiveis_aud,
+                default=cargas_disponiveis_aud if selecionar_todos_lote else []
+            )
+            if st.button("✅ Marcar Selecionados como Auditado (Histórico)", disabled=len(cargas_lote_escolhidas) == 0):
+                df_plan_lote = carregar_dados("planejamento")
+                if df_plan_lote.empty or "id_carga" not in df_plan_lote.columns:
+                    df_plan_lote = pd.DataFrame(columns=["id_carga", "cliente", "transportadora", "placa", "data_carregamento", "status", "observacoes", "validado"])
+                if "validado" not in df_plan_lote.columns:
+                    df_plan_lote["validado"] = ""
+                df_plan_lote["validado"] = df_plan_lote["validado"].astype(object)
+
+                existentes_plan = set(df_plan_lote["id_carga"].apply(limpar_texto).tolist())
+                novas_linhas_lote = []
+
+                for cid_ant in cargas_lote_escolhidas:
+                    cid_l = limpar_texto(cid_ant)
+                    if cid_l in existentes_plan:
+                        df_plan_lote.loc[df_plan_lote["id_carga"].apply(limpar_texto) == cid_l, "validado"] = "Auditado (Histórico)"
+                    else:
+                        nl = {col: "" for col in df_plan_lote.columns}
+                        nl["id_carga"] = cid_ant
+                        nl["status"] = "🟢 Carregado / Liberado"
+                        nl["validado"] = "Auditado (Histórico)"
+                        novas_linhas_lote.append(nl)
+
+                if novas_linhas_lote:
+                    df_plan_lote = pd.concat([df_plan_lote, pd.DataFrame(novas_linhas_lote)], ignore_index=True)
+
+                salvar_dados(df_plan_lote, "planejamento")
+                st.cache_data.clear()
+                st.success(f"🎉 {len(cargas_lote_escolhidas)} pedido(s) marcados como Auditado (Histórico)!")
+                st.rerun()
 
     if not cargas_disponiveis_aud:
         st.success("🎉 Todas as cargas cadastradas já foram validadas!")
