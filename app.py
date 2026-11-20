@@ -184,17 +184,38 @@ def padronizar_df_maiusculo(df):
             )
     return df
 
+st.cache_data(ttl=15, show_spinner=False)
+def _ler_planilha_com_cache(aba):
+    for tentativa in range(3):
+        try:
+            df = conn.read(worksheet=aba, ttl=0)
+            df = df.dropna(how="all")
+            return padronizar_df_maiusculo(df)
+        except Exception as e:
+            if tentativa < 2:
+                time.sleep(1.2)
+            else:
+                raise e
+
 def carregar_dados(aba):
     try:
-        df = conn.read(worksheet=aba, ttl=0)
-        df = df.dropna(how="all")
-        return padronizar_df_maiusculo(df)
-    except Exception:
-        return pd.DataFrame()
+        return _ler_planilha_com_cache(aba).copy()
+    except Exception as e:
+        st.error(f"⚠️ Instabilidade temporária na comunicação com o Google Sheets ao ler '{aba}'. Aguarde 3 segundos e recarregue. (Detalhe: {e})")
+        st.stop()
 
 def salvar_dados(df, aba):
     df_padronizado = padronizar_df_maiusculo(df)
-    conn.update(worksheet=aba, data=df_padronizado)
+    for tentativa in range(3):
+        try:
+            conn.update(worksheet=aba, data=df_padronizado)
+            st.cache_data.clear()
+            return
+        except Exception as e:
+            if tentativa < 2:
+                time.sleep(1.2)
+            else:
+                raise e
 
 def verificar_carga_100_concluida(df_carga_especifica):
     if df_carga_especifica.empty:
