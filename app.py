@@ -333,9 +333,9 @@ def processar_foto_avatar(arquivo_upload):
     lado = min(largura, altura)
     left = (largura - lado) // 2
     top = (altura - lado) // 2
-    img = img.crop((left, top, left + lado, top + lado)).resize((140, 140), Image.Resampling.LANCZOS)
+    img = img.crop((left, top, left + lado, top + lado)).resize((64, 64), Image.Resampling.LANCZOS)
     buf = io.BytesIO()
-    img.save(buf, format="JPEG", quality=75)
+    img.save(buf, format="JPEG", quality=45)
     return "IMG_" + base64.b64encode(buf.getvalue()).decode("utf-8")    
 
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
