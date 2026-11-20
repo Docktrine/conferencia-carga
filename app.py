@@ -32,11 +32,8 @@ st.markdown(
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-SENHA_ADMIN = "grano2026"
 FUSO_BR = ZoneInfo("America/Sao_Paulo")
 
-if "admin_autenticado" not in st.session_state:
-    st.session_state.admin_autenticado = False
 if "upload_key" not in st.session_state:
     st.session_state.upload_key = 0
 if "msg_sucesso_carga" not in st.session_state:
@@ -683,41 +680,41 @@ if aba == "🚚 Planejamento Logística":
                     st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
                     st.rerun()
                     
-                if tem_permissao("🔔 Lançar Notificações"):
-                    with st.container(border=True):
-                        st.markdown("**🔔 Lançar Notificação no Pedido**")
-                        opcoes_notif = {
-                            f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
-                            for idx, r in df_exibir_plan.iterrows()
-                        }
-                        df_users_nt = carregar_usuarios_sistema()
-                        df_users_ativos_nt = df_users_nt[df_users_nt["ativo"].apply(limpar_texto) == "SIM"]
-                        opcoes_destino_nt = {"👥 TODOS OS USUÁRIOS": "TODOS"}
-                        for _, u_nt in df_users_ativos_nt.iterrows():
-                            opcoes_destino_nt[f"👤 {limpar_texto(u_nt['nome'])} ({limpar_texto(u_nt['login'])})"] = limpar_texto(u_nt["login"])
-        
-                        if opcoes_notif:
-                            with st.form("form_lancar_notif", clear_on_submit=True):
-                                nt_c1, nt_c2, nt_c3, nt_c4 = st.columns([2, 2, 3, 1], vertical_alignment="bottom")
-                                sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()))
-                                sel_nt_dest = nt_c2.selectbox("Para quem?", list(opcoes_destino_nt.keys()))
-                                txt_nova_notif = nt_c3.text_input(
-                                    "Mensagem da Notificação:",
-                                    placeholder="Ex: PRIORIDADE DE CARREGAMENTO..."
-                                )
-                                btn_enviar_notif = nt_c4.form_submit_button("🔔 Notificar", type="primary", use_container_width=True)
-        
-                                if btn_enviar_notif:
-                                    if txt_nova_notif.strip():
-                                        idx_nt_alvo = opcoes_notif[sel_nt_ped]
-                                        dest_codigo = opcoes_destino_nt[sel_nt_dest]
-                                        df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                                        df_plan.at[idx_nt_alvo, "Notificação"] = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} ({st.session_state.nome_usuario})"
-                                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                                        st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
-                                        st.rerun()
-                                    else:
-                                        st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+        if tem_permissao("🔔 Lançar Notificações"):
+            with st.container(border=True):
+                st.markdown("**🔔 Lançar Notificação no Pedido**")
+                opcoes_notif = {
+                    f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
+                    for idx, r in df_exibir_plan.iterrows()
+                }
+                df_users_nt = carregar_usuarios_sistema()
+                df_users_ativos_nt = df_users_nt[df_users_nt["ativo"].apply(limpar_texto) == "SIM"]
+                opcoes_destino_nt = {"👥 TODOS OS USUÁRIOS": "TODOS"}
+                for _, u_nt in df_users_ativos_nt.iterrows():
+                    opcoes_destino_nt[f"👤 {limpar_texto(u_nt['nome'])} ({limpar_texto(u_nt['login'])})"] = limpar_texto(u_nt["login"])
+
+                if opcoes_notif:
+                    with st.form("form_lancar_notif", clear_on_submit=True):
+                        nt_c1, nt_c2, nt_c3, nt_c4 = st.columns([2, 2, 3, 1], vertical_alignment="bottom")
+                        sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()))
+                        sel_nt_dest = nt_c2.selectbox("Para quem?", list(opcoes_destino_nt.keys()))
+                        txt_nova_notif = nt_c3.text_input(
+                            "Mensagem da Notificação:",
+                            placeholder="Ex: PRIORIDADE DE CARREGAMENTO..."
+                        )
+                        btn_enviar_notif = nt_c4.form_submit_button("🔔 Notificar", type="primary", use_container_width=True)
+
+                        if btn_enviar_notif:
+                            if txt_nova_notif.strip():
+                                idx_nt_alvo = opcoes_notif[sel_nt_ped]
+                                dest_codigo = opcoes_destino_nt[sel_nt_dest]
+                                df_plan["Notificação"] = df_plan["Notificação"].astype(object)
+                                df_plan.at[idx_nt_alvo, "Notificação"] = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} ({st.session_state.nome_usuario})"
+                                salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                                st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
+                                st.rerun()
+                            else:
+                                st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
                
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")
@@ -1849,31 +1846,31 @@ elif aba == "✅ Auditoria e Ajustes":
                                 st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
                                 st.rerun()
 
-                    with col_estorno:
-                        st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
-                        st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
-                        confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
-                        if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
-                            col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
-                            sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
-                            qtd_estornar = int(float(registro_alvo["quantidade"]))
-
-                            df_cargas_adm = carregar_dados("cargas")
-                            filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
-                            if filtro_c.any():
-                                idx_c = df_cargas_adm.index[filtro_c][0]
-                                df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
-                                salvar_dados(df_cargas_adm, "cargas")
-
-                            df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
-                            if df_bipes_adm.empty:
-                                df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
-                            salvar_dados(df_bipes_adm, "bipes")
-
-                            if "relatorio_final" in st.session_state:
-                                del st.session_state.relatorio_final
-                            st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
-                            st.rerun()
+                        with col_estorno:
+                            st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
+                            st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
+                            confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
+                            if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
+                                col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
+                                sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
+                                qtd_estornar = int(float(registro_alvo["quantidade"]))
+    
+                                df_cargas_adm = carregar_dados("cargas")
+                                filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
+                                if filtro_c.any():
+                                    idx_c = df_cargas_adm.index[filtro_c][0]
+                                    df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
+                                    salvar_dados(df_cargas_adm, "cargas")
+    
+                                df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
+                                if df_bipes_adm.empty:
+                                    df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
+                                salvar_dados(df_bipes_adm, "bipes")
+    
+                                if "relatorio_final" in st.session_state:
+                                    del st.session_state.relatorio_final
+                                st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
+                                st.rerun()
                 else:
                     st.info("Nenhuma etiqueta bipada nesta carga ainda.")
             else:
