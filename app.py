@@ -868,14 +868,15 @@ if aba == "🚚 Planejamento Logística":
         if filtro_status_plan != "Todos os status":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"] == filtro_status_plan]
         if busca_livre.strip():
-    termo = busca_livre.strip().lower()
-    mask_busca = (
-        df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
-        df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
-        df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False) |
-        df_exibir_plan["Transportadora"].astype(str).str.lower().str.contains(termo, na=False)
-    )
-    df_exibir_plan = df_exibir_plan[mask_busca]
+    if busca_livre.strip():
+        termo = busca_livre.strip().lower()
+        mask_busca = (
+            df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
+            df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
+            df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False) |
+            df_exibir_plan["Transportadora"].astype(str).str.lower().str.contains(termo, na=False)
+        )
+        df_exibir_plan = df_exibir_plan[mask_busca]
 
         qtd_total_kpi = len(df_exibir_plan)
         qtd_aguardando = int(df_exibir_plan["Status"].isin(["⏳ Aguardando Veículo", "🚚 Veículo no Pátio"]).sum())
