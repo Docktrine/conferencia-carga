@@ -814,7 +814,7 @@ with st.sidebar:
             border-left: 4px solid #4CAF50 !important;
             font-weight: 600 !important;
         }
-        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:not(:last-child) {
             display: none !important;
         }
         section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
