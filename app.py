@@ -31,7 +31,21 @@ st.markdown(
     div[data-testid="InputInstructions"]::after {
         content: "Press Enter";
         font-size: 0.75rem !important;
-        color: rgba(230, 225, 214, 0.5);
+        color: rgba(28, 36, 30, 0.55);
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"],
+    details[data-testid="stExpander"] {
+        border-color: rgba(27, 94, 32, 0.45) !important;
+        border-radius: 10px !important;
+    }
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="select"] > div {
+        border-color: rgba(27, 94, 32, 0.4) !important;
+    }
+    div[data-baseweb="input"] > div:focus-within,
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: #1B5E20 !important;
+        box-shadow: 0 0 0 1px #1B5E20 !important;
     }
     </style>
     """,
