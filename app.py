@@ -868,7 +868,6 @@ if aba == "🚚 Planejamento Logística":
         if filtro_status_plan != "Todos os status":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"] == filtro_status_plan]
         if busca_livre.strip():
-        if busca_livre.strip():
             termo = busca_livre.strip().lower()
             mask_busca = (
                 df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
