@@ -21,13 +21,13 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    div[data-testid="stStatusWidget"],
-    div[data-testid="stSpinner"],
-    .stSpinner,
-    [data-stale="true"] {
+    div[data-testid="stStatusWidget"] {
         display: none !important;
-        visibility: hidden !important;
     }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
     </style>
     """,
     unsafe_allow_html=True
@@ -344,9 +344,6 @@ with st.sidebar:
         if st.button("🔒 Sair do Modo Admin", use_container_width=True):
             st.session_state.admin_autenticado = False
             st.rerun()
-
-for _aba_preload in ("planejamento", "cargas", "bipes"):
-    carregar_dados(_aba_preload)
 
 if aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
