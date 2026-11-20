@@ -885,11 +885,11 @@ if aba == "🚚 Planejamento Logística":
                 ed_status = e5c1.selectbox("Status:", STATUS_PLANEJAMENTO, index=idx_ed_st)
                 ed_obs = e5c2.text_input("Observação:", value=str(reg_plan["Observação"]))
 
-             if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
+                if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
                  c_btn_save, c_btn_del = st.columns(2)
                  btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
                  btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
-             else:
+                else:
                  btn_atualizar_plan = st.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
                  btn_excluir_plan = False
 
