@@ -513,7 +513,87 @@ if not st.session_state.usuario_autenticado:
                             st.session_state.perfil_usuario = limpar_texto(u_row["perfil"])
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
-                            st.rerun()
+    st.markdown(
+        """
+        <style>
+        @keyframes rodarCaminhao {
+            0%   { transform: translateX(-40px); opacity: 0; }
+            12%  { opacity: 1; }
+            88%  { opacity: 1; }
+            100% { transform: translateX(460px); opacity: 0; }
+        }
+        @keyframes girarRoda {
+            100% { transform: rotate(360deg); }
+        }
+        .cena-entrega-wrapper {
+            width: 100%;
+            max-width: 520px;
+            margin: 28px auto 0 auto;
+            overflow: hidden;
+            position: relative;
+            height: 76px;
+        }
+        .caminhao-animado {
+            position: absolute;
+            bottom: 14px;
+            left: 0;
+            animation: rodarCaminhao 7.5s linear infinite;
+        }
+        .roda-spin {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: girarRoda 0.9s linear infinite;
+        }
+        </style>
+
+        <div class="cena-entrega-wrapper">
+            <svg width="100%" height="76" viewBox="0 0 520 76" fill="none" xmlns="http://w3.org">
+                <!-- Fábrica / CD (Origem à esquerda) -->
+                <path d="M14 62 V34 L28 42 V34 L42 42 V62" stroke="#141A16" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="20" y="50" width="6" height="12" stroke="#141A16" stroke-width="1.4"/>
+                <rect x="31" y="48" width="5" height="5" stroke="#141A16" stroke-width="1.3"/>
+
+                <!-- Estrada tracejada -->
+                <line x1="8" y1="62" x2="512" y2="62" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="56" y1="68" x2="464" y2="68" stroke="#141A16" stroke-width="1.2" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.45"/>
+
+                <!-- Ponto de Entrega / Cliente (Destino à direita) -->
+                <path d="M482 62 V42 L495 32 L508 42 V62" stroke="#141A16" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="491" y="50" width="8" height="12" stroke="#141A16" stroke-width="1.4"/>
+                <circle cx="495" cy="24" r="3" stroke="#1B5E20" stroke-width="1.6"/>
+            </svg>
+
+            <!-- Caminhão Black Line em movimento -->
+            <div class="caminhao-animado">
+                <svg width="86" height="44" viewBox="0 0 86 44" fill="none" xmlns="http://w3.org">
+                    <!-- Linhas de velocidade -->
+                    <line x1="2" y1="16" x2="11" y2="16" stroke="#141A16" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
+                    <line x1="5" y1="22" x2="12" y2="22" stroke="#141A16" stroke-width="1.4" stroke-linecap="round" opacity="0.4"/>
+                    <!-- Baú do caminhão -->
+                    <rect x="15" y="8" width="42" height="24" rx="2" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
+                    <line x1="22" y1="14" x2="50" y2="14" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Cabine -->
+                    <path d="M57 15 H68 L76 23 V32 H57 V15 Z" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <!-- Janela da cabine -->
+                    <path d="M60 18 H66.5 L72 23.5 H60 V18 Z" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                    <!-- Chassi -->
+                    <line x1="13" y1="32" x2="78" y2="32" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- Roda traseira -->
+                    <g class="roda-spin">
+                        <circle cx="27" cy="34" r="5.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
+                        <circle cx="27" cy="34" r="1.8" fill="#141A16"/>
+                    </g>
+                    <!-- Roda dianteira -->
+                    <g class="roda-spin">
+                        <circle cx="66" cy="34" r="5.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
+                        <circle cx="66" cy="34" r="1.8" fill="#141A16"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )                        st.rerun()
     st.stop()
 
 with st.sidebar:
