@@ -73,11 +73,13 @@ st.markdown(
         border-radius: 8px !important;
     }
     /* Campos de senha e botão do olhinho */
+    section[data-testid="stSidebar"] input,
     section[data-testid="stSidebar"] div[data-baseweb="input"],
     section[data-testid="stSidebar"] div[data-baseweb="input"] > div,
     section[data-testid="stSidebar"] div[data-baseweb="base-input"],
     section[data-testid="stSidebar"] div[data-baseweb="input"] button {
         background-color: #141A16 !important;
+        color: #E6E1D6 !important;
         border-color: rgba(76, 175, 80, 0.5) !important;
     }
     section[data-testid="stSidebar"] div[data-baseweb="input"] svg {
