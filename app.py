@@ -315,7 +315,11 @@ def carregar_usuarios_sistema():
             "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
             "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
             "ativo": "SIM"
+            "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
+            "ativo": "SIM",
+            "foto_b64": ""
         }])
+        
         salvar_dados(df_init, "usuarios")
         return df_init
     for col in COLUNAS_USUARIOS:
@@ -1390,7 +1394,7 @@ elif aba == "📥 Importação de Pedidos":
                     if not df_bipes_ger.empty and "id_carga" in df_bipes_ger.columns:
                         df_bipes_restante = df_bipes_ger[df_bipes_ger["id_carga"] != carga_para_excluir]
                         if df_bipes_restante.empty:
-                            df_bipes_restante = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade"])
+                            df_bipes_restante = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
                         salvar_dados(df_bipes_restante, "bipes")
 
                     st.success(f"✅ Carga '{carga_para_excluir}' excluída com sucesso!")
@@ -1894,7 +1898,7 @@ elif aba == "📦 Conferência dos Pedidos":
 
                 df_bipes = df_bipes.drop(idx_bipe)
                 if df_bipes.empty:
-                    df_bipes = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade"])
+                    df_bipes = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
                 salvar_dados(df_bipes, "bipes")
                 st.warning(f"↩️ Etiqueta '{ult_etiq}' ({ult_qtd}x) foi estornada e liberada novamente!")
                 st.rerun()
@@ -2120,30 +2124,30 @@ elif aba == "✅ Auditoria e Ajustes":
                                 st.rerun()
 
                     with col_estorno:
-                            st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
-                            st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
-                            confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
-                            if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
-                                col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
-                                sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
-                                qtd_estornar = int(float(registro_alvo["quantidade"]))
-    
-                                df_cargas_adm = carregar_dados("cargas")
-                                filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
-                                if filtro_c.any():
-                                    idx_c = df_cargas_adm.index[filtro_c][0]
-                                    df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
-                                    salvar_dados(df_cargas_adm, "cargas")
-    
-                                df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
-                                if df_bipes_adm.empty:
-                                    df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
-                                salvar_dados(df_bipes_adm, "bipes")
-    
-                                if "relatorio_final" in st.session_state:
-                                    del st.session_state.relatorio_final
-                                st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
-                                st.rerun()
+                        st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
+                        st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
+                        confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
+                        if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
+                            col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
+                            sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
+                            qtd_estornar = int(float(registro_alvo["quantidade"]))
+
+                            df_cargas_adm = carregar_dados("cargas")
+                            filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
+                            if filtro_c.any():
+                                idx_c = df_cargas_adm.index[filtro_c][0]
+                                df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
+                                salvar_dados(df_cargas_adm, "cargas")
+
+                            df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
+                            if df_bipes_adm.empty:
+                                df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
+                            salvar_dados(df_bipes_adm, "bipes")
+
+                            if "relatorio_final" in st.session_state:
+                                del st.session_state.relatorio_final
+                            st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
+                            st.rerun()
                 else:
                     st.info("Nenhuma etiqueta bipada nesta carga ainda.")
             else:
@@ -2293,13 +2297,13 @@ elif aba == "👥 Central de Usuários":
     st.divider()
 
     with st.expander("➕ Cadastrar Novo Usuário", expanded=True):
+        nu_foto = st.file_uploader("📷 Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
         with st.form("form_novo_usuario", clear_on_submit=True):
             nu_c1, nu_c2, nu_c3, nu_c4 = st.columns(4)
             nu_nome = nu_c1.text_input("Nome Completo*:", placeholder="Ex: JOÃO SILVA")
             nu_login = nu_c2.text_input("Login de Acesso*:", placeholder="Ex: JOAO.SILVA")
             nu_senha = nu_c3.text_input("Senha Inicial*:", type="password", placeholder="Mínimo 4 caracteres")
             nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"])
-            nu_foto = st.file_uploader("📷 Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
             
             nu_mods = st.multiselect(
                 "📂 Módulos / Telas Liberadas:",
@@ -2351,7 +2355,8 @@ elif aba == "👥 Central de Usuários":
         perms_atuais = [p.strip() for p in str(reg_u["permissoes"]).split("|") if p.strip() in TODAS_PERMISSOES_CRITICAS]
         perfis_lista = ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"]
         idx_perf = perfis_lista.index(limpar_texto(reg_u["perfil"])) if limpar_texto(reg_u["perfil"]) in perfis_lista else 0
-
+        
+        ed_foto = st.file_uploader("📷 Alterar Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key=f"ed_foto_{idx_u_edit}")
         with st.form("form_editar_usuario"):
             eu_c1, eu_c2, eu_c3, eu_c4 = st.columns(4)
             eu_nome = eu_c1.text_input("Nome Completo:", value=str(reg_u["nome"]))
