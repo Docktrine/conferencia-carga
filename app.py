@@ -1414,9 +1414,6 @@ elif aba == "🚚 Planejamento Logística":
                 st.markdown(
                     """
                     <style>
-                   st.markdown(
-                    """
-                    <style>
                     div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button {
                         background-color: #C65353 !important;
                         border: 1px solid #A83E3E !important;
@@ -1429,10 +1426,6 @@ elif aba == "🚚 Planejamento Logística":
                     div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button:hover {
                         background-color: #B24343 !important;
                     }
-                    </style>
-                    """,
-                    unsafe_allow_html=True
-                )
                     </style>
                     """,
                     unsafe_allow_html=True
