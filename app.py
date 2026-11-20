@@ -106,6 +106,11 @@ st.markdown(
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #FFFFFF !important;
         border-color: #1B5E20 !important;
+      /* Deixa os emojis e selos mais escuros, profundos e saturados */
+    [data-testid="stDataFrame"],
+    .stMarkdown p,
+    .stMarkdown span {
+        filter: saturate(2.1) brightness(0.82) contrast(1.25);
     }
     </style>
     """,
