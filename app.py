@@ -1,4 +1,4 @@
-import streamlit as st
+Dimport streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import io
@@ -278,6 +278,7 @@ STATUS_PLANEJAMENTO = [
 ]
 
 TODOS_MODULOS_SISTEMA = [
+    "📊 Análise de Pedidos",
     "🚚 Planejamento Logística",
     "📥 Importação de Pedidos",
     "📦 Conferência dos Pedidos",
@@ -316,8 +317,6 @@ def carregar_usuarios_sistema():
             "perfil": "ADMIN",
             "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
             "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
-            "ativo": "SIM",
-            "foto_b64": "",
             "ativo": "SIM",
             "foto_b64": "",
             "ultimo_acesso": ""
@@ -910,8 +909,192 @@ if qtd_online > 0:
         """,
         unsafe_allow_html=True
     )
+if aba == "📊 Análise de Pedidos":
+    st.title("📊 Análise de Pedidos & Lead Time")
+    st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação e envio ao Planejamento.")
 
-if aba == "🚚 Planejamento Logística":
+    df_lt = carregar_dados("lead time")
+    mapa_lt = {}
+    if not df_lt.empty:
+        col_uf_lt = encontrar_coluna_correspondente(df_lt, ["ESTADO", "UF"])
+        col_cid_lt = encontrar_coluna_correspondente(df_lt, ["CIDADE", "MUNICIPIO"])
+        col_dias_lt = encontrar_coluna_correspondente(df_lt, ["DIAS", "LEAD TIME", "PRAZO"])
+        if col_uf_lt and col_cid_lt and col_dias_lt:
+            for _, r_lt in df_lt.iterrows():
+                uf_k = limpar_texto(r_lt[col_uf_lt])
+                cid_k = limpar_texto(r_lt[col_cid_lt])
+                val_str = str(r_lt[col_dias_lt]).strip().replace(",", ".")
+                try:
+                    mapa_lt[(uf_k, cid_k)] = float(val_str)
+                except Exception:
+                    pass
+
+    c_up_bi, c_cfg_bi = st.columns([2.2, 1])
+    with c_up_bi:
+        arquivo_bi = st.file_uploader("📂 Importar Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=["xls", "xlsx", "csv"], key="up_bi_analise")
+    with c_cfg_bi:
+        limite_critico = st.number_input("⚠️ Limite Crítico (dias p/ expedir):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
+
+    if arquivo_bi is not None:
+        try:
+            nome_arq_bi = arquivo_bi.name.lower()
+            if nome_arq_bi.endswith(".csv"):
+                df_bi = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str)
+            else:
+                df_bi = pd.read_excel(arquivo_bi, dtype=str)
+            df_bi = df_bi.dropna(how="all").fillna("")
+
+            if df_bi.empty:
+                st.warning("O arquivo enviado está vazio.")
+            else:
+                cols_bi = list(df_bi.columns)
+                def achar_idx_bi(termos):
+                    c_enc = encontrar_coluna_correspondente(df_bi, termos)
+                    return cols_bi.index(c_enc) if c_enc in cols_bi else 0
+
+                with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
+                    m1, m2, m3 = st.columns(3)
+                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", cols_bi, index=achar_idx_bi(["PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"]))
+                    col_cli_bi = m2.selectbox("Cliente (Opcional):", ["(Nenhum)"] + cols_bi, index=(achar_idx_bi(["CLIENTE", "DESTINATARIO", "RAZAO"]) + 1) if encontrar_coluna_correspondente(df_bi, ["CLIENTE", "DESTINATARIO", "RAZAO"]) else 0)
+                    col_uf_bi = m3.selectbox("Estado (UF):", cols_bi, index=achar_idx_bi(["UF", "ESTADO"]))
+
+                    m4, m5, m6 = st.columns(3)
+                    col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(["CIDADE", "MUNICIPIO"]))
+                    col_dt_cria = m5.selectbox("Data de Criação do Pedido:", cols_bi, index=achar_idx_bi(["CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA"]))
+                    col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(["ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"]))
+
+                df_plan_exist = carregar_dados("planejamento")
+                ids_no_wms = set()
+                if not df_plan_exist.empty and "id_carga" in df_plan_exist.columns:
+                    ids_no_wms = set(df_plan_exist["id_carga"].apply(limpar_texto).tolist())
+
+                hoje_dt = pd.Timestamp(datetime.now().date())
+                linhas_analise = []
+                cidades_sem_lt = set()
+
+                for _, r_bi in df_bi.iterrows():
+                    ped_val = str(r_bi[col_ped_bi]).strip()
+                    if not ped_val:
+                        continue
+                    cli_val = str(r_bi[col_cli_bi]).strip() if col_cli_bi != "(Nenhum)" else ""
+                    uf_val = limpar_texto(r_bi[col_uf_bi])
+                    cid_val = limpar_texto(r_bi[col_cid_bi])
+
+                    dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce")
+                    dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce")
+
+                    lt_dias = mapa_lt.get((uf_val, cid_val))
+                    if lt_dias is None and (uf_val or cid_val):
+                        cidades_sem_lt.add(f"{cid_val}/{uf_val}")
+
+                    if pd.notna(dt_c) and pd.notna(dt_e) and lt_dias is not None:
+                        prazo_total = round((dt_e - dt_c).days, 1)
+                        janela_exp = round(prazo_total - lt_dias, 1)
+                        dt_limite_exp = dt_e - pd.to_timedelta(lt_dias, unit="D")
+                        dias_ate_limite = round((dt_limite_exp - hoje_dt).days, 1)
+
+                        if janela_exp <= 0 or dias_ate_limite < 0:
+                            status_sla = "🔴 Crítico / Inviável no Prazo"
+                            ordem_prio = 1
+                        elif janela_exp <= limite_critico or dias_ate_limite <= limite_critico:
+                            status_sla = "🟡 Atenção / Expedir Logo"
+                            ordem_prio = 2
+                        else:
+                            status_sla = "🟢 Viável / Programação Normal"
+                            ordem_prio = 3
+                        dt_lim_str = dt_limite_exp.strftime("%d/%m/%Y")
+                    else:
+                        prazo_total = None
+                        janela_exp = None
+                        dt_lim_str = "-"
+                        status_sla = "⚪ Sem Lead Time / Data Inválida"
+                        ordem_prio = 4
+
+                    ja_wms = "🚚 Já no Planejamento" if limpar_texto(ped_val) in ids_no_wms else "🆕 Novo (Fora do WMS)"
+
+                    linhas_analise.append({
+                        "Prioridade": ordem_prio,
+                        "Status SLA": status_sla,
+                        "Pedido": ped_val,
+                        "Cliente": cli_val,
+                        "Cidade": cid_val,
+                        "UF": uf_val,
+                        "Criação": dt_c.strftime("%d/%m/%Y") if pd.notna(dt_c) else "-",
+                        "Entrega": dt_e.strftime("%d/%m/%Y") if pd.notna(dt_e) else "-",
+                        "Prazo Total (d)": prazo_total,
+                        "Lead Time (d)": lt_dias,
+                        "Janela p/ Expedir (d)": janela_exp,
+                        "Data Limite Expedição": dt_lim_str,
+                        "Situação WMS": ja_wms
+                    })
+
+                df_res_bi = pd.DataFrame(linhas_analise)
+                if not df_res_bi.empty:
+                    df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Janela p/ Expedir (d)"], ascending=[True, True], na_position="last")
+
+                    if cidades_sem_lt:
+                        st.warning(f"⚠️ **{len(cidades_sem_lt)} cidade(s)** não encontrada(s) na aba `lead time`: {', '.join(sorted(list(cidades_sem_lt))[:10])}")
+
+                    k1, k2, k3, k4 = st.columns(4)
+                    k1.metric("📦 Total Analisado", len(df_res_bi))
+                    k2.metric("🔴 Críticos / Inviáveis", int((df_res_bi["Prioridade"] == 1).sum()))
+                    k3.metric("🟡 Atenção / Urgentes", int((df_res_bi["Prioridade"] == 2).sum()))
+                    k4.metric("🟢 Viáveis / No Prazo", int((df_res_bi["Prioridade"] == 3).sum()))
+
+                    filtro_sla = st.multiselect(
+                        "Filtrar por Indicador de Prazo:",
+                        options=df_res_bi["Status SLA"].unique().tolist(),
+                        default=df_res_bi["Status SLA"].unique().tolist()
+                    )
+                    df_exib_bi = df_res_bi[df_res_bi["Status SLA"].isin(filtro_sla)].drop(columns=["Prioridade"])
+
+                    st.dataframe(df_exib_bi, use_container_width=True, hide_index=True)
+
+                    st.divider()
+                    st.subheader("🚚 Enviar Pedidos Pertinentes para o Planejamento Logística")
+                    st.caption("Selecione abaixo apenas os pedidos que você decidiu assumir para enviá-los direto à fila do Planejamento.")
+
+                    opcoes_envio = df_exib_bi[df_exib_bi["Situação WMS"] == "🆕 Novo (Fora do WMS)"]["Pedido"].tolist()
+                    pedidos_escolhidos = st.multiselect("Pedidos selecionados para programar:", options=opcoes_envio)
+
+                    if st.button("🚚 Imputar Selecionados no Planejamento Logística", type="primary", disabled=(len(pedidos_escolhidos) == 0)):
+                        df_p_atual = carregar_dados("planejamento")
+                        if df_p_atual.empty:
+                            df_p_atual = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
+                        for c_p in COLUNAS_PLANEJAMENTO:
+                            if c_p not in df_p_atual.columns:
+                                df_p_atual[c_p] = ""
+
+                        novos_plan = []
+                        for p_esc in pedidos_escolhidos:
+                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc[0]
+                            nova_l = {c_p: "" for c_p in df_p_atual.columns}
+                            nova_l["id_carga"] = r_esc["Pedido"]
+                            nova_l["cliente"] = f"{r_esc['Cliente']} ({r_esc['Cidade']}/{r_esc['UF']})".strip(" ()/")
+                            nova_l["data_carregamento"] = r_esc["Data Limite Expedição"] if r_esc["Data Limite Expedição"] != "-" else ""
+                            nova_l["status"] = "🟡 Programado / Aguardando"
+                            nova_l["observacoes"] = f"SLA BI | Entrega: {r_esc['Entrega']} | Janela: {r_esc['Janela p/ Expedir (d)']}d | LT: {r_esc['Lead Time (d)']}d"
+                            novos_plan.append(nova_l)
+
+                        df_p_atual = pd.concat([df_p_atual, pd.DataFrame(novos_plan)], ignore_index=True)
+                        salvar_dados(df_p_atual, "planejamento")
+                        st.cache_data.clear()
+                        st.success(f"🎉 {len(novos_plan)} pedido(s) enviado(s) com sucesso para o Planejamento Logística!")
+                        st.rerun()
+
+                    buf_bi = io.BytesIO()
+                    with pd.ExcelWriter(buf_bi, engine="openpyxl") as writer:
+                        df_exib_bi.to_excel(writer, index=False, sheet_name="Analise_Lead_Time")
+                    st.download_button(
+                        "📥 Baixar Análise Completa em Excel (.xlsx)",
+                        data=buf_bi.getvalue(),
+                        file_name=f"Analise_Pedidos_LeadTime_{datetime.now().strftime('%d%m%Y')}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+        except Exception as e_bi:
+            st.error(f"Erro ao ler a planilha do BI: {e_bi}")
+
+elif aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
     st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
 
