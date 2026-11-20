@@ -365,7 +365,7 @@ def salvar_foto_github(login_user, arquivo_upload):
     img.save(buf, format="PNG")
     conteudo_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-    api_base = "https://api." + "github.com" + repo + "/contents/fotos/"
+    api_base = "https://api." + "github.com" + "/repos/" + repo.strip("/") + "/contents/fotos/"
     headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
     for ext_ant in ("jpg", "jpeg", "webp"):
         url_ant = f"{api_base}{login_limpo}.{ext_ant}"
