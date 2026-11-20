@@ -773,7 +773,52 @@ with st.sidebar:
             st.rerun()
         st.stop()
 
-    aba = st.radio("Escolha a etapa:", modulos_disponiveis)
+    st.markdown(
+        """
+        <style>
+        section[data-testid="stSidebar"] [data-testid="stRadio"] > label {
+            font-size: 0.72rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.08em !important;
+            color: #81C784 !important;
+            font-weight: 700 !important;
+            margin-bottom: 6px !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] {
+            gap: 4px !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label {
+            background-color: transparent !important;
+            border: 1px solid transparent !important;
+            border-radius: 8px !important;
+            padding: 8px 10px !important;
+            margin: 0 !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            width: 100% !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:hover {
+            background-color: rgba(76, 175, 80, 0.14) !important;
+            border-color: rgba(76, 175, 80, 0.35) !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+            background-color: #243329 !important;
+            border: 1px solid rgba(76, 175, 80, 0.65) !important;
+            border-left: 4px solid #4CAF50 !important;
+            font-weight: 600 !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+            display: none !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label p {
+            font-size: 0.86rem !important;
+            white-space: nowrap !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    aba = st.radio("Módulos do Sistema", modulos_disponiveis)
 
     st.divider()
     st.markdown(
