@@ -377,7 +377,7 @@ if not st.session_state.usuario_autenticado:
             with st.form("form_login_wms"):
                 in_login = st.text_input("👤 Usuário (Login):", placeholder="Ex: JOAO.SILVA")
                 in_senha = st.text_input("🔑 Senha:", type="password", placeholder="Digite sua senha...")
-                btn_entrar = st.form_submit_button("🔑 Login", type="primary", use_container_width=True)
+                btn_entrar = st.form_submit_button("Login", type="primary", use_container_width=True)
 
                 if btn_entrar:
                     login_limpo = limpar_texto(in_login)
