@@ -515,6 +515,8 @@ if not st.session_state.usuario_autenticado:
                             st.session_state.perfil_usuario = limpar_texto(u_row["perfil"])
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
+                            st.session_state.foto_usuario = str(u_row.get("foto_b64", "")).strip()
+                            st.rerun()
     components.html(
         """
         <style>
