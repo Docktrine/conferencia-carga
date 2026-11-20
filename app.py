@@ -336,7 +336,15 @@ def processar_foto_avatar(arquivo_upload):
     img = img.crop((left, top, left + lado, top + lado)).resize((64, 64), Image.Resampling.LANCZOS)
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=45)
-    return "IMG_" + base64.b64encode(buf.getvalue()).decode("utf-8")    
+    return "IMG_" + base64.b64encode(buf.getvalue()).decode("utf-8")
+def carregar_foto_usuario(login_user):
+    login_limpo = limpar_texto(login_user)
+    for ext in ["jpg", "jpeg", "png", "webp"]:
+        caminho = os.path.join("fotos", f"{login_limpo}.{ext}")
+        if os.path.exists(caminho):
+            with open(caminho, "rb") as f:
+                return base64.b64encode(f.read()).decode("utf-8")
+    return ""    
 
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
     alvo_norm = normalizar_chave_coluna(col_alvo)
@@ -677,11 +685,8 @@ with st.sidebar:
     else:
         st.title("📦 WMS Grano")
 
-    foto_b64_atual = str(st.session_state.get("foto_usuario", "")).strip()
-    if foto_b64_atual.lower() in ["", "nan", "none", "null"] or len(foto_b64_atual) < 50:
-        foto_b64_atual = ""
+    foto_b64_atual = carregar_foto_usuario(st.session_state.login_usuario)
     nome_exib = st.session_state.nome_usuario
-    perfil_exib = st.session_state.perfil_usuario
     perfil_exib = st.session_state.perfil_usuario
     iniciais = "".join([p[0] for p in nome_exib.split()[:2]]).upper() if nome_exib else "U"
 
