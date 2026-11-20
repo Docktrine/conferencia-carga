@@ -2361,7 +2361,6 @@ elif aba == "👥 Central de Usuários":
             eu_perfil = eu_c2.selectbox("Perfil Base:", perfis_lista, index=idx_perf)
             eu_ativo = eu_c3.selectbox("Status de Acesso:", ["SIM", "NÃO"], index=0 if limpar_texto(reg_u["ativo"]) == "SIM" else 1)
             eu_nova_senha = eu_c4.text_input("Nova Senha (deixe vazio para manter):", type="password")
-            ed_foto = st.file_uploader("📷 Alterar Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key=f"ed_foto_{idx_u_edit}")
 
             eu_mods = st.multiselect("📂 Módulos / Telas Liberadas:", TODOS_MODULOS_SISTEMA, default=mods_atuais)
             eu_perms = st.multiselect("🛡️ Permissões de Ações Críticas:", TODAS_PERMISSOES_CRITICAS, default=perms_atuais)
