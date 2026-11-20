@@ -509,6 +509,10 @@ for chave_sessao, valor_padrao in [
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
                             st.rerun()
+                        st.session_state.permissoes_usuario = perms
+                        st.rerun()
+                    else:
+                        st.error("❌ Usuário ou senha inválidos.")                            
     st.stop()
 
 with st.sidebar:
