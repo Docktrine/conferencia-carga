@@ -792,15 +792,20 @@ with st.sidebar:
         st.rerun()
 agora_ping = datetime.now()
 ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
-if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 60:
-    df_u_ping = carregar_usuarios_sistema()
-    mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
-    if mask_ping.any():
-        df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
-        salvar_dados(df_u_ping[COLUNAS_USUARIOS], "usuarios")
-        st.cache_data.clear()
+if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 180:
+    st.cache_data.clear()
+    df_u_ping = carregar_dados("usuarios")
+    if not df_u_ping.empty and len(df_u_ping) >= 1 and "login" in df_u_ping.columns:
+        if "ultimo_acesso" not in df_u_ping.columns:
+            df_u_ping["ultimo_acesso"] = ""
+        df_u_ping["ultimo_acesso"] = df_u_ping["ultimo_acesso"].astype(object)
+        mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
+        if mask_ping.any():
+            df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
+            salvar_dados(df_u_ping, "usuarios")
+            st.cache_data.clear()
     st.session_state.ultimo_ping_ts = agora_ping
-
+    
 df_u_online = carregar_dados("usuarios")
 avatares_online_html = ""
 qtd_online = 0
