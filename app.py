@@ -746,7 +746,7 @@ if aba == "🚚 Planejamento Logística":
 
                 c_btn_save, c_btn_del = st.columns(2)
                 btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
-                btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Agendamento", use_container_width=True)
+                btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
 
                 if btn_atualizar_plan:
                     dados_editados = {
