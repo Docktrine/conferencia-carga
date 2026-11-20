@@ -592,10 +592,17 @@ if not st.session_state.usuario_autenticado:
                 <line x1="12" y1="72" x2="1038" y2="72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
                 <line x1="28" y1="78" x2="1022" y2="78" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" stroke-linecap="round" opacity="0.45"/>
 
-                <!-- Cliente / Destino na ponta direita -->
-                <path d="M1002 72 V50 L1016 40 L1030 50 V72" stroke="#141A16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="1012" y="59" width="8" height="13" stroke="#141A16" stroke-width="1.4"/>
-                <circle cx="1016" cy="32" r="3" stroke="#1B5E20" stroke-width="1.8"/>
+                <!-- Supermercado / Destino na ponta direita -->
+                <rect x="986" y="42" width="52" height="30" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                <!-- Placa / Letreiro no topo do Supermercado -->
+                <rect x="994" y="34" width="36" height="8" rx="1" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.6"/>
+                <line x1="1001" y1="38" x2="1023" y2="38" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Toldo da fachada -->
+                <path d="M984 48 H1040 L1037 53 H987 L984 48 Z" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+                <!-- Porta automática e vitrines -->
+                <rect x="1007" y="57" width="10" height="15" stroke="#141A16" stroke-width="1.4"/>
+                <rect x="991" y="57" width="11" height="9" stroke="#141A16" stroke-width="1.3"/>
+                <rect x="1022" y="57" width="11" height="9" stroke="#141A16" stroke-width="1.3"/>
 
                 <!-- Caixinha sendo carregada na doca -->
                 <g class="caixa-carga">
