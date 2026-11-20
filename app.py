@@ -1588,61 +1588,6 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
 
-    with st.expander("📥 Importar Planilha de Planejamento (.xlsx / .csv)"):
-        st.caption("O sistema reconhece automaticamente colunas mesmo com letras maiúsculas/minúsculas, acentos ou variações (ex: 'Placa Veículo' ou 'Placa do veículo').")
-        arq_plan = st.file_uploader("Selecione o Excel ou CSV de planejamento:", type=["xlsx", "xls", "csv"], key="up_plan_massa")
-        if arq_plan:
-            df_up_plan = pd.read_csv(arq_plan, sep=None, engine="python", dtype=str) if arq_plan.name.endswith(".csv") else pd.read_excel(arq_plan, dtype=str)
-            cols_arquivo = list(df_up_plan.columns)
-            opcoes_mapeamento = ["(Ignorar / Deixar em branco)"] + cols_arquivo
-
-            st.write(f"Linhas encontradas no arquivo: **{len(df_up_plan)}**. Confira o vínculo automático das colunas:")
-            mapeamento_escolhido = {}
-
-            for i in range(0, len(COLUNAS_PLANEJAMENTO), 3):
-                cols_ui = st.columns(3)
-                for j in range(3):
-                    if i + j < len(COLUNAS_PLANEJAMENTO):
-                        col_dest = COLUNAS_PLANEJAMENTO[i + j]
-                        sugestao = encontrar_coluna_correspondente(col_dest, cols_arquivo)
-                        idx_padrao = opcoes_mapeamento.index(sugestao) if sugestao in opcoes_mapeamento else 0
-                        mapeamento_escolhido[col_dest] = cols_ui[j].selectbox(
-                            f"{col_dest}:",
-                            opcoes_mapeamento,
-                            index=idx_padrao,
-                            key=f"map_plan_{col_dest}"
-                        )
-
-            if st.button("🚀 Importar Linhas para a Agenda", type="primary", use_container_width=True):
-                if mapeamento_escolhido["Nº Pedido"] == "(Ignorar / Deixar em branco)":
-                    st.error("⚠️ Selecione qual coluna do seu arquivo corresponde ao **Nº Pedido**!")
-                else:
-                    df_novo_lote = pd.DataFrame()
-                    for col_dest, col_orig in mapeamento_escolhido.items():
-                        if col_orig != "(Ignorar / Deixar em branco)" and col_orig in df_up_plan.columns:
-                            df_novo_lote[col_dest] = df_up_plan[col_orig].fillna("").astype(str).str.strip()
-                        else:
-                            df_novo_lote[col_dest] = ""
-
-                    df_novo_lote["Nº Pedido"] = df_novo_lote["Nº Pedido"].apply(limpar_texto)
-                    df_novo_lote["Status"] = df_novo_lote["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
-                    for col_dt in ("Data", "Data da entrega"):
-                        df_novo_lote[col_dt] = df_novo_lote[col_dt].apply(formatar_data_br_str)
-                    df_novo_lote["Hora"] = df_novo_lote["Hora"].apply(formatar_hora_br_str)
-                    for col_vl in ("Valor Pedido", "Valor de Frete"):
-                        df_novo_lote[col_vl] = df_novo_lote[col_vl].apply(formatar_moeda_br_str)
-
-                    df_novo_lote = df_novo_lote[df_novo_lote["Nº Pedido"] != ""]
-                    df_novo_lote = df_novo_lote[~df_novo_lote["Nº Pedido"].isin(df_plan["Nº Pedido"].values)]
-
-                    if not df_novo_lote.empty:
-                        df_plan_comb = pd.concat([df_plan, df_novo_lote], ignore_index=True)
-                        salvar_dados(df_plan_comb[COLUNAS_PLANEJAMENTO], "planejamento")
-                        st.success(f"✅ {len(df_novo_lote)} pedido(s) importado(s) para o planejamento!")
-                        st.rerun()
-                    else:
-                        st.warning("Nenhum pedido novo encontrado (todos já constavam na agenda ou estavam sem Nº Pedido).")
-
     with st.expander("✏️ Editar ou Excluir Pedido"):
         if not df_plan.empty:
             opcoes_plan = {
