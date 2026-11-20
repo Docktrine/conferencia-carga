@@ -12,6 +12,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from streamlit_gsheets import GSheetsConnection
 from PIL import Image
+import requests
 
 ARQUIVO_LOGO = next((f for f in ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"] if os.path.exists(f)), None)
 
@@ -345,7 +346,44 @@ def carregar_foto_usuario(login_user):
             with open(caminho, "rb") as f:
                 return base64.b64encode(f.read()).decode("utf-8")
     return ""    
+def salvar_foto_github(login_user, arquivo_upload):
+    if arquivo_upload is None:
+        return True, ""
+    token = st.secrets.get("GITHUB_TOKEN", "")
+    repo = st.secrets.get("GITHUB_REPO", "")
+    if not token or not repo:
+        return False, "Configure GITHUB_TOKEN e GITHUB_REPO nos Secrets."
 
+    login_limpo = limpar_texto(login_user)
+    img = Image.open(arquivo_upload).convert("RGB")
+    largura, altura = img.size
+    lado = min(largura, altura)
+    left = (largura - lado) // 2
+    top = (altura - lado) // 2
+    img = img.crop((left, top, left + lado, top + lado)).resize((200, 200), Image.Resampling.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    conteudo_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    api_base = "https://api." + "github.com" + repo + "/contents/fotos/"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    for ext_ant in ("jpg", "jpeg", "webp"):
+        url_ant = f"{api_base}{login_limpo}.{ext_ant}"
+        r_ant = requests.get(url_ant, headers=headers)
+        if r_ant.status_code == 200:
+            requests.delete(url_ant, headers=headers, json={"message": f"Remove foto antiga {login_limpo}", "sha": r_ant.json()["sha"]})
+
+    url_png = f"{api_base}{login_limpo}.png"
+    r_get = requests.get(url_png, headers=headers)
+    payload = {"message": f"Atualiza foto de {login_limpo}", "content": conteudo_b64}
+    if r_get.status_code == 200:
+        payload["sha"] = r_get.json()["sha"]
+
+    r_put = requests.put(url_png, headers=headers, json=payload)
+    if r_put.status_code in (200, 201):
+        return True, ""
+    return False, f"Erro GitHub ({r_put.status_code}): {r_put.text}"
+        
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
     alvo_norm = normalizar_chave_coluna(col_alvo)
     for c in cols_arquivo:
@@ -2445,6 +2483,11 @@ elif aba == "👥 Central de Usuários":
                     }])
                     df_u_final = pd.concat([df_usuarios, novo_u], ignore_index=True)
                     salvar_dados(df_u_final[COLUNAS_USUARIOS], "usuarios")
+                    if nu_foto is not None:
+                        ok_gh, msg_gh = salvar_foto_github(login_novo, nu_foto)
+                        if not ok_gh:
+                            st.warning(f"⚠️ Usuário criado, mas houve falha ao enviar a foto: {msg_gh}")
+                    
                     st.success(f"✅ Usuário **{nome_novo}** (`{login_novo}`) criado com sucesso!")
                     st.rerun()
 
@@ -2488,14 +2531,10 @@ elif aba == "👥 Central de Usuários":
                 df_usuarios.at[idx_u_edit, "ativo"] = eu_ativo
                 df_usuarios.at[idx_u_edit, "modulos_liberados"] = " | ".join(mods_ed)
                 df_usuarios.at[idx_u_edit, "permissoes"] = " | ".join(perms_ed)
-                if ed_foto is not None:
-                        nova_foto_b64 = processar_foto_avatar(ed_foto)
-                        if "foto_b64" not in df_usuarios.columns:
-                            df_usuarios["foto_b64"] = ""                    
-                        df_usuarios["foto_b64"] = df_usuarios["foto_b64"].astype(object)
-                        df_usuarios.at[idx_u_edit, "foto_b64"] = nova_foto_b64
-                        if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
-                            st.session_state.foto_usuario = nova_foto_b64[4:] if nova_foto_b64.startswith("IMG_") else nova_foto_b64
+                    if ed_foto is not None:
+                        ok_gh, msg_gh = salvar_foto_github(reg_u["login"], ed_foto)
+                        if not ok_gh:
+                            st.warning(f"⚠️ Dados salvos, mas houve falha ao enviar a foto: {msg_gh}")                
 
                 if eu_nova_senha.strip():
                     if len(eu_nova_senha.strip()) < 4:
