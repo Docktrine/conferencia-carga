@@ -760,9 +760,47 @@ with st.sidebar:
     aba = st.radio("Escolha a etapa:", modulos_disponiveis)
 
     st.divider()
+    st.markdown(
+        """
+        <style>
+        section[data-testid="stSidebar"] [data-testid="stExpander"] {
+            background-color: #1F2922;
+            border: 1px solid rgba(76, 175, 80, 0.45);
+            border-radius: 10px;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
+            background-color: #161E18;
+            border: 1px dashed rgba(76, 175, 80, 0.55);
+            border-radius: 8px;
+            padding: 8px;
+            min-height: unset;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] {
+            display: none;
+        }
+        section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button {
+            width: 100%;
+            background-color: #243329;
+            color: #E6E1D6;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        section[data-testid="stSidebar"] input {
+            background-color: #161E18 !important;
+            color: #E6E1D6 !important;
+            border: 1px solid rgba(76, 175, 80, 0.4) !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stForm"] {
+            border: none !important;
+            padding: 0 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     with st.expander("👤 Meu Perfil e Senha"):
-        st.caption("📸 Foto de Perfil")
-        minha_nova_foto = st.file_uploader("Trocar minha foto", type=["png", "jpg", "jpeg", "webp"], key="up_minha_foto")
+        st.markdown("<div style='font-size: 0.82rem; font-weight: 600; color: #A5D6A7; margin-bottom: 4px;'>📸 Foto de Perfil</div>", unsafe_allow_html=True)
+        minha_nova_foto = st.file_uploader("Trocar foto", type=["png", "jpg", "jpeg", "webp"], key="up_minha_foto", label_visibility="collapsed")
         if st.button("💾 Salvar Minha Foto", use_container_width=True, disabled=(minha_nova_foto is None)):
             with st.spinner("Atualizando foto..."):
                 ok_f, msg_f = salvar_foto_github(st.session_state.login_usuario, minha_nova_foto)
@@ -771,7 +809,10 @@ with st.sidebar:
                     st.rerun()
                 else:
                     st.error(f"Erro ao salvar foto: {msg_f}")
-        st.divider()
+
+        st.markdown("<hr style='margin: 10px 0; border-color: rgba(76, 175, 80, 0.25);'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size: 0.82rem; font-weight: 600; color: #A5D6A7; margin-bottom: 4px;'>🔑 Alterar Senha</div>", unsafe_allow_html=True)
+
         with st.form("form_trocar_propria_senha", clear_on_submit=True):
             s_atual = st.text_input("Senha Atual:", type="password")
             s_nova = st.text_input("Nova Senha:", type="password")
@@ -791,7 +832,6 @@ with st.sidebar:
                         df_u_alt.at[i_u, "senha"] = gerar_hash_senha(s_nova)
                         salvar_dados(df_u_alt[COLUNAS_USUARIOS], "usuarios")
                         st.success("✅ Senha alterada com sucesso!")
-
     if st.button("🚪 Sair / Trocar Usuário", use_container_width=True):
         df_u_out = carregar_usuarios_sistema()
         mask_out = df_u_out["login"].apply(limpar_texto) == st.session_state.login_usuario
