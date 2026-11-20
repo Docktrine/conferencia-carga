@@ -196,7 +196,7 @@ def padronizar_df_maiusculo(df):
             )
     return df
 
-@st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _ler_planilha_com_cache(aba):
     for tentativa in range(3):
         try:
@@ -981,6 +981,7 @@ elif aba == "📋 Gestão de Pedidos":
     st.title("📋 Gestão de Pedidos: Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
+        st.cache_data.clear()
         st.rerun()
 
     df_todas = carregar_dados("cargas")
@@ -1450,6 +1451,7 @@ elif aba == "📈 Painel de Acompanhamento":
     carga_selecionada = st.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist())
     
     if st.button("🔄 Atualizar Dados"):
+        st.cache_data.clear()
         st.rerun()
 
     df = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada].copy()
