@@ -1448,6 +1448,14 @@ elif aba == "📋 Gestão de Pedidos":
     lista_pendentes = list()
     lista_concluidas = list()
 
+    df_plan_gp = carregar_dados("planejamento")
+    mapa_validados_gp = {}
+    if not df_plan_gp.empty and "id_carga" in df_plan_gp.columns and "validado" in df_plan_gp.columns:
+        for _, r_p in df_plan_gp.iterrows():
+            val_str = str(r_p.get("validado", "")).strip()
+            if val_str and val_str.lower() not in ["nan", "none", "null", "nao", "não"]:
+                mapa_validados_gp[limpar_texto(r_p["id_carga"])] = val_str
+
     for cid, grupo in df_todas.groupby("id_carga", sort=False):
         tot_ped = int(grupo["pedido_real"].sum())
         tot_bip = int(grupo["bipado"].sum())
@@ -1469,7 +1477,8 @@ elif aba == "📋 Gestão de Pedidos":
                 "Conferido em": data_conclusao,
                 "Conferido por": conferentes_por_carga.get(cid, "-"),
                 "Lacre": obter_lacre_carga(grupo) or "-",
-                "Situação": f"🟢 100% Conferida{selo_corte}"
+                "Situação": f"🟢 100% Conferida{selo_corte}",
+                "Validação Final": f"✅ {mapa_validados_gp[limpar_texto(cid)]}" if limpar_texto(cid) in mapa_validados_gp else "⏳ Aguardando Auditoria"
             })
         else:
             if tot_bip == 0:
@@ -2054,7 +2063,23 @@ elif aba == "✅ Auditoria e Ajustes":
         st.info("Nenhuma carga cadastrada.")
         st.stop()
 
-    carga_selecionada = st.selectbox("Selecione a Carga para Auditar:", df_todas_cargas["id_carga"].unique().tolist())
+    df_plan_aud = carregar_dados("planejamento")
+    cargas_ja_validadas = set()
+    if not df_plan_aud.empty and "id_carga" in df_plan_aud.columns and "validado" in df_plan_aud.columns:
+        for _, r_pa in df_plan_aud.iterrows():
+            v_str = str(r_pa.get("validado", "")).strip()
+            if v_str and v_str.lower() not in ["nan", "none", "null", "nao", "não"]:
+                cargas_ja_validadas.add(limpar_texto(r_pa["id_carga"]))
+
+    todas_cargas_lista = df_todas_cargas["id_carga"].unique().tolist()
+    mostrar_validadas = st.checkbox("👁️ Mostrar também cargas já validadas", value=False)
+    cargas_disponiveis_aud = todas_cargas_lista if mostrar_validadas else [c for c in todas_cargas_lista if limpar_texto(c) not in cargas_ja_validadas]
+
+    if not cargas_disponiveis_aud:
+        st.success("🎉 Todas as cargas cadastradas já foram validadas!")
+        st.stop()
+
+    carga_selecionada = st.selectbox("Selecione a Carga para Auditar:", cargas_disponiveis_aud)  
 
     df_carga_aud = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if carga_possui_corte(df_carga_aud):
@@ -2287,6 +2312,39 @@ elif aba == "✅ Auditoria e Ajustes":
             file_name=f"validacao_{carga_selecionada}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+        st.divider()
+        ja_esta_validada = limpar_texto(carga_selecionada) in cargas_ja_validadas
+        if ja_esta_validada:
+            st.info(f"✅ Esta carga (**{carga_selecionada}**) já foi validada e liberada para expedição.")
+        else:
+            if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):
+                df_plan_salvar = carregar_dados("planejamento")
+                agora_val = agora_br().strftime("%d/%m/%Y %H:%M")
+                carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
+
+                if df_plan_salvar.empty or "id_carga" not in df_plan_salvar.columns:
+                    df_plan_salvar = pd.DataFrame(columns=["id_carga", "cliente", "transportadora", "placa", "data_carregamento", "status", "observacoes", "validado"])
+
+                if "validado" not in df_plan_salvar.columns:
+                    df_plan_salvar["validado"] = ""
+
+                df_plan_salvar["validado"] = df_plan_salvar["validado"].astype(object)
+                mask_p = df_plan_salvar["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada)
+
+                if mask_p.any():
+                    df_plan_salvar.loc[mask_p, "validado"] = carimbo_val
+                else:
+                    nova_linha_p = {col: "" for col in df_plan_salvar.columns}
+                    nova_linha_p["id_carga"] = carga_selecionada
+                    nova_linha_p["status"] = "🟢 Carregado / Liberado"
+                    nova_linha_p["validado"] = carimbo_val
+                    df_plan_salvar = pd.concat([df_plan_salvar, pd.DataFrame([nova_linha_p])], ignore_index=True)
+
+                salvar_dados(df_plan_salvar, "planejamento")
+                st.cache_data.clear()
+                st.success(f"🎉 Pedido **{carga_selecionada}** validado com sucesso e liberado para expedição!")
+                st.rerun()
+        
 elif aba == "👥 Central de Usuários":
     st.title("👥 Central de Usuários e Permissões")
     st.caption("Gerencie logins, perfis, módulos liberados e travas de ações críticas da equipe.")
