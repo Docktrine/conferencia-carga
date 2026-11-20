@@ -913,12 +913,26 @@ if aba == "📊 Análise de Pedidos":
     st.title("📊 Análise de Pedidos & Lead Time")
     st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação e envio ao Planejamento.")
 
+    def achar_col_bi(lista_cols, palavras_chave):
+        for p in palavras_chave:
+            p_l = limpar_texto(p)
+            for c in lista_cols:
+                if p_l == limpar_texto(c):
+                    return c
+        for p in palavras_chave:
+            p_l = limpar_texto(p)
+            for c in lista_cols:
+                if p_l in limpar_texto(c):
+                    return c
+        return None
+
     df_lt = carregar_dados("lead time")
     mapa_lt = {}
     if not df_lt.empty:
-        col_uf_lt = encontrar_coluna_correspondente(df_lt, ["ESTADO", "UF"])
-        col_cid_lt = encontrar_coluna_correspondente(df_lt, ["CIDADE", "MUNICIPIO"])
-        col_dias_lt = encontrar_coluna_correspondente(df_lt, ["DIAS", "LEAD TIME", "PRAZO"])
+        cols_lt_lista = list(df_lt.columns)
+        col_uf_lt = achar_col_bi(cols_lt_lista, ("ESTADO", "UF"))
+        col_cid_lt = achar_col_bi(cols_lt_lista, ("CIDADE", "MUNICIPIO"))
+        col_dias_lt = achar_col_bi(cols_lt_lista, ("DIAS", "LEAD TIME", "PRAZO"))
         if col_uf_lt and col_cid_lt and col_dias_lt:
             for _, r_lt in df_lt.iterrows():
                 uf_k = limpar_texto(r_lt[col_uf_lt])
@@ -929,9 +943,9 @@ if aba == "📊 Análise de Pedidos":
                 except Exception:
                     pass
 
-    c_up_bi, c_cfg_bi = st.columns([2.2, 1])
+    c_up_bi, c_cfg_bi = st.columns((3, 1))
     with c_up_bi:
-        arquivo_bi = st.file_uploader("📂 Importar Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=["xls", "xlsx", "csv"], key="up_bi_analise")
+        arquivo_bi = st.file_uploader("📂 Importar Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=("xls", "xlsx", "csv"), key="up_bi_analise")
     with c_cfg_bi:
         limite_critico = st.number_input("⚠️ Limite Crítico (dias p/ expedir):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
 
@@ -949,19 +963,20 @@ if aba == "📊 Análise de Pedidos":
             else:
                 cols_bi = list(df_bi.columns)
                 def achar_idx_bi(termos):
-                    c_enc = encontrar_coluna_correspondente(df_bi, termos)
+                    c_enc = achar_col_bi(cols_bi, termos)
                     return cols_bi.index(c_enc) if c_enc in cols_bi else 0
 
                 with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
                     m1, m2, m3 = st.columns(3)
-                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", cols_bi, index=achar_idx_bi(["PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"]))
-                    col_cli_bi = m2.selectbox("Cliente (Opcional):", ["(Nenhum)"] + cols_bi, index=(achar_idx_bi(["CLIENTE", "DESTINATARIO", "RAZAO"]) + 1) if encontrar_coluna_correspondente(df_bi, ["CLIENTE", "DESTINATARIO", "RAZAO"]) else 0)
-                    col_uf_bi = m3.selectbox("Estado (UF):", cols_bi, index=achar_idx_bi(["UF", "ESTADO"]))
+                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", cols_bi, index=achar_idx_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO")))
+                    cli_enc = achar_col_bi(cols_bi, ("CLIENTE", "DESTINATARIO", "RAZAO"))
+                    col_cli_bi = m2.selectbox("Cliente (Opcional):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(cli_enc) + 1) if cli_enc in cols_bi else 0)
+                    col_uf_bi = m3.selectbox("Estado (UF):", cols_bi, index=achar_idx_bi(("UF", "ESTADO")))
 
                     m4, m5, m6 = st.columns(3)
-                    col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(["CIDADE", "MUNICIPIO"]))
-                    col_dt_cria = m5.selectbox("Data de Criação do Pedido:", cols_bi, index=achar_idx_bi(["CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA"]))
-                    col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(["ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"]))
+                    col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(("CIDADE", "MUNICIPIO")))
+                    col_dt_cria = m5.selectbox("Data de Criação do Pedido:", cols_bi, index=achar_idx_bi(("CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA")))
+                    col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO")))
 
                 df_plan_exist = carregar_dados("planejamento")
                 ids_no_wms = set()
@@ -969,7 +984,7 @@ if aba == "📊 Análise de Pedidos":
                     ids_no_wms = set(df_plan_exist["id_carga"].apply(limpar_texto).tolist())
 
                 hoje_dt = pd.Timestamp(datetime.now().date())
-                linhas_analise = []
+                linhas_analise = list()
                 cidades_sem_lt = set()
 
                 for _, r_bi in df_bi.iterrows():
@@ -1065,9 +1080,9 @@ if aba == "📊 Análise de Pedidos":
                             if c_p not in df_p_atual.columns:
                                 df_p_atual[c_p] = ""
 
-                        novos_plan = []
+                        novos_plan = list()
                         for p_esc in pedidos_escolhidos:
-                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc[0]
+                            r_esc = df_res_bi[df_res_bi["Pedido"] == p_esc].iloc
                             nova_l = {c_p: "" for c_p in df_p_atual.columns}
                             nova_l["id_carga"] = r_esc["Pedido"]
                             nova_l["cliente"] = f"{r_esc['Cliente']} ({r_esc['Cidade']}/{r_esc['UF']})".strip(" ()/")
