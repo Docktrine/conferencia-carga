@@ -200,7 +200,7 @@ def padronizar_df_maiusculo(df):
             )
     return df
 
-st.cache_data(ttl=60, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def _ler_planilha_com_cache(aba):
     for tentativa in range(3):
         try:
