@@ -335,7 +335,7 @@ def processar_foto_avatar(arquivo_upload):
     img = img.crop((left, top, left + lado, top + lado)).resize((140, 140), Image.Resampling.LANCZOS)
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=75)
-    return base64.b64encode(buf.getvalue()).decode("utf-8")    
+    return "IMG_" + base64.b64encode(buf.getvalue()).decode("utf-8")    
 
 def encontrar_coluna_correspondente(col_alvo, cols_arquivo):
     alvo_norm = normalizar_chave_coluna(col_alvo)
@@ -530,6 +530,8 @@ if not st.session_state.usuario_autenticado:
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
                             raw_foto = str(u_row.get("foto_b64", "")).strip()
+                            if raw_foto.startswith("IMG_"):
+                               raw_foto = raw_foto[4:]
                             st.session_state.foto_usuario = "" if raw_foto.lower() in ["", "nan", "none", "null"] else raw_foto
                             st.rerun()
     components.html(
@@ -2391,7 +2393,7 @@ elif aba == "👥 Central de Usuários":
                         df_usuarios["foto_b64"] = df_usuarios["foto_b64"].astype(object)
                         df_usuarios.at[idx_u_edit, "foto_b64"] = nova_foto_b64
                         if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
-                            st.session_state.foto_usuario = nova_foto_b64
+                            st.session_state.foto_usuario = nova_foto_b64[4:] if nova_foto_b64.startswith("IMG_") else nova_foto_b64
 
                 if eu_nova_senha.strip():
                     if len(eu_nova_senha.strip()) < 4:
