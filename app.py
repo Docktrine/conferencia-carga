@@ -19,53 +19,20 @@ st.set_page_config(
     layout="wide"
 )
 
-if "tema_claro" not in st.session_state:
-    st.session_state.tema_claro = False
-
-css_tema_claro = ""
-if st.session_state.tema_claro:
-    css_tema_claro = """
-    :root {
-        --background-color: #F7F7F5 !important;
-        --secondary-background-color: #EAEAE4 !important;
-        --text-color: #1A1F24 !important;
-    }
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background-color: #F7F7F5 !important;
-        color: #1A1F24 !important;
-    }
-    [data-testid="stSidebar"] {
-        background-color: #EAEAE4 !important;
-    }
-    [data-testid="stSidebar"] *, .stMarkdown, .stText, label, p, h1, h2, h3, h4, span {
-        color: #1A1F24 !important;
-    }
-    button[kind="primary"], button[kind="primary"] * {
-        background-color: #1B5E20 !important;
-        color: #E6E1D6 !important;
-        border-color: #1B5E20 !important;
-    }
-    input, textarea, select, [data-baseweb="select"] > div, [data-baseweb="input"] > div {
-        background-color: #FFFFFF !important;
-        color: #1A1F24 !important;
-    }
-    """
-
 st.markdown(
-    f"""
+    """
     <style>
-    div[data-testid="stStatusWidget"] {{
+    div[data-testid="stStatusWidget"] {
         display: none !important;
-    }}
-    div[data-testid="InputInstructions"] {{
+    }
+    div[data-testid="InputInstructions"] {
         font-size: 0 !important;
-    }}
-    div[data-testid="InputInstructions"]::after {{
+    }
+    div[data-testid="InputInstructions"]::after {
         content: "Press Enter";
         font-size: 0.75rem !important;
-        color: {"rgba(26, 31, 36, 0.55)" if st.session_state.tema_claro else "rgba(230, 225, 214, 0.5)"};
-    }}
-    {css_tema_claro}
+        color: rgba(230, 225, 214, 0.5);
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -474,10 +441,6 @@ with st.sidebar:
     aba = st.radio("Escolha a etapa:", modulos_disponiveis)
 
     st.divider()
-    rotulo_tema = "🌙 Modo Escuro" if st.session_state.tema_claro else "☀️ Modo Claro"
-    if st.button(rotulo_tema, use_container_width=True):
-        st.session_state.tema_claro = not st.session_state.tema_claro
-        st.rerun()
     with st.expander("🔑 Alterar Minha Senha"):
         with st.form("form_trocar_propria_senha", clear_on_submit=True):
             s_atual = st.text_input("Senha Atual:", type="password")
