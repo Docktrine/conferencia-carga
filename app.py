@@ -606,9 +606,14 @@ if aba == "🚚 Planejamento Logística":
                 st.error(f"🔔 **Você tem {len(df_notif_pendentes)} notificação(ões) importante(s)!**")
                 for idx_nt, row_nt in df_notif_pendentes.iterrows():
                     c_nt_txt, c_nt_btn = st.columns([4, 1], vertical_alignment="center")
+                    msg_exibir = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", str(row_nt["Notificação"]).strip())
+                    msg_exibir = msg_exibir.replace("(DE: ", "(")
                     c_nt_txt.markdown(
-                        f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} — {row_nt['Data']} {row_nt['Hora']}): **{row_nt['Notificação']}**"
+                        f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} — {row_nt['Data']} {row_nt['Hora']}): "
+                        f"<span style='color: #38BDF8; font-weight: bold;'>{msg_exibir}</span>",
+                        unsafe_allow_html=True
                     )
+                    
                     if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
                         df_plan["Notificação"] = df_plan["Notificação"].astype(object)
                         df_plan.at[idx_nt, "Notificação"] = ""
@@ -707,7 +712,7 @@ if aba == "🚚 Planejamento Logística":
                                         idx_nt_alvo = opcoes_notif[sel_nt_ped]
                                         dest_codigo = opcoes_destino_nt[sel_nt_dest]
                                         df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                                        df_plan.at[idx_nt_alvo, "Notificação"] = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} (DE: {st.session_state.nome_usuario})"
+                                        df_plan.at[idx_nt_alvo, "Notificação"] = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} ({st.session_state.nome_usuario})"
                                         salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                                         st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
                                         st.rerun()
