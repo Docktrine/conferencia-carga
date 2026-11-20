@@ -671,7 +671,28 @@ with st.sidebar:
     else:
         st.title("📦 WMS Grano")
 
-    st.success(f"👤 **{st.session_state.nome_usuario}**\n\n🏷️ Perfil: **{st.session_state.perfil_usuario}**")
+    foto_b64_atual = st.session_state.get("foto_usuario", "")
+    nome_exib = st.session_state.nome_usuario
+    perfil_exib = st.session_state.perfil_usuario
+    iniciais = "".join([p[0] for p in nome_exib.split()[:2]]).upper() if nome_exib else "U"
+
+    if foto_b64_atual:
+        avatar_html = f'<img src="data:image/jpeg;base64,{foto_b64_atual}" style="width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; flex-shrink: 0;">'
+    else:
+        avatar_html = f'<div style="width: 46px; height: 46px; border-radius: 50%; background-color: #1B5E20; color: #E6E1D6; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; border: 2px solid #4CAF50; flex-shrink: 0;">{iniciais}</div>'
+
+    st.markdown(
+        f"""
+        <div style="background-color: #1F2922; border: 1px solid rgba(76, 175, 80, 0.45); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 11px; margin-bottom: 12px;">
+            {avatar_html}
+            <div style="min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.85rem; color: #E6E1D6; line-height: 1.25; word-break: break-word;">{nome_exib}</div>
+                <div style="font-size: 0.78rem; color: #A5D6A7; margin-top: 3px;">🏷️ Perfil: {perfil_exib}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )    
 
     modulos_disponiveis = st.session_state.modulos_usuario
     if not modulos_disponiveis:
