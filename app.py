@@ -760,7 +760,18 @@ with st.sidebar:
     aba = st.radio("Escolha a etapa:", modulos_disponiveis)
 
     st.divider()
-    with st.expander("🔑 Alterar Minha Senha"):
+    with st.expander("👤 Meu Perfil e Senha"):
+        st.caption("📸 Foto de Perfil")
+        minha_nova_foto = st.file_uploader("Trocar minha foto", type=["png", "jpg", "jpeg", "webp"], key="up_minha_foto")
+        if st.button("💾 Salvar Minha Foto", use_container_width=True, disabled=(minha_nova_foto is None)):
+            with st.spinner("Atualizando foto..."):
+                ok_f, msg_f = salvar_foto_github(st.session_state.login_usuario, minha_nova_foto)
+                if ok_f:
+                    st.success("✅ Foto atualizada!")
+                    st.rerun()
+                else:
+                    st.error(f"Erro ao salvar foto: {msg_f}")
+        st.divider()
         with st.form("form_trocar_propria_senha", clear_on_submit=True):
             s_atual = st.text_input("Senha Atual:", type="password")
             s_nova = st.text_input("Nova Senha:", type="password")
