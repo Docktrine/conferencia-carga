@@ -728,7 +728,8 @@ with st.sidebar:
 
     foto_b64_atual = carregar_foto_usuario(st.session_state.login_usuario)
     nome_exib = st.session_state.nome_usuario
-    perfil_exib = st.session_state.perfil_usuario
+    mapa_perfis_visual = {"ADMIN": "Administrador", "SUPERVISOR": "Supervisor", "OPERADOR": "Operador"}
+    perfil_exib = mapa_perfis_visual.get(str(st.session_state.perfil_usuario).upper(), st.session_state.perfil_usuario)
     iniciais = "".join([p[0] for p in nome_exib.split()[:2]]).upper() if nome_exib else "U"
 
     if foto_b64_atual:
@@ -742,7 +743,7 @@ with st.sidebar:
             {avatar_html}
             <div style="min-width: 0;">
                 <div style="font-weight: 700; font-size: 0.85rem; color: #E6E1D6; line-height: 1.25; word-break: break-word;">{nome_exib}</div>
-                <div style="font-size: 0.78rem; color: #A5D6A7; margin-top: 3px;">🏷️ Perfil: {perfil_exib}</div>
+                <div style="font-size: 0.78rem; color: #A5D6A7; margin-top: 3px;">{perfil_exib}</div>
             </div>
         </div>
         """,
