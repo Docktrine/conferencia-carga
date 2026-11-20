@@ -728,8 +728,8 @@ with st.sidebar:
 
     foto_b64_atual = carregar_foto_usuario(st.session_state.login_usuario)
     nome_exib = st.session_state.nome_usuario
-    mapa_perfis_visual = {"ADMIN": "Administrador", "SUPERVISOR": "Supervisor", "OPERADOR": "Operador"}
-    perfil_exib = mapa_perfis_visual.get(str(st.session_state.perfil_usuario).upper(), st.session_state.perfil_usuario)
+    mapa_perfis_visual = {"ADMIN": "Administrador", "AUXILIAR ADMINISTRATIVO": "Auxiliar Administrativo"}
+    perfil_exib = mapa_perfis_visual.get(str(st.session_state.perfil_usuario).upper(), str(st.session_state.perfil_usuario).title())
     iniciais = "".join([p[0] for p in nome_exib.split()[:2]]).upper() if nome_exib else "U"
 
     if foto_b64_atual:
