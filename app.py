@@ -861,20 +861,21 @@ if aba == "🚚 Planejamento Logística":
         with f_col2:
             filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
         with f_col3:
-            busca_livre = st.text_input("Buscar Pedido, Cliente ou Placa:", placeholder="Digite para filtrar...", key="filtro_fila_busca")
+            busca_livre = st.text_input("Buscar Pedido, Cliente, Placa ou Transportadora:", placeholder="Ex: 303820, Zaffari, ABC1D23 ou Transportadora...")S
 
         if filtro_data_carreg != "Todas as datas":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
         if filtro_status_plan != "Todos os status":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"] == filtro_status_plan]
         if busca_livre.strip():
-            termo = busca_livre.strip().lower()
-            mask_busca = (
-                df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
-                df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
-                df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False)
-            )
-            df_exibir_plan = df_exibir_plan[mask_busca]
+    termo = busca_livre.strip().lower()
+    mask_busca = (
+        df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
+        df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
+        df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False) |
+        df_exibir_plan["Transportadora"].astype(str).str.lower().str.contains(termo, na=False)
+    )
+    df_exibir_plan = df_exibir_plan[mask_busca]
 
         qtd_total_kpi = len(df_exibir_plan)
         qtd_aguardando = int(df_exibir_plan["Status"].isin(["⏳ Aguardando Veículo", "🚚 Veículo no Pátio"]).sum())
