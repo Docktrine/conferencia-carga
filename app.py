@@ -1437,7 +1437,8 @@ elif aba == "📦 Conferência dos Pedidos":
             "codigo_vinculado": limpar_texto(sku_destino),
             "tipo": obs_tipo,
             "lote": limpar_texto(lote_limpo),
-            "quantidade": qtd_final
+            "quantidade": qtd_final,
+            "conferente": st.session_state.nome_usuario
         }])
         df_bipes_atualizado = pd.concat([novo_bipe, df_bipes_check], ignore_index=True)
         salvar_dados(df_bipes_atualizado, "bipes")
@@ -1839,35 +1840,35 @@ elif aba == "✅ Auditoria e Ajustes":
                                 st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
                                 st.rerun()
 
-                with col_estorno:
-                    st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
-                    st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
-                    confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
-                    if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
-                        col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
-                        sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
-                        qtd_estornar = int(float(registro_alvo["quantidade"]))
+                    with col_estorno:
+                        st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
+                        st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
+                        confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
+                        if st.button("↩️ Estornar Etiqueta", type="primary", disabled=not confirma_estorno_adm, use_container_width=True):
+                            col_alvo_sku = "codigo_vinculado" if "codigo_vinculado" in registro_alvo else "codigo_bipado"
+                            sku_estornar = limpar_texto(registro_alvo[col_alvo_sku])
+                            qtd_estornar = int(float(registro_alvo["quantidade"]))
 
-                        df_cargas_adm = carregar_dados("cargas")
-                        filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
-                        if filtro_c.any():
-                            idx_c = df_cargas_adm.index[filtro_c][0]
-                            df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
-                            salvar_dados(df_cargas_adm, "cargas")
+                            df_cargas_adm = carregar_dados("cargas")
+                            filtro_c = (df_cargas_adm["id_carga"] == carga_selecionada) & (df_cargas_adm["codigo"].apply(limpar_texto) == sku_estornar)
+                            if filtro_c.any():
+                                idx_c = df_cargas_adm.index[filtro_c][0]
+                                df_cargas_adm.at[idx_c, "bipado"] = max(0, int(df_cargas_adm.at[idx_c, "bipado"]) - qtd_estornar)
+                                salvar_dados(df_cargas_adm, "cargas")
 
-                        df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
-                        if df_bipes_adm.empty:
-                            df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade"])
-                        salvar_dados(df_bipes_adm, "bipes")
+                            df_bipes_adm = df_bipes_adm.drop(idx_selecionado)
+                            if df_bipes_adm.empty:
+                                df_bipes_adm = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
+                            salvar_dados(df_bipes_adm, "bipes")
 
-                        if "relatorio_final" in st.session_state:
-                            del st.session_state.relatorio_final
-                        st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
-                        st.rerun()
-                    else:
-                        st.info("Nenhuma etiqueta bipada nesta carga ainda.")
+                            if "relatorio_final" in st.session_state:
+                                del st.session_state.relatorio_final
+                            st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
+                            st.rerun()
                 else:
-                        st.info("Nenhuma etiqueta bipada nesta carga ainda.")
+                    st.info("Nenhuma etiqueta bipada nesta carga ainda.")
+            else:
+                st.info("Nenhuma etiqueta bipada nesta carga ainda.")
 
     st.divider()
     arq_cliente = st.file_uploader("Suba o Excel/CSV enviado pelo cliente", type=["xlsx", "xls", "csv"])
