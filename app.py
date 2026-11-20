@@ -72,29 +72,38 @@ st.markdown(
         border-color: rgba(76, 175, 80, 0.4) !important;
         border-radius: 8px !important;
     }
-    /* Campos de senha e botão do olhinho */
+        /* Campos de senha escuros e botão do olhinho claro */
     section[data-testid="stSidebar"] input,
     section[data-testid="stSidebar"] div[data-baseweb="input"],
     section[data-testid="stSidebar"] div[data-baseweb="input"] > div,
-    section[data-testid="stSidebar"] div[data-baseweb="base-input"],
-    section[data-testid="stSidebar"] div[data-baseweb="input"] button {
+    section[data-testid="stSidebar"] div[data-baseweb="base-input"] {
         background-color: #141A16 !important;
         color: #E6E1D6 !important;
         border-color: rgba(76, 175, 80, 0.5) !important;
     }
-    section[data-testid="stSidebar"] div[data-baseweb="input"] svg {
-        fill: #E6E1D6 !important;
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button {
+        background-color: #EAE7E0 !important;
     }
-    /* Todos os botões do menu lateral (Atualizar Senha e Sair) */
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg {
+        fill: #141A16 !important;
+        color: #141A16 !important;
+    }
+
+    /* Botões do menu lateral com fundo claro e letra escura */
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"],
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"] {
-        background-color: #1F2922 !important;
-        border: 1px solid rgba(76, 175, 80, 0.55) !important;
+        background-color: #EAE7E0 !important;
+        border: 1px solid #4CAF50 !important;
+    }
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] *,
+    section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"] * {
+        color: #141A16 !important;
+        font-weight: 600 !important;
     }
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"]:hover,
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
-        background-color: #1B5E20 !important;
-        border-color: #4CAF50 !important;
+        background-color: #FFFFFF !important;
+        border-color: #1B5E20 !important;
     }
     </style>
     """,
