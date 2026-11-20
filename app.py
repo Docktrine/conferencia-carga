@@ -1147,11 +1147,19 @@ elif aba == "📋 Gestão de Pedidos":
 
     df_bipes_datas = carregar_dados("bipes")
     ultimas_datas_carga = {}
-    if not df_bipes_datas.empty and "id_carga" in df_bipes_datas.columns and "data_hora" in df_bipes_datas.columns:
+    conferentes_por_carga = {}
+    if not df_bipes_datas.empty and "id_carga" in df_bipes_datas.columns:
         for cid_b, grp_b in df_bipes_datas.groupby("id_carga", sort=False):
-            datas_validas = [str(d).strip() for d in grp_b["data_hora"] if str(d).strip() and str(d).strip().upper() != "NAN"]
-            if datas_validas:
-                ultimas_datas_carga[cid_b] = datas_validas[0].split()[0]
+            if "data_hora" in grp_b.columns:
+                datas_validas = [str(d).strip() for d in grp_b["data_hora"] if str(d).strip() and str(d).strip().upper() != "NAN"]
+                if datas_validas:
+                    ultimas_datas_carga[cid_b] = datas_validas[0].split()[0]
+            if "conferente" in grp_b.columns:
+                confs_validos = sorted(set(
+                    limpar_texto(c) for c in grp_b["conferente"] if limpar_texto(c)
+                ))
+                if confs_validos:
+                    conferentes_por_carga[cid_b] = ", ".join(confs_validos)
 
     lista_pendentes = list()
     lista_concluidas = list()
@@ -1175,6 +1183,7 @@ elif aba == "📋 Gestão de Pedidos":
                 "Volumes Pedidos": tot_ped,
                 "Volumes Bipados": tot_bip,
                 "Conferido em": data_conclusao,
+                "Conferido por": conferentes_por_carga.get(cid, "-"),
                 "Lacre": obter_lacre_carga(grupo) or "-",
                 "Situação": f"✅ 100% Conferida{selo_corte}"
             })
