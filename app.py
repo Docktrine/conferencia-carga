@@ -1121,8 +1121,19 @@ elif aba == "📦 Conferência dos Pedidos":
         st.warning("Nenhuma carga disponível no momento. Aguarde a liberação do administrativo.")
         st.stop()
 
-    lista_cargas = df_todas_cargas["id_carga"].unique().tolist()
-    carga_selecionada = st.selectbox("Selecione a Carga para Conferir:", lista_cargas)
+    cargas_pendentes_conf = []
+    for cid_check, grupo_check in df_todas_cargas.groupby("id_carga", sort=False):
+        concluida_check = verificar_carga_100_concluida(grupo_check)
+        lacre_check = obter_lacre_carga(grupo_check)
+        if not concluida_check or not lacre_check:
+            cargas_pendentes_conf.append(cid_check)
+
+    if not cargas_pendentes_conf:
+        st.success("🎉 **Parabéns! Todas as cargas importadas já foram 100% conferidas e lacradas!**")
+        st.info("Quando o administrativo importar um novo pedido, ele aparecerá automaticamente aqui.")
+        st.stop()
+
+    carga_selecionada = st.selectbox("Selecione a Carga Pendente para Conferir:", cargas_pendentes_conf)
 
     df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
