@@ -106,6 +106,7 @@ st.markdown(
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #FFFFFF !important;
         border-color: #1B5E20 !important;
+    }    
     /* Escurece as caixas de aviso (st.success / st.info / st.warning) e botões secundários */
     [data-testid="stAppViewContainer"] div[role="alert"],
     [data-testid="stAppViewContainer"] div[data-testid="stAlert"],
@@ -457,7 +458,7 @@ for chave_sessao, valor_padrao in [
 ]:
     if chave_sessao not in st.session_state:
         st.session_state[chave_sessao] = valor_padrao
-
+if not st.session_state.usuario_autenticado:
     col_l1, col_l2, col_l3 = st.columns([2.2, 1.6, 2.2])
     with col_l2:
         with st.container(border=True):
@@ -509,10 +510,6 @@ for chave_sessao, valor_padrao in [
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
                             st.rerun()
-                        st.session_state.permissoes_usuario = perms
-                        st.rerun()
-                    else:
-                        st.error("❌ Usuário ou senha inválidos.")                            
     st.stop()
 
 with st.sidebar:
@@ -1955,7 +1952,7 @@ elif aba == "✅ Auditoria e Ajustes":
                                 st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
                                 st.rerun()
 
-                        with col_estorno:
+                    with col_estorno:
                             st.markdown("**2️⃣ Estornar Etiqueta (Solicitar Rebipagem)**")
                             st.caption("Remove o bipe, abate a quantidade e libera a etiqueta para o conferente bipar novamente.")
                             confirma_estorno_adm = st.checkbox(f"Confirmar estorno da etiqueta '{limpar_texto(registro_alvo['etiqueta'])}'", key="chk_estorno_adm")
