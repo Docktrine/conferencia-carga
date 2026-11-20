@@ -5,6 +5,7 @@ import os
 import base64
 import unicodedata
 import re
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from streamlit_gsheets import GSheetsConnection
