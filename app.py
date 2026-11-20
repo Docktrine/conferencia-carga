@@ -128,6 +128,10 @@ st.markdown(
         color: #141A16 !important;
         border: 1px solid rgba(27, 94, 32, 0.55) !important;
     }
+        section[data-testid="stSidebar"] div[data-testid="stAlert"] *,
+    section[data-testid="stSidebar"] div[data-testid="stAlertContainer"] * {
+        color: #E6E1D6 !important;
+    }
     [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondary"]:hover,
     [data-testid="stAppViewContainer"] button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
         background-color: #C2BBA9 !important;
