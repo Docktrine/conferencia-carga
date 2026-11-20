@@ -529,7 +529,8 @@ if not st.session_state.usuario_autenticado:
                             st.session_state.perfil_usuario = limpar_texto(u_row["perfil"])
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
-                            st.session_state.foto_usuario = str(u_row.get("foto_b64", "")).strip()
+                            raw_foto = str(u_row.get("foto_b64", "")).strip()
+                            st.session_state.foto_usuario = "" if raw_foto.lower() in ["", "nan", "none", "null"] else raw_foto
                             st.rerun()
     components.html(
         """
@@ -673,8 +674,11 @@ with st.sidebar:
     else:
         st.title("📦 WMS Grano")
 
-    foto_b64_atual = st.session_state.get("foto_usuario", "")
+    foto_b64_atual = str(st.session_state.get("foto_usuario", "")).strip()
+    if foto_b64_atual.lower() in ["", "nan", "none", "null"] or len(foto_b64_atual) < 50:
+        foto_b64_atual = ""
     nome_exib = st.session_state.nome_usuario
+    perfil_exib = st.session_state.perfil_usuario
     perfil_exib = st.session_state.perfil_usuario
     iniciais = "".join([p[0] for p in nome_exib.split()[:2]]).upper() if nome_exib else "U"
 
