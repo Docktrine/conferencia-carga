@@ -786,6 +786,10 @@ with st.sidebar:
             border-radius: 8px !important;
             box-shadow: none !important;
         }
+        section[data-testid="stSidebar"] div.stButton > button p,
+        section[data-testid="stSidebar"] div.stButton > button span {
+            color: #E6E1D6 !important;
+        }
         section[data-testid="stSidebar"] div.stButton > button > div {
             justify-content: flex-start !important;
             width: 100% !important;
@@ -793,6 +797,8 @@ with st.sidebar:
         section[data-testid="stSidebar"] div.stButton > button:hover {
             background-color: rgba(76, 175, 80, 0.14) !important;
             border-color: rgba(76, 175, 80, 0.35) !important;
+        }
+        section[data-testid="stSidebar"] div.stButton > button:hover p {
             color: #FFFFFF !important;
         }
         section[data-testid="stSidebar"] div.stButton > button[kind="primary"],
@@ -800,6 +806,10 @@ with st.sidebar:
             background-color: #243329 !important;
             border: 1px solid rgba(76, 175, 80, 0.65) !important;
             border-left: 4px solid #4CAF50 !important;
+            font-weight: 600 !important;
+        }
+        section[data-testid="stSidebar"] div.stButton > button[kind="primary"] p,
+        section[data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-primary"] p {
             color: #FFFFFF !important;
             font-weight: 600 !important;
         }
