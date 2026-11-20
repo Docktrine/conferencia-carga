@@ -57,17 +57,40 @@ st.markdown(
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] span,
     section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] summary {
+    section[data-testid="stSidebar"] summary,
+    section[data-testid="stSidebar"] summary * {
         color: #E6E1D6 !important;
     }
-    section[data-testid="stSidebar"] input {
+    section[data-testid="stSidebar"] div[data-testid="stAlert"] {
+        background-color: #1F2922 !important;
+        border: 1px solid rgba(27, 94, 32, 0.7) !important;
+        border-radius: 10px !important;
+    }
+    section[data-testid="stSidebar"] details[data-testid="stExpander"] {
+        background-color: #1A221C !important;
+        border: 1px solid rgba(27, 94, 32, 0.55) !important;
+    }
+    section[data-testid="stSidebar"] details[data-testid="stExpander"] summary {
+        background-color: #1F2922 !important;
+        border-radius: 8px !important;
+    }
+    section[data-testid="stSidebar"] div[data-baseweb="input"] > div {
+        background-color: #1F2922 !important;
+        border-color: rgba(27, 94, 32, 0.6) !important;
+    }
+    section[data-testid="stSidebar"] input,
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button {
         background-color: #1F2922 !important;
         color: #E6E1D6 !important;
     }
-    section[data-testid="stSidebar"] button {
+    section[data-testid="stSidebar"] button[kind="secondary"] {
         background-color: #1F2922 !important;
         color: #E6E1D6 !important;
-        border-color: rgba(230, 225, 214, 0.25) !important;
+        border: 1px solid rgba(27, 94, 32, 0.65) !important;
+    }
+    section[data-testid="stSidebar"] button[kind="secondary"]:hover {
+        border-color: #4CAF50 !important;
+        background-color: #253129 !important;
     }
     section[data-testid="stSidebar"] button[kind="primary"] {
         background-color: #1B5E20 !important;
