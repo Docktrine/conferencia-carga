@@ -2025,7 +2025,7 @@ elif aba == "👥 Central de Usuários":
             nu_nome = nu_c1.text_input("Nome Completo*:", placeholder="Ex: JOÃO SILVA")
             nu_login = nu_c2.text_input("Login de Acesso*:", placeholder="Ex: JOAO.SILVA")
             nu_senha = nu_c3.text_input("Senha Inicial*:", type="password", placeholder="Mínimo 4 caracteres")
-            nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "PLANEJAMENTO", "SUPERVISOR", "AUDITOR", "ADMIN"])
+            nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"])
 
             nu_mods = st.multiselect(
                 "📂 Módulos / Telas Liberadas:",
@@ -2073,7 +2073,7 @@ elif aba == "👥 Central de Usuários":
 
         mods_atuais = [m.strip() for m in str(reg_u["modulos_liberados"]).split("|") if m.strip() in TODOS_MODULOS_SISTEMA]
         perms_atuais = [p.strip() for p in str(reg_u["permissoes"]).split("|") if p.strip() in TODAS_PERMISSOES_CRITICAS]
-        perfis_lista = ["CONFERENTE", "PLANEJAMENTO", "SUPERVISOR", "AUDITOR", "ADMIN"]
+        perfis_lista = ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"]
         idx_perf = perfis_lista.index(limpar_texto(reg_u["perfil"])) if limpar_texto(reg_u["perfil"]) in perfis_lista else 0
 
         with st.form("form_editar_usuario"):
