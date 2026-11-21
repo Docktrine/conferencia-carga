@@ -1390,22 +1390,22 @@ elif aba == "🚚 Planejamento Logística":
 
         def extrair_minhas_notifs(txt_raw):
         s_nt = str(txt_raw).strip()
-        if not s_nt or s_nt.lower() in ("nan", "none", "null"):
-            return list()
-        login_atual_nt = limpar_texto(st.session_state.login_usuario)
-        nome_atual_nt = limpar_texto(st.session_state.nome_usuario)
-        minhas = list()
-        for parte in s_nt.split(" || "):
-            p_limpa = parte.strip()
-            if not p_limpa:
-                continue
-            if "[PARA:" not in p_limpa:
-                minhas.append(p_limpa)
-            else:
-                destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
-                if destino in ("TODOS", login_atual_nt, nome_atual_nt):
+            if not s_nt or s_nt.lower() in ("nan", "none", "null"):
+                return list()
+            login_atual_nt = limpar_texto(st.session_state.login_usuario)
+            nome_atual_nt = limpar_texto(st.session_state.nome_usuario)
+            minhas = list()
+            for parte in s_nt.split(" || "):
+                p_limpa = parte.strip()
+                if not p_limpa:
+                    continue
+                if "[PARA:" not in p_limpa:
                     minhas.append(p_limpa)
-        return minhas
+                else:
+                    destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
+                    if destino in ("TODOS", login_atual_nt, nome_atual_nt):
+                        minhas.append(p_limpa)
+            return minhas
 
     lista_alertas_plan = list()
     for idx_nt, row_nt in df_plan.iterrows():
