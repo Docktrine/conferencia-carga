@@ -1230,30 +1230,37 @@ if aba == "🏠 Início":
     st.markdown(
         """
         <style>
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key^="btn_atalho_ini_"]) {
-            background-color: #E3DFD5 !important;
-            border: 1px solid rgba(27, 94, 32, 0.35) !important;
-            border-radius: 12px !important;
-            padding: 4px 8px !important;
-            transition: all 0.2s ease !important;
+        /* Cartões compactos e botões pílula modernos na Página Inicial */
+        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"]:has(button[data-testid="stBaseButton-primary"]) {
+            background-color: #E4E0D6 !important;
+            border: 1px solid rgba(27, 94, 32, 0.30) !important;
+            border-radius: 10px !important;
+            padding: 2px 6px !important;
+            transition: all 0.18s ease !important;
         }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key^="btn_atalho_ini_"]):hover {
+        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"]:has(button[data-testid="stBaseButton-primary"]):hover {
             border-color: #1B5E20 !important;
-            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.12) !important;
+            background-color: #EAE7DE !important;
+            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.10) !important;
         }
-        button[key^="btn_atalho_ini_"] {
+        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"] {
             background-color: #1F2922 !important;
             border: 1px solid #4CAF50 !important;
-            border-radius: 8px !important;
-            padding: 6px 14px !important;
-            min-height: 36px !important;
+            border-radius: 20px !important;
+            padding: 2px 12px !important;
+            min-height: 28px !important;
+            height: 28px !important;
+            width: auto !important;
+            float: right !important;
+            box-shadow: none !important;
         }
-        button[key^="btn_atalho_ini_"] p {
+        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"] p {
             color: #FFFFFF !important;
             font-weight: 600 !important;
-            font-size: 0.82rem !important;
+            font-size: 0.74rem !important;
+            white-space: nowrap !important;
         }
-        button[key^="btn_atalho_ini_"]:hover {
+        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"]:hover {
             background-color: #1B5E20 !important;
         }
         </style>
@@ -1274,12 +1281,12 @@ if aba == "🏠 Início":
     for idx_at, mod_at in enumerate(modulos_disponiveis):
         with cols_atalho[idx_at % 2]:
             with st.container(border=True):
-                c_info, c_btn = st.columns((3.2, 1.1), vertical_alignment="center")
+                c_info, c_btn = st.columns((3.6, 1.0), vertical_alignment="center")
                 with c_info:
-                    st.markdown(f"<div style='font-weight:700; font-size:0.95rem; color:#141A16; margin-bottom:2px;'>{mod_at}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='font-size:0.78rem; color:#4A524C; line-height:1.25;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='font-weight:700; font-size:0.90rem; color:#141A16; margin-bottom:1px;'>{mod_at}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='font-size:0.75rem; color:#4A524C; line-height:1.2;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
                 with c_btn:
-                    if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
+                    if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", type="primary"):
                         st.session_state.aba_ativa = mod_at
                         st.rerun()
 
