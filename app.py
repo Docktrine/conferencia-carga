@@ -1681,6 +1681,14 @@ elif aba == "🚚 Planejamento Logística":
             df_tab_plan,
             use_container_width=True,
             hide_index=True,
+            column_order=[
+                "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
+                "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora",
+                "Placa do veículo", "Tipo de Veículo", "Valor de Frete",
+                "UF", "Cidade", "CIF/FOB", "Veículo compartilhado",
+                "Data da entrega", "Lead Time", "Sugestão Carreg.",
+                "Observação", "Status", "Nota Fiscal"
+            ],
             column_config={
                 "Data": st.column_config.TextColumn("📅 Data", width="small"),
                 "Hora": st.column_config.TextColumn("⏰ Hora", width="small"),
@@ -1706,13 +1714,6 @@ elif aba == "🚚 Planejamento Logística":
             }
         )
 
-        with st.container(border=True):
-            st.markdown("**⚡ Atualização Rápida de Status**")
-            st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
-            opcoes_rapidas = {
-                f"Pedido {r['Nº Pedido']} — {r['Cliente']} (Atual: {r['Status']})": idx
-                for idx, r in df_exibir_plan.iterrows()
-            }
             if opcoes_rapidas:
                 sel_rapida = st_c1.selectbox("Selecione o Pedido:", list(opcoes_rapidas.keys()), key="sel_status_rapido")
                 idx_rapido = opcoes_rapidas[sel_rapida]
