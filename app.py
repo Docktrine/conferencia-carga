@@ -189,6 +189,101 @@ def obter_logo_base64():
 
 LOGO_B64, LOGO_MIME = obter_logo_base64()
 
+def _calcular_pascoa(ano):
+    a = ano % 19
+    b = ano // 100
+    c = ano % 100
+    d = b // 4
+    e = b % 4
+    f = (b + 8) // 25
+    g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30
+    i = c // 4
+    k = c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l) // 451
+    mes = (h + l - 7 * m + 114) // 31
+    dia = ((h + l - 7 * m + 114) % 31) + 1
+    return datetime(ano, mes, dia).date()
+
+@st.cache_data(ttl=300, show_spinner=False)
+def obter_feriados_sistema():
+    feriados = set()
+    ano_base = datetime.now().year
+    for y in (ano_base - 1, ano_base, ano_base + 1, ano_base + 2):
+        for m_f, d_f in ((1, 1), (4, 21), (5, 1), (9, 7), (10, 12), (11, 2), (11, 15), (11, 20), (12, 25)):
+            feriados.add(datetime(y, m_f, d_f).date())
+        pascoa = _calcular_pascoa(y)
+        feriados.add((pd.Timestamp(pascoa) - pd.Timedelta(days=48)).date())
+        feriados.add((pd.Timestamp(pascoa) - pd.Timedelta(days=47)).date())
+        feriados.add((pd.Timestamp(pascoa) - pd.Timedelta(days=2)).date())
+        feriados.add((pd.Timestamp(pascoa) + pd.Timedelta(days=60)).date())
+    try:
+        df_fer = _ler_planilha_com_cache("feriados")
+        if df_fer is not None and not df_fer.empty:
+            for col_f in df_fer.columns:
+                if "DATA" in limpar_texto(col_f):
+                    for v_f in df_fer[col_f].dropna():
+                        dt_f = pd.to_datetime(str(v_f).strip(), dayfirst=True, errors="coerce")
+                        if pd.notna(dt_f):
+                            feriados.add(dt_f.date())
+                    break
+    except Exception:
+        pass
+    return feriados
+
+def subtrair_dias_uteis(dt_alvo, qtd_dias, feriados_set):
+    if pd.isna(dt_alvo):
+        return pd.NaT
+    d = dt_alvo.date() if hasattr(dt_alvo, "date") else dt_alvo
+    passos = int(math.ceil(max(0.0, float(qtd_dias))))
+    while passos > 0:
+        d = (pd.Timestamp(d) - pd.Timedelta(days=1)).date()
+        if d.weekday() < 5 and d not in feriados_set:
+            passos -= 1
+    while d.weekday() >= 5 or d in feriados_set:
+        d = (pd.Timestamp(d) - pd.Timedelta(days=1)).date()
+    return pd.Timestamp(d)
+
+def contar_dias_uteis_entre(dt_inicio, dt_fim, feriados_set):
+    if pd.isna(dt_inicio) or pd.isna(dt_fim):
+        return 0
+    d1 = dt_inicio.date() if hasattr(dt_inicio, "date") else dt_inicio
+    d2 = dt_fim.date() if hasattr(dt_fim, "date") else dt_fim
+    if d1 == d2:
+        return 0
+    sinal = 1 if d2 > d1 else -1
+    atual, alvo = (d1, d2) if d2 > d1 else (d2, d1)
+    uteis = 0
+    while atual < alvo:
+        atual = (pd.Timestamp(atual) + pd.Timedelta(days=1)).date()
+        if atual.weekday() < 5 and atual not in feriados_set:
+            uteis += 1
+    return uteis * sinal
+
+def obter_mapa_lead_time():
+    df_lt = carregar_dados("lead time")
+    mapa = {}
+    if df_lt is not None and not df_lt.empty:
+        col_uf, col_cid, col_dias = None, None, None
+        for c in df_lt.columns:
+            cl = limpar_texto(c)
+            if not col_uf and cl in ("ESTADO", "UF"):
+                col_uf = c
+            elif not col_cid and cl in ("CIDADE", "MUNICIPIO"):
+                col_cid = c
+            elif not col_dias and ("DIAS" in cl or "LEAD" in cl or "PRAZO" in cl):
+                col_dias = c
+        if col_uf and col_cid and col_dias:
+            for _, r in df_lt.iterrows():
+                u_k = limpar_texto(r[col_uf])
+                c_k = limpar_texto(r[col_cid])
+                try:
+                    mapa[(u_k, c_k)] = float(str(r[col_dias]).strip().replace(",", "."))
+                except Exception:
+                    pass
+    return mapa
+
 def limpar_texto(valor):
     if pd.isna(valor):
         return ""
