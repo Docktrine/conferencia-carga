@@ -682,8 +682,8 @@ if not st.session_state.usuario_autenticado:
                     f"""
                     <div style="text-align: center; padding-top: 8px; padding-bottom: 12px;">
                         <img src="data:{LOGO_MIME};base64,{LOGO_B64}" style="width: 100px; height: 100px; border-radius: 16px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15); margin-bottom: 14px;">
-                        <h2 style="margin: 0; padding: 0;">WMS Grano</h2>
-                        <p style="color: gray; margin-top: 4px;">Acesso Restrito — Identifique-se para continuar</p>
+                        <p style="color: #1B5E20; font-weight: 700; font-size: 0.85rem; margin: 2px 0 4px 0;">v2.0 — Inteligência Logística</p>
+                        <p style="color: gray; margin-top: 2px; font-size: 0.82rem;">Acesso Restrito — Identifique-se para continuar</p>
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -1115,6 +1115,7 @@ with st.sidebar:
             st.cache_data.clear()
         st.session_state.usuario_autenticado = False
         st.rerun()
+    st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
 agora_ping = datetime.now()
 ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
 if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 180:
