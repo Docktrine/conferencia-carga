@@ -1060,6 +1060,10 @@ with st.sidebar:
             border: none !important;
             padding: 0 !important;
         }
+        section[data-testid="stSidebar"] div[data-baseweb="input"] button {
+            background-color: #1F2922 !important;
+            border-left: 1px solid rgba(76, 175, 80, 0.45) !important;
+        }        
         </style>
         """,
         unsafe_allow_html=True
