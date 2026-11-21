@@ -1263,29 +1263,67 @@ if len(abas_nav) > 1:
         st.markdown(
             f"""
             <style>
-            @keyframes brisaFolhaGrano {{
-                0%, 100% {{ transform: rotate(-6deg); }}
-                50% {{ transform: rotate(8deg); }}
+            @keyframes pulsoVivoGrano {{
+                0%, 100% {{ transform: scale(1); opacity: 1; }}
+                50% {{ transform: scale(1.35); opacity: 0.55; }}
             }}
-            .folha-grano-anim {{
+            @keyframes folhaVento1 {{
+                0% {{ transform: translate(-10px, 8px) rotate(-15deg); opacity: 0; }}
+                25% {{ opacity: 0.85; }}
+                75% {{ opacity: 0.85; }}
+                100% {{ transform: translate(190px, -10px) rotate(35deg); opacity: 0; }}
+            }}
+            @keyframes folhaVento2 {{
+                0% {{ transform: translate(15px, 12px) rotate(10deg); opacity: 0; }}
+                30% {{ opacity: 0.7; }}
+                80% {{ opacity: 0.7; }}
+                100% {{ transform: translate(230px, -6px) rotate(-25deg); opacity: 0; }}
+            }}
+            @keyframes folhaVento3 {{
+                0% {{ transform: translate(-5px, 4px) rotate(-5deg); opacity: 0; }}
+                25% {{ opacity: 0.6; }}
+                75% {{ opacity: 0.6; }}
+                100% {{ transform: translate(165px, -14px) rotate(45deg); opacity: 0; }}
+            }}
+            .ponto-vivo-grano {{
                 display: inline-block;
-                transform-origin: 20% 85%;
-                animation: brisaFolhaGrano 3s ease-in-out infinite;
-                margin-right: 10px;
+                width: 11px;
+                height: 11px;
+                border-radius: 50%;
+                background-color: #2E7D32;
+                box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.18);
+                animation: pulsoVivoGrano 2.2s ease-in-out infinite;
+                margin-right: 12px;
                 vertical-align: middle;
             }}
+            .vento-box-grano {{
+                position: relative;
+                height: 18px;
+                width: 260px;
+                overflow: visible;
+                pointer-events: none;
+            }}
+            .f-voa-1 {{ position: absolute; left: 10px; top: 2px; animation: folhaVento1 5.5s ease-in-out infinite; }}
+            .f-voa-2 {{ position: absolute; left: 35px; top: 5px; animation: folhaVento2 6.8s ease-in-out 1.8s infinite; }}
+            .f-voa-3 {{ position: absolute; left: 5px; top: 6px; animation: folhaVento3 6.2s ease-in-out 3.4s infinite; }}
             </style>
-            <div style="display:flex; align-items:center; margin-top:4px; margin-bottom:2px;">
-                <span class="folha-grano-anim">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://w3.org">
-                        <path d="M6 26 C6 14 15 6 26 6 C26 17 18 26 6 26 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/>
-                        <path d="M6 26 C12 20 18 14 23 9" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M13 19 H18 M16 16 V12" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
-                    </svg>
-                </span>
+            <div class="vento-box-grano">
+                <svg class="f-voa-1" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 20 C4 10 11 4 20 4 C20 13 14 20 4 20 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M4 20 C9 15 14 10 18 6" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <svg class="f-voa-2" width="11" height="11" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 20 C4 10 11 4 20 4 C20 13 14 20 4 20 Z" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+                <svg class="f-voa-3" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 20 C4 10 11 4 20 4 C20 13 14 20 4 20 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div style="display:flex; align-items:center; margin-top:-2px; margin-bottom:2px;">
+                <span class="ponto-vivo-grano"></span>
                 <span style="font-size:2.15rem; font-weight:800; color:#141A16; letter-spacing:-0.5px; line-height:1.1;">Olá, {primeiro_nome_ini}!</span>
             </div>
-            <div style="font-size:0.82rem; color:#5A635C; margin-top:4px; padding-left:42px;">Torre de Controle Logística • {hoje_str_ini}</div>
+            <div style="font-size:0.82rem; color:#5A635C; margin-top:4px; padding-left:23px;">Torre de Controle Logística • {hoje_str_ini}</div>
             """,
             unsafe_allow_html=True
         )
