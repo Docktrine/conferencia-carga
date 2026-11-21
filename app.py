@@ -3204,7 +3204,11 @@ elif aba == "📈 Painel de Acompanhamento":
         st.info("Nenhuma carga cadastrada.")
         st.stop()
 
-    carga_selecionada = st.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist())
+    c_sel_pa, c_btn_pa, _ = st.columns((2.0, 1.0, 3.0), vertical_alignment="bottom")
+    carga_selecionada = c_sel_pa.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist(), key="sel_carga_painel")
+    if c_btn_pa.button("🔄 Atualizar Dados", type="primary"):
+        st.cache_data.clear()
+        st.rerun(
     
     if st.button("🔄 Atualizar Dados"):
         st.cache_data.clear()
