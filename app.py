@@ -1098,22 +1098,25 @@ else:
         st.session_state.abas_abertas.append(aba)
 
 abas_nav = st.session_state.abas_abertas
+def _ao_mudar_guia():
+    sel = st.session_state.get("barra_guias_topo")
+    if sel == "✕ Fechar guia atual":
+        atual = st.session_state.aba_ativa
+        if atual in st.session_state.abas_abertas and len(st.session_state.abas_abertas) > 1:
+            st.session_state.abas_abertas.remove(atual)
+            st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
+    elif sel and sel in st.session_state.abas_abertas:
+        st.session_state.aba_ativa = sel
+
 if len(abas_nav) > 1:
-    opcoes_pills = abas_nav + ["✕ Fechar guia atual"]
     st.session_state["barra_guias_topo"] = aba
-    escolha_pill = st.pills(
+    st.pills(
         "Guias abertas:",
-        options=opcoes_pills,
+        options=abas_nav + ["✕ Fechar guia atual"],
         label_visibility="collapsed",
-        key="barra_guias_topo"
+        key="barra_guias_topo",
+        on_change=_ao_mudar_guia
     )
-    if escolha_pill == "✕ Fechar guia atual":
-        st.session_state.abas_abertas.remove(aba)
-        st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
-        st.rerun()
-    elif escolha_pill and escolha_pill != aba:
-        st.session_state.aba_ativa = escolha_pill
-        st.rerun()
     
 if aba == "📊 Análise de Pedidos":
     st.title("📊 Análise de Pedidos & Lead Time")
