@@ -1608,7 +1608,7 @@ if aba == "🏠 Início":
                 )
 
                 ci_txt.markdown(
-                    f"{badge_ped_html} <span style='color:#0D3B16; font-weight:700;'>{corpo_msg_i}</span>{autor_html_i}",
+                    f"{badge_ped_html} <span style='color:#08240E; font-weight:700;'>{corpo_msg_i}</span>{autor_html_i}",
                     unsafe_allow_html=True
                 )
                 
