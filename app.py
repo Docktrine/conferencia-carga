@@ -900,55 +900,60 @@ with st.sidebar:
             st.session_state.usuario_autenticado = False
             st.rerun()
         st.stop()
-    # === TEMA VISUAL GLOBAL MODERNIZADO (WMS GRANO) ===
+# === TEMA VISUAL GLOBAL MODERNIZADO (WMS GRANO) ===
     st.markdown(
         """
         <style>
         /* 1. Botões Principais (Pílula Verde-Floresta) */
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] button[data-testid="stBaseButton-primary"],
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"] {
+        .stMain button[kind="primary"],
+        .stMain button[kind="primaryFormSubmit"],
+        [data-testid="stAppViewContainer"] button[kind="primary"],
+        [data-testid="stAppViewContainer"] button[kind="primaryFormSubmit"] {
             background-color: #1F2922 !important;
             border: 1px solid #4CAF50 !important;
             border-radius: 20px !important;
             min-height: 36px !important;
-            padding: 4px 18px !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+            padding: 4px 20px !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14) !important;
             transition: all 0.18s ease !important;
         }
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] button[data-testid="stBaseButton-primary"] p,
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"] p {
+        .stMain button[kind="primary"] p,
+        .stMain button[kind="primaryFormSubmit"] p,
+        [data-testid="stAppViewContainer"] button[kind="primary"] p,
+        [data-testid="stAppViewContainer"] button[kind="primaryFormSubmit"] p {
             color: #FFFFFF !important;
             font-weight: 600 !important;
             font-size: 0.84rem !important;
         }
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] button[data-testid="stBaseButton-primary"]:hover,
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"]:hover {
+        .stMain button[kind="primary"]:hover,
+        .stMain button[kind="primaryFormSubmit"]:hover,
+        [data-testid="stAppViewContainer"] button[kind="primary"]:hover,
+        [data-testid="stAppViewContainer"] button[kind="primaryFormSubmit"]:hover {
             background-color: #1B5E20 !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 4px 10px rgba(27, 94, 32, 0.25) !important;
         }
 
-        /* 2. Cartões, Containers e Expanders */
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"],
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] details[data-testid="stExpander"] {
+        /* 2. Cartões de Métricas (KPIs com borda verde à esquerda) */
+        [data-testid="stMetric"] {
+            background-color: #E4E0D6 !important;
+            border: 1px solid rgba(27, 94, 32, 0.28) !important;
+            border-left: 4px solid #1B5E20 !important;
+            border-radius: 10px !important;
+            padding: 12px 16px !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        /* 3. Caixas, Containers e Expanders */
+        [data-testid="stExpander"],
+        .stMain [data-testid="stVerticalBlockBorderWrapper"] {
             background-color: #E4E0D6 !important;
             border: 1px solid rgba(27, 94, 32, 0.28) !important;
             border-radius: 12px !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         }
 
-        /* 3. Cartões de Métricas (KPIs com borda verde à esquerda) */
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] div[data-testid="stMetric"] {
-            background-color: #E4E0D6 !important;
-            border: 1px solid rgba(27, 94, 32, 0.25) !important;
-            border-left: 4px solid #1B5E20 !important;
-            border-radius: 10px !important;
-            padding: 10px 14px !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-        }
-
         /* 4. Tabelas e Dataframes */
-        div[data-testid="stAppViewContainer"] section[data-testid="stMain"] div[data-testid="stDataFrame"] {
+        [data-testid="stDataFrame"] {
             border: 1px solid rgba(27, 94, 32, 0.30) !important;
             border-radius: 12px !important;
             overflow: hidden !important;
@@ -957,9 +962,8 @@ with st.sidebar:
         </style>
         """,
         unsafe_allow_html=True
-    )
+    ) 
 
-    
     st.markdown("<div style='font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #81C784; font-weight: 700; margin-top: 22px; margin-bottom: 10px;'>MÓDULOS DO SISTEMA</div>", unsafe_allow_html=True)
     st.markdown(
         """
