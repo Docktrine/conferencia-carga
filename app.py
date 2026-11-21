@@ -1522,16 +1522,58 @@ elif aba == "🚚 Planejamento Logística":
         k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
 
         df_tab_plan = df_exibir_plan.drop(columns=["Notificação"], errors="ignore").copy()
-        estilo_plan = (
-            df_tab_plan.style
-            .set_table_styles([
-                {"selector": "th", "props": [("background-color", "#1F2922"), ("color", "#E6E1D6"), ("font-weight", "700"), ("border-bottom", "2px solid #4CAF50")]},
-                {"selector": "tr:nth-child(even)", "props": [("background-color", "rgba(27, 94, 32, 0.05)")]}
-            ])
-            .set_properties(subset=["Nº Pedido"], **{"font-weight": "700", "color": "#1B5E20"})
+        html_tab_plan = df_tab_plan.to_html(index=False, escape=True)
+        st.markdown(
+            f"""
+            <style>
+            .wms-table-wrap {{
+                width: 100%;
+                max-height: 420px;
+                overflow: auto;
+                border: 1px solid rgba(27, 94, 32, 0.45);
+                border-radius: 12px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+                background-color: #EAE7E0;
+                margin-bottom: 14px;
+            }}
+            .wms-table-wrap table {{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.83rem;
+                white-space: nowrap;
+            }}
+            .wms-table-wrap thead th {{
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background-color: #1F2922;
+                color: #E6E1D6;
+                font-weight: 700;
+                text-align: left;
+                padding: 11px 14px;
+                border-bottom: 2px solid #4CAF50;
+                letter-spacing: 0.03em;
+            }}
+            .wms-table-wrap tbody td {{
+                padding: 9px 14px;
+                color: #141A16;
+                border-bottom: 1px solid rgba(27, 94, 32, 0.14);
+            }}
+            .wms-table-wrap tbody tr:nth-child(even) {{
+                background-color: rgba(27, 94, 32, 0.06);
+            }}
+            .wms-table-wrap tbody tr:hover {{
+                background-color: rgba(76, 175, 80, 0.15);
+            }}
+            .wms-table-wrap tbody td:nth-child(5) {{
+                font-weight: 700;
+                color: #1B5E20;
+            }}
+            </style>
+            <div class="wms-table-wrap">{html_tab_plan}</div>
+            """,
+            unsafe_allow_html=True
         )
-        st.dataframe(estilo_plan, use_container_width=True, hide_index=True)
-
         with st.container(border=True):
             st.markdown("**⚡ Atualização Rápida de Status**")
             st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
