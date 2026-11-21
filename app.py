@@ -1500,7 +1500,7 @@ elif aba == "🚚 Planejamento Logística":
     k_top1, k_top2, k_top3 = st.columns(3)
     k_top1.metric("📋 Total Programado", total_prog_kpi)
     k_top2.metric("💰 Valor Total dos Pedidos", fmt_pedidos_kpi)
-    k_top3.metric("🚛 Valor Total de Frete", fmt_frete_kpi, delta=f"{perc_frete_kpi:.1f}% sobre pedidos".replace(".", ","), delta_color="off")
+    k_top3.metric("🚛 Valor Total de Frete", fmt_frete_kpi, delta=f"{perc_frete_kpi:.1f}% sobre pedidos".replace(".", ","), delta_color="inverse")
 
     c_locais, c_top_clientes = st.columns(2)
     with c_locais:
