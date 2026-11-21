@@ -1521,7 +1521,16 @@ elif aba == "🚚 Planejamento Logística":
         k4.metric("✅ Carregado / Liberado", qtd_st4)
         k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
 
-        st.dataframe(df_exibir_plan.drop(columns=["Notificação"], errors="ignore"), use_container_width=True, hide_index=True)
+        df_tab_plan = df_exibir_plan.drop(columns=["Notificação"], errors="ignore").copy()
+        estilo_plan = (
+            df_tab_plan.style
+            .set_table_styles([
+                {"selector": "th", "props": [("background-color", "#1F2922"), ("color", "#E6E1D6"), ("font-weight", "700"), ("border-bottom", "2px solid #4CAF50")]},
+                {"selector": "tr:nth-child(even)", "props": [("background-color", "rgba(27, 94, 32, 0.05)")]}
+            ])
+            .set_properties(subset=["Nº Pedido"], **{"font-weight": "700", "color": "#1B5E20"})
+        )
+        st.dataframe(estilo_plan, use_container_width=True, hide_index=True)
 
         with st.container(border=True):
             st.markdown("**⚡ Atualização Rápida de Status**")
