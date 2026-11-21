@@ -1192,19 +1192,36 @@ if len(abas_nav) > 1:
     st.markdown(
         """
         <style>
-        /* Congela diretamente o componente stPills no cabeçalho superior */
-        [data-testid="stPills"] {
+        /* Faz o header nativo do Streamlit deixar cliques passarem na faixa central */
+        header[data-testid="stHeader"] {
+            background: transparent !important;
+            pointer-events: none !important;
+        }
+        header[data-testid="stHeader"] * {
+            pointer-events: auto !important;
+        }
+
+        /* Sobe e congela a barra de guias no topo da janela (mesma linha dos avatares) */
+        [data-testid="stButtonGroup"],
+        [data-testid="stPills"],
+        div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
+        div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
             position: fixed !important;
-            top: 9px !important;
-            left: 22rem !important;
+            top: 10px !important;
+            left: 21.5rem !important;
             width: auto !important;
             max-width: calc(100vw - 38rem) !important;
-            z-index: 999990 !important;
+            z-index: 999998 !important;
+            pointer-events: auto !important;
         }
-        /* Ajusta automaticamente se o menu lateral estiver recolhido */
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stPills"] {
+
+        /* Ajusta a posição à esquerda quando a barra lateral estiver recolhida */
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stButtonGroup"],
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stPills"],
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
             left: 4.5rem !important;
-            max-width: calc(100vw - 22rem) !important;
+            max-width: calc(100vw - 21rem) !important;
         }
         </style>
         """,
