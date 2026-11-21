@@ -387,7 +387,7 @@ COLUNAS_PLANEJAMENTO = [
     "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
     "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora", "Placa do veículo",
     "Tipo de Veículo", "Valor de Frete", "UF", "Cidade", "CIF/FOB",
-    "Veículo compartilhado", "Data da entrega", "Observação", "Status", "Notificação","Nota Fiscal"
+    "Veículo compartilhado", "Data da entrega", "Observação", "Status", "Notificação", "Nota Fiscal, "id_carga", "validado"
 ]
 
 STATUS_PLANEJAMENTO = [
@@ -2186,16 +2186,17 @@ elif aba == "📋 Gestão de Pedidos":
     mapa_validados_gp = {}
     mapa_nf_gp = {}
     if not df_plan_gp.empty:
-        col_ped_gp = "Nº Pedido" if "Nº Pedido" in df_plan_gp.columns else ("id_carga" if "id_carga" in df_plan_gp.columns else None)
-        if col_ped_gp:
-            for _, r_p in df_plan_gp.iterrows():
-                ped_p_str = str(r_p.get(col_ped_gp, "")).strip()
+        for _, r_p in df_plan_gp.iterrows():
                 val_str = str(r_p.get("validado", "")).strip()
                 nf_str = str(r_p.get("Nota Fiscal", "")).strip()
-                if val_str and val_str.lower() not in ("nan", "none", "null", "nao", "não"):
-                    mapa_validados_gp[limpar_texto(ped_p_str)] = val_str
-                if nf_str and nf_str.lower() not in ("nan", "none", "null", "-"):
-                    mapa_nf_gp[ped_p_str] = nf_str
+                for col_chave in ("Nº Pedido", "id_carga"):
+                    ped_p_str = str(r_p.get(col_chave, "")).strip()
+                    if not ped_p_str or ped_p_str.lower() in ("nan", "none"):
+                        continue
+                    if val_str and val_str.lower() not in ("nan", "none", "null", "nao", "não"):
+                        mapa_validados_gp[limpar_texto(ped_p_str)] = val_str
+                    if nf_str and nf_str.lower() not in ("nan", "none", "null", "-"):
+                        mapa_nf_gp[ped_p_str] = nf_str
     for cid, grupo in df_todas.groupby("id_carga", sort=False):
         tot_ped = int(grupo["pedido_real"].sum())
         tot_bip = int(grupo["bipado"].sum())
