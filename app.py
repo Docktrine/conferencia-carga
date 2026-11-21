@@ -1251,6 +1251,7 @@ if aba == "📊 Análise de Pedidos":
                             salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
                             st.cache_data.clear()
                             st.success(f"🎉 {len(novos_plan)} pedido(s) adicionado(s) ao Planejamento sem alterar os existentes!")
+                            st.rerun()
 
                     buf_bi = io.BytesIO()
                     with pd.ExcelWriter(buf_bi, engine="openpyxl") as writer:
@@ -1392,24 +1393,24 @@ elif aba == "🚚 Planejamento Logística":
     login_atual_nt = st.session_state.get("login_usuario", "")
     nome_atual_nt = st.session_state.get("nome_usuario", "")
 
-        def extrair_minhas_notifs(txt_raw):
-            s_nt = str(txt_raw).strip()
-            if not s_nt or s_nt.lower() in ("nan", "none", "null"):
-                return list()
-            login_atual_nt = limpar_texto(st.session_state.login_usuario)
-            nome_atual_nt = limpar_texto(st.session_state.nome_usuario)
-            minhas = list()
-            for parte in s_nt.split(" || "):
-                p_limpa = parte.strip()
-                if not p_limpa:
-                    continue
-                if "[PARA:" not in p_limpa:
+    def extrair_minhas_notifs(txt_raw):
+        s_nt = str(txt_raw).strip()
+        if not s_nt or s_nt.lower() in ("nan", "none", "null"):
+            return list()
+        login_u = limpar_texto(st.session_state.login_usuario)
+        nome_u = limpar_texto(st.session_state.nome_usuario)
+        minhas = list()
+        for parte in s_nt.split(" || "):
+            p_limpa = parte.strip()
+            if not p_limpa:
+                continue
+            if "[PARA:" not in p_limpa:
+                minhas.append(p_limpa)
+            else:
+                destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
+                if destino in ("TODOS", login_u, nome_u):
                     minhas.append(p_limpa)
-                else:
-                    destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
-                    if destino in ("TODOS", login_atual_nt, nome_atual_nt):
-                        minhas.append(p_limpa)
-            return minhas
+        return minhas
 
     lista_alertas_plan = list()
     for idx_nt, row_nt in df_plan.iterrows():
@@ -1455,8 +1456,9 @@ elif aba == "🚚 Planejamento Logística":
                     df_plan.at[idx_nt, "Notificação"] = " || ".join(partes_atuais)
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
-                    st.rerun()        
+                    st.rerun()
 
+    if not df_exibir_plan.empty:
         f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
             datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
@@ -1469,7 +1471,7 @@ elif aba == "🚚 Planejamento Logística":
         if filtro_data_carreg != "Todas as datas":
             df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
         if filtro_status_plan != "Todos os status":
-            df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"] == filtro_status_plan]
+            df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"].apply(limpar_texto) == limpar_texto(filtro_status_plan)]
         if busca_livre.strip():
             termo = busca_livre.strip().lower()
             mask_busca = (
@@ -1480,16 +1482,12 @@ elif aba == "🚚 Planejamento Logística":
             )
             df_exibir_plan = df_exibir_plan[mask_busca]
 
-        qtd_total_kpi = len(df_exibir_plan)
-        qtd_aguardando = int(df_exibir_plan["Status"].isin(["⏳ Aguardando Veículo", "🚚 Veículo no Pátio"]).sum())
-        qtd_conferencia = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
-        qtd_liberados = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
-
-        qtd_st1 = int((df_exibir_plan["Status"] == "⏳ Aguardando Veículo").sum())
-        qtd_st2 = int((df_exibir_plan["Status"] == "🚚 Veículo no Pátio").sum())
-        qtd_st3 = int((df_exibir_plan["Status"] == "📦 Em Conferência").sum())
-        qtd_st4 = int((df_exibir_plan["Status"] == "✅ Carregado / Liberado").sum())
-        qtd_st5 = int((df_exibir_plan["Status"] == "⚠️ Atrasado / Ocorrência").sum())
+        st_norm = df_exibir_plan["Status"].apply(limpar_texto)
+        qtd_st1 = int((st_norm == limpar_texto("⏳ Aguardando Veículo")).sum())
+        qtd_st2 = int((st_norm == limpar_texto("🚚 Veículo no Pátio")).sum())
+        qtd_st3 = int((st_norm == limpar_texto("📦 Em Conferência")).sum())
+        qtd_st4 = int((st_norm == limpar_texto("✅ Carregado / Liberado")).sum())
+        qtd_st5 = int((st_norm == limpar_texto("⚠️ Atrasado / Ocorrência")).sum())
 
         k1, k2, k3, k4, k5 = st.columns(5)
         k1.metric("⏳ Aguardando Veículo", qtd_st1)
@@ -1519,7 +1517,7 @@ elif aba == "🚚 Planejamento Logística":
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
                     st.rerun()
-                    
+
         if tem_permissao("🔔 Lançar Notificações"):
             with st.container(border=True):
                 st.markdown("**🔔 Lançar Notificação no Pedido**")
@@ -1535,7 +1533,7 @@ elif aba == "🚚 Planejamento Logística":
 
                 if opcoes_notif:
                     with st.form("form_lancar_notif", clear_on_submit=True):
-                        nt_c1, nt_c2, nt_c3, nt_c4 = st.columns([2, 2, 3, 1], vertical_alignment="bottom")
+                        nt_c1, nt_c2, nt_c3, nt_c4 = st.columns((2, 2, 3, 1), vertical_alignment="bottom")
                         sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()))
                         sel_nt_dest = nt_c2.selectbox("Para quem?", list(opcoes_destino_nt.keys()))
                         txt_nova_notif = nt_c3.text_input(
@@ -1548,16 +1546,20 @@ elif aba == "🚚 Planejamento Logística":
                             if txt_nova_notif.strip():
                                 idx_nt_alvo = opcoes_notif[sel_nt_ped]
                                 dest_codigo = opcoes_destino_nt[sel_nt_dest]
-                                df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                                df_plan.at[idx_nt_alvo, "Notificação"] = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} ({st.session_state.nome_usuario})"
+                                df_plan["Notificação"] = df_plan["Notificação"].fillna("").astype(object)
+                                nova_msg_nt = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} (DE: {st.session_state.nome_usuario})"
+                                atual_nt = str(df_plan.at[idx_nt_alvo, "Notificação"]).strip()
+                                if atual_nt and atual_nt.lower() not in ("nan", "none", "null"):
+                                    df_plan.at[idx_nt_alvo, "Notificação"] = f"{atual_nt} || {nova_msg_nt}"
+                                else:
+                                    df_plan.at[idx_nt_alvo, "Notificação"] = nova_msg_nt
                                 salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                                 st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
                                 st.rerun()
                             else:
                                 st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
-               
     else:
-        st.info("Nenhum pedido cadastrado no planejamento ainda.")
+        st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
     st.divider()
 
