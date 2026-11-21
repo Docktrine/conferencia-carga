@@ -1159,35 +1159,47 @@ if qtd_online > 0:
         """,
         unsafe_allow_html=True
     )
-if "abas_abertas" not in st.session_state:
-    st.session_state.abas_abertas = [aba]
-else:
-    st.session_state.abas_abertas = [m for m in st.session_state.abas_abertas if m in menu_lateral_itens]
-    if aba not in st.session_state.abas_abertas:
-        if len(st.session_state.abas_abertas) >= 5:
-            st.session_state.abas_abertas.pop(0)
-        st.session_state.abas_abertas.append(aba)
+# === BARRA DE GUIAS FIXA COM "🏠 INÍCIO" SEMPRE EM 1º LUGAR ===
+if "abas_abertas" not in st.session_state or not st.session_state.abas_abertas:
+    st.session_state.abas_abertas = ["🏠 Início"] if usar_inicio else [aba]
 
-abas_nav = st.session_state.abas_abertas
+if usar_inicio:
+    outras_abas = [m for m in st.session_state.abas_abertas if m != "🏠 Início" and m in menu_lateral_itens]
+    if aba != "🏠 Início" and aba in menu_lateral_itens and aba not in outras_abas:
+        if len(outras_abas) >= 4:
+            outras_abas.pop(0)
+        outras_abas.append(aba)
+    abas_nav = ["🏠 Início"] + outras_abas
+else:
+    abas_nav = [aba]
+
+st.session_state.abas_abertas = abas_nav
+
 def _ao_mudar_guia():
     sel = st.session_state.get("barra_guias_topo")
     if sel == "✕ Fechar guia atual":
         atual = st.session_state.aba_ativa
-        if atual in st.session_state.abas_abertas and len(st.session_state.abas_abertas) > 1:
+        if atual != "🏠 Início" and atual in st.session_state.abas_abertas:
             st.session_state.abas_abertas.remove(atual)
-            st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
+        st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+        st.session_state["barra_guias_topo"] = st.session_state.aba_ativa
     elif sel and sel in st.session_state.abas_abertas:
         st.session_state.aba_ativa = sel
 
 if len(abas_nav) > 1:
-    st.session_state["barra_guias_topo"] = aba
     st.pills(
         "Guias abertas:",
         options=abas_nav + ["✕ Fechar guia atual"],
+        default=st.session_state.aba_ativa,
         label_visibility="collapsed",
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
     )
+
+aba = st.session_state.aba_ativa
+
+if aba == "🏠 Início":
+
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
     primeiro_nome_ini = st.session_state.nome_usuario.split().pop(0).title() if st.session_state.nome_usuario else "Equipe"
 
