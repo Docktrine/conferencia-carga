@@ -1713,7 +1713,13 @@ elif aba == "🚚 Planejamento Logística":
                 "Nota Fiscal": st.column_config.TextColumn("🧾 Nota Fiscal", width="small"),
             }
         )
-
+        with st.container(border=True):
+            st.markdown("**⚡ Atualização Rápida de Status**")
+            st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
+            opcoes_rapidas = {
+                f"Pedido {r['Nº Pedido']} — {r['Cliente']} (Atual: {r['Status']})": idx
+                for idx, r in df_exibir_plan.iterrows()
+            }
             if opcoes_rapidas:
                 sel_rapida = st_c1.selectbox("Selecione o Pedido:", list(opcoes_rapidas.keys()), key="sel_status_rapido")
                 idx_rapido = opcoes_rapidas[sel_rapida]
