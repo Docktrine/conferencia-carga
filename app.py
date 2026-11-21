@@ -1131,28 +1131,14 @@ if aba == "📊 Análise de Pedidos":
         padrao = r"(?<!\d)" + re.escape(p_limpo) + r"(?!\d)"
         return bool(re.search(padrao, c_limpo))
 
-    df_lt = carregar_dados("lead time")
-    mapa_lt = {}
-    if not df_lt.empty:
-        cols_lt_lista = list(df_lt.columns)
-        col_uf_lt = achar_col_bi(cols_lt_lista, ("ESTADO", "UF"))
-        col_cid_lt = achar_col_bi(cols_lt_lista, ("CIDADE", "MUNICIPIO"))
-        col_dias_lt = achar_col_bi(cols_lt_lista, ("DIAS", "LEAD TIME", "PRAZO"))
-        if col_uf_lt and col_cid_lt and col_dias_lt:
-            for _, r_lt in df_lt.iterrows():
-                uf_k = limpar_texto(r_lt[col_uf_lt])
-                cid_k = limpar_texto(r_lt[col_cid_lt])
-                val_str = str(r_lt[col_dias_lt]).strip().replace(",", ".")
-                try:
-                    mapa_lt[(uf_k, cid_k)] = float(val_str)
-                except Exception:
-                    pass
+    feriados_sys = obter_feriados_sistema()
+    mapa_lt = obter_mapa_lead_time()
 
     c_up_bi, c_cfg_bi = st.columns((3, 1))
     with c_up_bi:
         arquivo_bi = st.file_uploader("📂 Importar Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=("xls", "xlsx", "csv"), key="up_bi_analise")
     with c_cfg_bi:
-        limite_critico = st.number_input("⚠️ Limite Crítico (dias p/ expedir):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
+        limite_critico = st.number_input("⚠️ Limite Crítico (dias úteis p/ carregar):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
 
     if arquivo_bi is not None:
         try:
@@ -1180,7 +1166,7 @@ if aba == "📊 Análise de Pedidos":
                     col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(("CIDADE", "MUNICIPIO")))
 
                     m5, m6, m7, m8 = st.columns(4)
-                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", cols_bi, index=achar_idx_bi(("LANCAMENTO", "CRIACAO", "EMISSAO", "DATA PEDIDO", "INCLUSAO", "DATA")))
+                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", cols_bi, index=achar_idx_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA")))
                     col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO")))
                     val_enc = achar_col_bi(cols_bi, ("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
                     col_val_bi = m7.selectbox("Valor do Pedido (R$):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(val_enc) + 1) if val_enc in cols_bi else 0)
@@ -1191,13 +1177,14 @@ if aba == "📊 Análise de Pedidos":
                     col_nf_bi = st.selectbox("Nota Fiscal de Venda (Opcional — para vincular pedidos faturados):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(nf_enc) + 1) if nf_enc in cols_bi else 0)
 
                 df_plan_exist = carregar_dados("planejamento")
-                lista_peds_plan = []
+                lista_peds_plan = list()
                 if not df_plan_exist.empty and "Nº Pedido" in df_plan_exist.columns:
                     lista_peds_plan = df_plan_exist["Nº Pedido"].astype(str).tolist()
 
                 hoje_dt = pd.Timestamp(datetime.now().date())
                 linhas_analise = list()
                 cidades_sem_lt = set()
+                alteracoes_entrega = list()
 
                 for _, r_bi in df_bi.iterrows():
                     ped_val = str(r_bi[col_ped_bi]).strip()
@@ -1222,34 +1209,54 @@ if aba == "📊 Análise de Pedidos":
                         cidades_sem_lt.add(f"{cid_val}/{uf_val}")
 
                     if pd.notna(dt_c) and pd.notna(dt_e) and lt_dias is not None:
-                        prazo_total = round((dt_e - dt_c).days, 1)
-                        janela_exp = round(prazo_total - lt_dias, 1)
-                        dt_limite_exp = dt_e - pd.to_timedelta(lt_dias, unit="D")
-                        dias_ate_limite = round((dt_limite_exp - hoje_dt).days, 1)
+                        dias_rota = round(max(0.0, lt_dias - 5.0), 1)
+                        dt_sug_carreg = subtrair_dias_uteis(dt_e, dias_rota, feriados_sys)
+                        uteis_desde_criacao = contar_dias_uteis_entre(dt_c, hoje_dt, feriados_sys)
+                        uteis_ate_carreg = contar_dias_uteis_entre(hoje_dt, dt_sug_carreg, feriados_sys)
+                        janela_exp = uteis_ate_carreg
 
-                        if janela_exp <= 0:
-                            status_sla = "🔴 Inviável na Origem"
+                        if uteis_ate_carreg < 0:
+                            status_sla = "🔴 Atrasado p/ Carregar"
                             ordem_prio = 1
-                        elif dias_ate_limite < 0:
-                            status_sla = "🟠 Atrasado p/ Expedir"
+                        elif uteis_ate_carreg == 0:
+                            status_sla = "🟠 Carregar Hoje"
                             ordem_prio = 2
-                        elif janela_exp <= limite_critico or dias_ate_limite <= limite_critico:
-                            status_sla = "🟡 Atenção / Expedir Logo"
+                        elif uteis_ate_carreg <= limite_critico or uteis_desde_criacao > 1:
+                            status_sla = "🟡 Atenção / Operação Apertada"
                             ordem_prio = 3
                         else:
-                            status_sla = "🟢 Viável / Programação Normal"
+                            status_sla = "🟢 Viável / No Prazo"
                             ordem_prio = 4
-                        dt_lim_str = dt_limite_exp.strftime("%d/%m/%Y")
+
+                        dt_lim_str = dt_sug_carreg.strftime("%d/%m/%Y")
+                        obs_criacao = f"{uteis_desde_criacao}d úteis (SLA 1d)" if uteis_desde_criacao <= 1 else f"⚠️ {uteis_desde_criacao}d úteis (perdeu {uteis_desde_criacao - 1}d)"
+                        rota_str = f"{lt_dias}d ({dias_rota}d rota)"
                     else:
-                        prazo_total = None
                         janela_exp = None
                         dt_lim_str = "-"
+                        obs_criacao = "-"
+                        rota_str = f"{lt_dias}d" if lt_dias is not None else "-"
                         status_sla = "⚪ Sem Lead Time / Data Inválida"
                         ordem_prio = 5
 
                     esta_no_plan = any(pedido_contido_no_planejamento(ped_val, p_ex) for p_ex in lista_peds_plan)
                     ja_wms = "🚚 Já no Planejamento" if esta_no_plan else "🆕 Novo (Fora do WMS)"
                     valor_fmt = f"R$ {valor_num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                    if esta_no_plan and pd.notna(dt_e) and not df_plan_exist.empty:
+                        nova_ent_str = dt_e.strftime("%d/%m/%Y")
+                        for idx_pe, r_pe in df_plan_exist.iterrows():
+                            if pedido_contido_no_planejamento(ped_val, r_pe.get("Nº Pedido", "")):
+                                ent_ant_str = formatar_data_br_str(r_pe.get("Data da entrega", ""))
+                                if ent_ant_str and ent_ant_str != nova_ent_str:
+                                    alteracoes_entrega.append({
+                                        "idx_plan": idx_pe,
+                                        "Pedido": ped_val,
+                                        "Cliente": cli_val or str(r_pe.get("Cliente", "")),
+                                        "Entrega Anterior": ent_ant_str,
+                                        "Nova Entrega (BI)": nova_ent_str,
+                                        "Nova Sugestão Carreg.": dt_lim_str
+                                    })
 
                     linhas_analise.append({
                         "Prioridade": ordem_prio,
@@ -1264,26 +1271,57 @@ if aba == "📊 Análise de Pedidos":
                         "Valor (R$)": valor_fmt,
                         "Volumes": vol_num,
                         "Criação": dt_c.strftime("%d/%m/%Y") if pd.notna(dt_c) else "-",
+                        "Tempo Parado": obs_criacao,
                         "Entrega": dt_e.strftime("%d/%m/%Y") if pd.notna(dt_e) else "-",
-                        "Prazo Total (d)": prazo_total,
-                        "Lead Time (d)": lt_dias,
-                        "Janela p/ Expedir (d)": janela_exp,
-                        "Data Limite Expedição": dt_lim_str,
+                        "LT Total (Rota)": rota_str,
+                        "Dias Úteis p/ Carregar": janela_exp,
+                        "Sugestão Carregamento": dt_lim_str,
                         "Situação WMS": ja_wms
                     })
 
                 df_res_bi = pd.DataFrame(linhas_analise)
                 if not df_res_bi.empty:
-                    df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Janela p/ Expedir (d)"], ascending=[True, True], na_position="last")
+                    df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Dias Úteis p/ Carregar"], ascending=[True, True], na_position="last")
+
+                    if alteracoes_entrega:
+                        with st.container(border=True):
+                            st.error(f"🚨 **ALERTA COMERCIAL: {len(alteracoes_entrega)} pedido(s) já programado(s) tiveram a Data de Entrega alterada no BI!**")
+                            st.dataframe(pd.DataFrame(alteracoes_entrega).drop(columns=["idx_plan"]), use_container_width=True, hide_index=True)
+                            if st.button("🔄 Atualizar Datas no Planejamento e Disparar Alerta para a Equipe", type="primary"):
+                                st.cache_data.clear()
+                                df_p_alt = carregar_dados("planejamento")
+                                for col_p_a in COLUNAS_PLANEJAMENTO:
+                                    if col_p_a not in df_p_alt.columns:
+                                        df_p_alt[col_p_a] = ""
+                                df_p_alt["Data da entrega"] = df_p_alt["Data da entrega"].astype(object)
+                                df_p_alt["Notificação"] = df_p_alt["Notificação"].fillna("").astype(object)
+                                qtd_alt = 0
+                                for item_alt in alteracoes_entrega:
+                                    i_p = item_alt["idx_plan"]
+                                    if i_p in df_p_alt.index:
+                                        df_p_alt.at[i_p, "Data da entrega"] = item_alt["Nova Entrega (BI)"]
+                                        aviso_com = f"[PARA: TODOS] ⚠️ COMERCIAL ALTEROU DATA DE ENTREGA DO PEDIDO {item_alt['Pedido']}: DE {item_alt['Entrega Anterior']} PARA {item_alt['Nova Entrega (BI)']} (NOVA SUGESTÃO CARREG.: {item_alt['Nova Sugestão Carreg.']}) (SISTEMA BI)"
+                                        nt_atual = str(df_p_alt.at[i_p, "Notificação"]).strip()
+                                        if nt_atual and nt_atual.lower() not in ("nan", "none", "null"):
+                                            if aviso_com not in nt_atual:
+                                                df_p_alt.at[i_p, "Notificação"] = f"{nt_atual} || {aviso_com}"
+                                        else:
+                                            df_p_alt.at[i_p, "Notificação"] = aviso_com
+                                        qtd_alt += 1
+                                if qtd_alt > 0:
+                                    salvar_dados(df_p_alt[COLUNAS_PLANEJAMENTO], "planejamento")
+                                    st.cache_data.clear()
+                                    st.success(f"🔔 {qtd_alt} pedido(s) atualizados no Planejamento e notificação disparada para toda a equipe!")
+                                    st.rerun()
 
                     if cidades_sem_lt:
                         st.warning(f"⚠️ **{len(cidades_sem_lt)} cidade(s)** não encontrada(s) na aba `lead time`: {', '.join(sorted(list(cidades_sem_lt))[:10])}")
 
                     k1, k2, k3, k4, k5, k6 = st.columns(6)
                     k1.metric("📦 Total Pedidos", len(df_res_bi))
-                    k2.metric("🔴/🟠 Críticos/Atraso", int(df_res_bi["Prioridade"].isin([1, 2]).sum()))
-                    k3.metric("🟡 Urgentes", int((df_res_bi["Prioridade"] == 3).sum()))
-                    k4.metric("🟢 Viáveis", int((df_res_bi["Prioridade"] == 4).sum()))
+                    k2.metric("🔴/🟠 Críticos/Hoje", int(df_res_bi["Prioridade"].isin((1, 2)).sum()))
+                    k3.metric("🟡 Atenção", int((df_res_bi["Prioridade"] == 3).sum()))
+                    k4.metric("🟢 No Prazo", int((df_res_bi["Prioridade"] == 4).sum()))
                     tot_val_str = f"R$ {df_res_bi['Valor_Num'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
                     k5.metric("💰 Valor Carteira", tot_val_str)
                     k6.metric("🧊 Total Volumes", f"{int(df_res_bi['Volumes'].sum()):,}".replace(",", "."))
@@ -1355,14 +1393,14 @@ if aba == "📊 Análise de Pedidos":
                                 continue
                             r_esc = linhas_match.pop(0)
                             nova_l = {c_p: "" for c_p in COLUNAS_PLANEJAMENTO}
-                            nova_l["Data"] = r_esc["Data Limite Expedição"] if r_esc["Data Limite Expedição"] != "-" else ""
+                            nova_l["Data"] = r_esc["Sugestão Carregamento"] if r_esc["Sugestão Carregamento"] != "-" else ""
                             nova_l["Nº Pedido"] = r_esc["Pedido"]
                             nova_l["Valor Pedido"] = r_esc["Valor (R$)"]
                             nova_l["Cliente"] = r_esc["Cliente"]
                             nova_l["UF"] = r_esc["UF"]
                             nova_l["Cidade"] = r_esc["Cidade"]
                             nova_l["Data da entrega"] = r_esc["Entrega"] if r_esc["Entrega"] != "-" else ""
-                            nova_l["Observação"] = f"SLA BI | {r_esc['Volumes']} vol | Janela: {r_esc['Janela p/ Expedir (d)']}d | LT: {r_esc['Lead Time (d)']}d"
+                            nova_l["Observação"] = f"SLA BI | {r_esc['Volumes']} vol | LT: {r_esc['LT Total (Rota)']} | {r_esc['Tempo Parado']}"
                             nova_l["Status"] = "⏳ Aguardando Veículo"
                             nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
                             novos_plan.append(nova_l)
@@ -1383,6 +1421,7 @@ if aba == "📊 Análise de Pedidos":
                         file_name=f"Analise_Pedidos_LeadTime_{datetime.now().strftime('%d%m%Y')}.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
+
         except Exception as e_bi:
             st.error(f"Erro ao ler a planilha do BI: {e_bi}")
 
@@ -1617,7 +1656,27 @@ elif aba == "🚚 Planejamento Logística":
         k4.metric("✅ Carregado / Liberado", qtd_st4)
         k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
 
+        feriados_plan = obter_feriados_sistema()
+        mapa_lt_plan = obter_mapa_lead_time()
+
+        def calc_lt_e_sugestao(row_p):
+            u_p = limpar_texto(row_p.get("UF", ""))
+            c_p = limpar_texto(row_p.get("Cidade", ""))
+            lt_v = mapa_lt_plan.get((u_p, c_p))
+            if lt_v is None:
+                return "-", "-"
+            rota_v = round(max(0.0, lt_v - 5.0), 1)
+            dt_ent_p = pd.to_datetime(str(row_p.get("Data da entrega", "")).strip(), dayfirst=True, errors="coerce")
+            if pd.isna(dt_ent_p):
+                return f"{lt_v}d ({rota_v}d rota)", "-"
+            dt_sug_p = subtrair_dias_uteis(dt_ent_p, rota_v, feriados_plan)
+            return f"{lt_v}d ({rota_v}d rota)", dt_sug_p.strftime("%d/%m/%Y")
+
         df_tab_plan = df_exibir_plan.drop(columns=["Notificação"], errors="ignore").copy()
+        res_lt_plan = [list(t) for t in df_tab_plan.apply(calc_lt_e_sugestao, axis=1).tolist()]
+        df_tab_plan["Lead Time"] = [x.pop(0) for x in res_lt_plan]
+        df_tab_plan["Sugestão Carreg."] = [x.pop(0) for x in res_lt_plan]
+
         st.dataframe(
             df_tab_plan,
             use_container_width=True,
@@ -1639,6 +1698,8 @@ elif aba == "🚚 Planejamento Logística":
                 "CIF/FOB": st.column_config.TextColumn("🔄 CIF/FOB", width="small"),
                 "Veículo compartilhado": st.column_config.TextColumn("🤝 Compartilhado", width="small"),
                 "Data da entrega": st.column_config.TextColumn("🏁 Entrega", width="small"),
+                "Lead Time": st.column_config.TextColumn("⏱️ Lead Time", width="small"),
+                "Sugestão Carreg.": st.column_config.TextColumn("🎯 Sugestão Carreg.", width="small"),
                 "Observação": st.column_config.TextColumn("📝 Observação", width="large"),
                 "Status": st.column_config.TextColumn("🚦 Status", width="medium"),
                 "Nota Fiscal": st.column_config.TextColumn("🧾 Nota Fiscal", width="small"),
@@ -1711,6 +1772,24 @@ elif aba == "🚚 Planejamento Logística":
     st.divider()
 
     with st.expander("➕ Incluir Pedido Manualmente"):
+        st.caption("💡 Consulte rapidamente o trânsito e a data útil ideal de carregamento antes de preencher:")
+        q_c1, q_c2, q_c3 = st.columns((1, 2, 2))
+        q_uf = q_c1.text_input("UF p/ Consulta:", placeholder="Ex: DF", key="q_lt_uf")
+        q_cid = q_c2.text_input("Cidade p/ Consulta:", placeholder="Ex: BRASILIA", key="q_lt_cid")
+        q_ent = q_c3.text_input("Data Entrega Prevista:", placeholder="Ex: 26/11/2026", key="q_lt_ent")
+        if q_uf.strip() and q_cid.strip():
+            lt_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
+            if lt_q is not None:
+                rota_q = round(max(0.0, lt_q - 5.0), 1)
+                dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
+                if pd.notna(dt_ent_q):
+                    dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
+                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota) | 🎯 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
+                else:
+                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota). Informe a data de entrega ao lado para ver a data sugerida.")
+            else:
+                st.warning(f"⚠️ Cidade **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}** não encontrada na aba `lead time`.")
+        
         with st.form("form_novo_planejamento", clear_on_submit=True):
             r1c1, r1c2, r1c3, r1c4 = st.columns(4)
             in_data = r1c1.text_input("Data (DD/MM/AAAA):", placeholder="Ex: 18/11/2026")
