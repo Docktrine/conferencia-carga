@@ -1259,7 +1259,7 @@ if len(abas_nav) > 1:
     )
     c_topo_esq, c_topo_clima, _, c_topo_cal = st.columns((1.30, 1.85, 0.35, 1.05), vertical_alignment="center")
 
-        with c_topo_esq:
+    with c_topo_esq:
         st.markdown(
             f"""
             <style>
