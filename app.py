@@ -1457,7 +1457,7 @@ elif aba == "🚚 Planejamento Logística":
 
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
     status_padrao = STATUS_PLANEJAMENTO.copy().pop(0)
-    df_plan = df_plan[df_plan["Nº Pedido"].astype(str).str.strip() != ""].copy()
+    df_plan["Status"] = df_plan["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
     MESES_PT = {
         "01": "Janeiro", "02": "Fevereiro", "03": "Março", "04": "Abril",
         "05": "Maio", "06": "Junho", "07": "Julho", "08": "Agosto",
@@ -1487,7 +1487,8 @@ elif aba == "🚚 Planejamento Logística":
         key="kpi_plan_mes_selecionado"
     )
 
-    df_kpi_plan = df_plan.copy() if mes_escolhido == "Todos os meses" else df_plan[df_plan["_mes_ano_kpi"] == mes_escolhido].copy()
+     df_plan_ativos = df_plan[df_plan["Nº Pedido"].astype(str).str.strip() != ""].copy()
+     df_kpi_plan = df_plan_ativos.copy() if mes_escolhido == "Todos os meses" else df_plan_ativos[df_plan_ativos["_mes_ano_kpi"] == mes_escolhido].copy()
 
     total_prog_kpi = int(len(df_kpi_plan))
     soma_pedidos_kpi = float(pd.to_numeric(df_kpi_plan["Valor Pedido"].apply(converter_moeda_para_float), errors="coerce").fillna(0.0).sum()) if not df_kpi_plan.empty else 0.0
@@ -1547,7 +1548,7 @@ elif aba == "🚚 Planejamento Logística":
     st.divider()
 
     st.subheader("🖥️ Painel de Expedição")
-    df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
+    df_exibir_plan = df_plan[df_plan["Nº Pedido"].astype(str).str.strip() != ""][COLUNAS_PLANEJAMENTO].copy()
 
     df_plan["Notificação"] = df_plan["Notificação"].astype(str).str.strip()
     login_atual_nt = st.session_state.get("login_usuario", "")
@@ -2430,16 +2431,24 @@ elif aba == "📦 Conferência dos Pedidos":
             txt_nt = str(row_p["Notificação"]).strip()
             if not txt_nt or txt_nt.lower() in ("nan", "none", "null"):
                 return list()
+            login_u_c = limpar_texto(login_conf_nt)
+            nome_u_c = limpar_texto(nome_conf_nt)
             minhas_c = list()
             for parte in txt_nt.split(" || "):
                 p_limpa = parte.strip()
                 if not p_limpa:
                     continue
+                lidos_c = set()
+                if "[LIDO:" in p_limpa:
+                    trecho_l = p_limpa.split("[LIDO:").pop(1).split("]").pop(0)
+                    lidos_c = {limpar_texto(u) for u in trecho_l.split(",") if limpar_texto(u)}
+                if login_u_c in lidos_c or nome_u_c in lidos_c:
+                    continue
                 if "[PARA:" not in p_limpa:
                     minhas_c.append(p_limpa)
                 else:
                     destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
-                    if destino in ("TODOS", login_conf_nt, nome_conf_nt):
+                    if destino in ("TODOS", login_u_c, nome_u_c):
                         minhas_c.append(p_limpa)
             return minhas_c
 
@@ -2453,7 +2462,8 @@ elif aba == "📦 Conferência dos Pedidos":
                 st.error(f"🔔 **ATENÇÃO NESTA CARGA ({carga_selecionada}) — {len(lista_alertas_conf)} notificação(ões):**")
                 for i_nc, (idx_nc, row_nc, msg_bruta_nc) in enumerate(lista_alertas_conf):
                     cc_txt, cc_btn = st.columns((4, 1), vertical_alignment="center")
-                    msg_nc = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", msg_bruta_nc).strip().replace("(DE: ", "(")
+                    msg_nc = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", msg_bruta_nc).strip()
+                    msg_nc = re.sub(r"\s*\[LIDO:\s*[^\]]+\]", "", msg_nc).strip().replace("(DE: ", "(")
                     cc_txt.markdown(
                         f"📌 <span style='color: #0D3B16; font-weight: bold;'>{msg_nc}</span>",
                         unsafe_allow_html=True
@@ -2462,11 +2472,22 @@ elif aba == "📦 Conferência dos Pedidos":
                         df_plan_conf["Notificação"] = df_plan_conf["Notificação"].fillna("").astype(object)
                         partes_c = [x.strip() for x in str(df_plan_conf.at[idx_nc, "Notificação"]).split(" || ") if x.strip()]
                         if msg_bruta_nc in partes_c:
-                            partes_c.remove(msg_bruta_nc)
+                            idx_mc = partes_c.index(msg_bruta_nc)
+                            if "[PARA: TODOS]" in msg_bruta_nc.upper():
+                                leitor_c = limpar_texto(login_conf_nt)
+                                if "[LIDO:" in msg_bruta_nc:
+                                    base_c, resto_c = msg_bruta_nc.split("[LIDO:", 1)
+                                    lidos_at_c = resto_c.split("]", 1).pop(0).strip()
+                                    novos_lidos_c = f"{lidos_at_c}, {leitor_c}" if lidos_at_c else leitor_c
+                                    partes_c[idx_mc] = f"{base_c.strip()} [LIDO: {novos_lidos_c}]"
+                                else:
+                                    partes_c[idx_mc] = f"{msg_bruta_nc} [LIDO: {leitor_c}]"
+                            else:
+                                partes_c.remove(msg_bruta_nc)
                         df_plan_conf.at[idx_nc, "Notificação"] = " || ".join(partes_c)
                         salvar_dados(df_plan_conf[COLUNAS_PLANEJAMENTO], "planejamento")
                         st.toast("✔️ Notificação confirmada como lida!", icon="✔️")
-                        st.rerun()
+                        st.rerun()        
     df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
         st.success("✅ Conferência realizada com sucesso!")
