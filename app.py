@@ -1259,31 +1259,33 @@ if len(abas_nav) > 1:
     )
     c_topo_esq, c_topo_clima, _, c_topo_cal = st.columns((1.30, 1.85, 0.35, 1.05), vertical_alignment="center")
 
-    with c_topo_esq:
+        with c_topo_esq:
         st.markdown(
             f"""
             <style>
-            @keyframes pulsoVivoGrano {{
-                0%, 100% {{ transform: scale(1); opacity: 1; }}
-                50% {{ transform: scale(1.35); opacity: 0.55; }}
+            @keyframes brisaFolhaGrano {{
+                0%, 100% {{ transform: rotate(-6deg); }}
+                50% {{ transform: rotate(8deg); }}
             }}
-            .ponto-vivo-grano {{
+            .folha-grano-anim {{
                 display: inline-block;
-                width: 11px;
-                height: 11px;
-                border-radius: 50%;
-                background-color: #2E7D32;
-                box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.18);
-                animation: pulsoVivoGrano 2.2s ease-in-out infinite;
-                margin-right: 12px;
+                transform-origin: 20% 85%;
+                animation: brisaFolhaGrano 3s ease-in-out infinite;
+                margin-right: 10px;
                 vertical-align: middle;
             }}
             </style>
             <div style="display:flex; align-items:center; margin-top:4px; margin-bottom:2px;">
-                <span class="ponto-vivo-grano"></span>
+                <span class="folha-grano-anim">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://w3.org">
+                        <path d="M6 26 C6 14 15 6 26 6 C26 17 18 26 6 26 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M6 26 C12 20 18 14 23 9" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M13 19 H18 M16 16 V12" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                </span>
                 <span style="font-size:2.15rem; font-weight:800; color:#141A16; letter-spacing:-0.5px; line-height:1.1;">Olá, {primeiro_nome_ini}!</span>
             </div>
-            <div style="font-size:0.82rem; color:#5A635C; margin-top:4px; padding-left:23px;">Torre de Controle Logística • {hoje_str_ini}</div>
+            <div style="font-size:0.82rem; color:#5A635C; margin-top:4px; padding-left:42px;">Torre de Controle Logística • {hoje_str_ini}</div>
             """,
             unsafe_allow_html=True
         )
