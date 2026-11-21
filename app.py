@@ -140,6 +140,31 @@ st.markdown(
         background-color: #C2BBA9 !important;
         border-color: #1B5E20 !important;
         }
+    /* === TABELAS SOFISTICADAS ESTILO ERP === */
+    [data-testid="stDataFrame"] {
+        border: 1px solid rgba(27, 94, 32, 0.45) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+    }
+    [data-testid="stDataFrame"] [role="columnheader"] {
+        background-color: #1F2922 !important;
+        color: #E6E1D6 !important;
+        font-weight: 700 !important;
+        font-size: 0.80rem !important;
+        letter-spacing: 0.03em !important;
+        border-bottom: 2px solid #4CAF50 !important;
+    }
+    [data-testid="stDataFrame"] [role="columnheader"] * {
+        color: #E6E1D6 !important;
+    }
+    [data-testid="stDataFrame"] [role="gridcell"] {
+        font-size: 0.84rem !important;
+        border-bottom: 1px solid rgba(27, 94, 32, 0.12) !important;
+    }
+    [data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
+        background-color: rgba(76, 175, 80, 0.10) !important;
+    }        
     </style>
     """,
     unsafe_allow_html=True
