@@ -1268,32 +1268,32 @@ if len(abas_nav) > 1:
                 50% {{ transform: scale(1.35); opacity: 0.55; }}
             }}
             @keyframes rastroVentoGrano {{
-                0% {{ stroke-dashoffset: 240; opacity: 0; }}
-                20% {{ opacity: 0.48; }}
+                0% {{ stroke-dashoffset: 280; opacity: 0; }}
+                20% {{ opacity: 0.50; }}
                 80% {{ opacity: 0.42; }}
-                100% {{ stroke-dashoffset: -240; opacity: 0; }}
+                100% {{ stroke-dashoffset: -280; opacity: 0; }}
             }}
             @keyframes pirueta3DFolha1 {{
-                0% {{ transform: perspective(350px) translate(-18px, 8px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.9); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(-18px, 6px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.95); opacity: 0; }}
                 12% {{ opacity: 1; }}
-                30% {{ transform: perspective(350px) translate(65px, 42px) rotateX(180deg) rotateY(90deg) rotateZ(140deg) scale(1.1); }}
-                55% {{ transform: perspective(350px) translate(145px, 4px) rotateX(360deg) rotateY(220deg) rotateZ(290deg) scale(1); }}
-                82% {{ transform: perspective(350px) translate(220px, 38px) rotateX(520deg) rotateY(320deg) rotateZ(440deg) scale(0.95); opacity: 0.95; }}
-                100% {{ transform: perspective(350px) translate(275px, 14px) rotateX(680deg) rotateY(420deg) rotateZ(580deg) scale(0.85); opacity: 0; }}
+                30% {{ transform: perspective(380px) translate(85px, 46px) rotateX(180deg) rotateY(90deg) rotateZ(140deg) scale(1.15); }}
+                55% {{ transform: perspective(380px) translate(185px, 2px) rotateX(360deg) rotateY(220deg) rotateZ(290deg) scale(1.05); }}
+                82% {{ transform: perspective(380px) translate(275px, 42px) rotateX(520deg) rotateY(320deg) rotateZ(440deg) scale(1); opacity: 0.95; }}
+                100% {{ transform: perspective(380px) translate(335px, 14px) rotateX(680deg) rotateY(420deg) rotateZ(580deg) scale(0.9); opacity: 0; }}
             }}
             @keyframes pirueta3DFolha2 {{
-                0% {{ transform: perspective(350px) translate(-5px, 40px) rotateX(40deg) rotateY(0deg) rotateZ(30deg) scale(0.85); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(-5px, 44px) rotateX(40deg) rotateY(0deg) rotateZ(30deg) scale(0.9); opacity: 0; }}
                 15% {{ opacity: 0.95; }}
-                42% {{ transform: perspective(350px) translate(105px, 2px) rotateX(-190deg) rotateY(160deg) rotateZ(-150deg) scale(1.05); }}
-                72% {{ transform: perspective(350px) translate(195px, 40px) rotateX(-380deg) rotateY(300deg) rotateZ(-320deg) scale(0.95); opacity: 0.9; }}
-                100% {{ transform: perspective(350px) translate(265px, 18px) rotateX(-540deg) rotateY(420deg) rotateZ(-460deg) scale(0.8); opacity: 0; }}
+                42% {{ transform: perspective(380px) translate(130px, 0px) rotateX(-190deg) rotateY(160deg) rotateZ(-150deg) scale(1.1); }}
+                72% {{ transform: perspective(380px) translate(245px, 44px) rotateX(-380deg) rotateY(300deg) rotateZ(-320deg) scale(1); opacity: 0.9; }}
+                100% {{ transform: perspective(380px) translate(325px, 18px) rotateX(-540deg) rotateY(420deg) rotateZ(-460deg) scale(0.85); opacity: 0; }}
             }}
             @keyframes pirueta3DFolha3 {{
-                0% {{ transform: perspective(350px) translate(-12px, 24px) rotateX(0deg) rotateY(30deg) rotateZ(-20deg) scale(0.85); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(-12px, 26px) rotateX(0deg) rotateY(30deg) rotateZ(-20deg) scale(0.9); opacity: 0; }}
                 15% {{ opacity: 0.9; }}
-                38% {{ transform: perspective(350px) translate(80px, 46px) rotateX(150deg) rotateY(-140deg) rotateZ(180deg) scale(1); }}
-                68% {{ transform: perspective(350px) translate(165px, 10px) rotateX(320deg) rotateY(-280deg) rotateZ(350deg) scale(0.92); opacity: 0.85; }}
-                100% {{ transform: perspective(350px) translate(240px, 34px) rotateX(480deg) rotateY(-400deg) rotateZ(500deg) scale(0.8); opacity: 0; }}
+                38% {{ transform: perspective(380px) translate(105px, 50px) rotateX(150deg) rotateY(-140deg) rotateZ(180deg) scale(1.05); }}
+                68% {{ transform: perspective(380px) translate(210px, 8px) rotateX(320deg) rotateY(-280deg) rotateZ(350deg) scale(0.98); opacity: 0.85; }}
+                100% {{ transform: perspective(380px) translate(300px, 36px) rotateX(480deg) rotateY(-400deg) rotateZ(500deg) scale(0.85); opacity: 0; }}
             }}
             .saudacao-wrap-grano {{
                 position: relative;
@@ -1301,65 +1301,66 @@ if len(abas_nav) > 1:
             }}
             .ponto-vivo-grano {{
                 display: inline-block;
-                width: 11px;
-                height: 11px;
+                width: 13px;
+                height: 13px;
                 border-radius: 50%;
                 background-color: #2E7D32;
                 box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.18);
                 animation: pulsoVivoGrano 2.2s ease-in-out infinite;
-                margin-right: 12px;
+                margin-right: 14px;
                 vertical-align: middle;
+                flex-shrink: 0;
             }}
             .vento-overlay-grano {{
                 position: absolute;
                 left: 0;
                 top: 0;
-                height: 72px;
-                width: 300px;
+                height: 82px;
+                width: 360px;
                 z-index: 5;
                 overflow: visible;
                 pointer-events: none;
             }}
             .linha-brisa-1 {{
-                stroke-dasharray: 90 150;
+                stroke-dasharray: 105 175;
                 animation: rastroVentoGrano 4.6s ease-in-out infinite;
             }}
             .linha-brisa-2 {{
-                stroke-dasharray: 70 170;
+                stroke-dasharray: 85 195;
                 animation: rastroVentoGrano 5.5s ease-in-out 1.6s infinite;
             }}
-            .f-voa-1 {{ position: absolute; left: 4px; top: 2px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.18)); animation: pirueta3DFolha1 6.2s cubic-bezier(0.37, 0, 0.63, 1) infinite; }}
-            .f-voa-2 {{ position: absolute; left: 16px; top: 6px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.15)); animation: pirueta3DFolha2 7.4s cubic-bezier(0.37, 0, 0.63, 1) 1.9s infinite; }}
-            .f-voa-3 {{ position: absolute; left: 0px; top: 4px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.15)); animation: pirueta3DFolha3 6.8s cubic-bezier(0.37, 0, 0.63, 1) 3.5s infinite; }}
+            .f-voa-1 {{ position: absolute; left: 4px; top: 2px; filter: drop-shadow(0 3px 4px rgba(20,26,22,0.22)); animation: pirueta3DFolha1 6.2s cubic-bezier(0.37, 0, 0.63, 1) infinite; }}
+            .f-voa-2 {{ position: absolute; left: 16px; top: 6px; filter: drop-shadow(0 3px 4px rgba(20,26,22,0.18)); animation: pirueta3DFolha2 7.4s cubic-bezier(0.37, 0, 0.63, 1) 1.9s infinite; }}
+            .f-voa-3 {{ position: absolute; left: 0px; top: 4px; filter: drop-shadow(0 3px 4px rgba(20,26,22,0.18)); animation: pirueta3DFolha3 6.8s cubic-bezier(0.37, 0, 0.63, 1) 3.5s infinite; }}
             </style>
             <div class="saudacao-wrap-grano">
                 <div class="vento-overlay-grano">
-                    <svg width="295" height="72" viewBox="0 0 295 72" fill="none" style="position:absolute; left:0; top:0;">
-                        <path class="linha-brisa-1" d="M4 22 Q 78 52, 152 20 T 285 38" stroke="#1B5E20" stroke-width="1.25" stroke-linecap="round" fill="none"/>
-                        <path class="linha-brisa-2" d="M16 46 Q 98 14, 180 44 T 290 24" stroke="#4CAF50" stroke-width="1.05" stroke-linecap="round" fill="none"/>
+                    <svg width="355" height="82" viewBox="0 0 355 82" fill="none" style="position:absolute; left:0; top:0;">
+                        <path class="linha-brisa-1" d="M4 24 Q 95 58, 185 22 T 345 42" stroke="#1B5E20" stroke-width="1.35" stroke-linecap="round" fill="none"/>
+                        <path class="linha-brisa-2" d="M18 52 Q 115 16, 215 48 T 350 26" stroke="#4CAF50" stroke-width="1.15" stroke-linecap="round" fill="none"/>
                     </svg>
-                    <svg class="f-voa-1" width="22" height="22" viewBox="0 0 32 32" fill="none">
-                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M14 17 L15 13 M18 14 L22 14" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
+                    <svg class="f-voa-1" width="30" height="30" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M14 17 L15 13 M18 14 L22 14" stroke="#1B5E20" stroke-width="1.2" stroke-linecap="round"/>
                     </svg>
-                    <svg class="f-voa-2" width="19" height="19" viewBox="0 0 32 32" fill="none">
-                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#81C784" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
+                    <svg class="f-voa-2" width="26" height="26" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#81C784" stroke="#2E7D32" stroke-width="1.6" stroke-linejoin="round"/>
                     </svg>
-                    <svg class="f-voa-3" width="20" height="20" viewBox="0 0 32 32" fill="none">
-                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    <svg class="f-voa-3" width="28" height="28" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div style="display:flex; align-items:center; margin-bottom:2px; position:relative; z-index:1;">
                     <span class="ponto-vivo-grano"></span>
-                    <span style="font-size:2.15rem; font-weight:800; color:#141A16; letter-spacing:-0.5px; line-height:1.1;">Olá, {primeiro_nome_ini}!</span>
+                    <span style="font-size:2.55rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.08;">Olá, {primeiro_nome_ini}!</span>
                 </div>
-                <div style="font-size:0.82rem; color:#5A635C; margin-top:4px; padding-left:23px; position:relative; z-index:1;">Torre de Controle Logística • {hoje_str_ini}</div>
+                <div style="font-size:0.86rem; color:#5A635C; margin-top:5px; padding-left:27px; position:relative; z-index:1;">Torre de Controle Logística • {hoje_str_ini}</div>
             </div>
             """,
             unsafe_allow_html=True
