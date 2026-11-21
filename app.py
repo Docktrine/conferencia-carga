@@ -1192,15 +1192,22 @@ if len(abas_nav) > 1:
     st.markdown(
         """
         <style>
-        /* Congela a barra de guias no topo ao rolar a página (igual ao Congelar Painéis do Excel) */
-        div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stPills"]) {
-            position: sticky !important;
-            top: 2.8rem !important;
-            z-index: 998 !important;
-            background-color: #DCD9D0 !important;
-            padding: 8px 4px 10px 4px !important;
-            margin-bottom: 6px !important;
-            border-bottom: 1px solid rgba(27, 94, 32, 0.18) !important;
+        /* Congela a barra de guias no cabeçalho superior (position: fixed) */
+        div[data-testid="stElementContainer"]:has(div[data-testid="stPills"]),
+        div.element-container:has(div[data-testid="stPills"]) {
+            position: fixed !important;
+            top: 8px !important;
+            left: 22rem !important;
+            width: auto !important;
+            max-width: calc(100vw - 38rem) !important;
+            z-index: 999990 !important;
+            background-color: transparent !important;
+        }
+        /* Ajusta automaticamente quando o menu lateral está recolhido */
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stElementContainer"]:has(div[data-testid="stPills"]),
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div.element-container:has(div[data-testid="stPills"]) {
+            left: 4.5rem !important;
+            max-width: calc(100vw - 22rem) !important;
         }
         </style>
         """,
