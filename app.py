@@ -1388,54 +1388,70 @@ elif aba == "🚚 Planejamento Logística":
         login_atual_nt = st.session_state.get("login_usuario", "")
         nome_atual_nt = st.session_state.get("nome_usuario", "")
 
-        def notif_eh_para_mim(txt_nt):
-            if not txt_nt:
-                return False
-            if "[PARA:" not in txt_nt:
-                return True
-            destino = txt_nt.split("[PARA:")[1].split("]")[0].strip()
-            return destino in ("TODOS", login_atual_nt, nome_atual_nt)
+        def extrair_minhas_notifs(txt_raw):
+        s_nt = str(txt_raw).strip()
+        if not s_nt or s_nt.lower() in ("nan", "none", "null"):
+            return list()
+        login_atual_nt = limpar_texto(st.session_state.login_usuario)
+        nome_atual_nt = limpar_texto(st.session_state.nome_usuario)
+        minhas = list()
+        for parte in s_nt.split(" || "):
+            p_limpa = parte.strip()
+            if not p_limpa:
+                continue
+            if "[PARA:" not in p_limpa:
+                minhas.append(p_limpa)
+            else:
+                destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
+                if destino in ("TODOS", login_atual_nt, nome_atual_nt):
+                    minhas.append(p_limpa)
+        return minhas
 
-        mask_minhas_notifs = df_plan["Notificação"].apply(notif_eh_para_mim)
-        df_notif_pendentes = df_plan[mask_minhas_notifs]
+    lista_alertas_plan = list()
+    for idx_nt, row_nt in df_plan.iterrows():
+        for msg_bruta in extrair_minhas_notifs(row_nt.get("Notificação", "")):
+            lista_alertas_plan.append((idx_nt, row_nt, msg_bruta))
 
-        if not df_notif_pendentes.empty:
-            with st.container(border=True):
-                st.error(f"🔔 **Você tem {len(df_notif_pendentes)} notificação(ões) importante(s)!**")
-                for idx_nt, row_nt in df_notif_pendentes.iterrows():
-                    c_nt_txt, c_nt_btn = st.columns([4, 1], vertical_alignment="center")
-                    msg_exibir = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", str(row_nt["Notificação"]).strip())
-                    msg_exibir = msg_exibir.replace("(DE: ", "(")
-                    c_nt_txt.markdown(
-                        f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} — {row_nt['Data']} {row_nt['Hora']}): "
-                        f"<span style='color: #1B5E20; font-weight: bold;'>{msg_exibir}</span>",
-                        unsafe_allow_html=True
-                    )
-                st.markdown(
-                    """
-                    <style>
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button {
-                        background-color: #C65353 !important;
-                        border: 1px solid #A83E3E !important;
-                        color: #FFFFFF !important;
-                    }
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button p {
-                        color: #FFFFFF !important;
-                        font-weight: 600 !important;
-                    }
-                    div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button:hover {
-                        background-color: #B24343 !important;
-                    }
-                    </style>
-                    """,
+    if lista_alertas_plan:
+        with st.container(border=True):
+            st.error(f"🔔 **Você tem {len(lista_alertas_plan)} notificação(ões) importante(s)!**")
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button {
+                    background-color: #C65353 !important;
+                    border: 1px solid #A83E3E !important;
+                    color: #FFFFFF !important;
+                }
+                div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button p {
+                    color: #FFFFFF !important;
+                    font-weight: 600 !important;
+                }
+                div[data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) div.stButton > button:hover {
+                    background-color: #B24343 !important;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            for seq_nt, (idx_nt, row_nt, msg_bruta) in enumerate(lista_alertas_plan):
+                c_nt_txt, c_nt_btn = st.columns((4, 1), vertical_alignment="center")
+                msg_exibir = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", msg_bruta).strip()
+                msg_exibir = msg_exibir.replace("(DE: ", "(")
+                c_nt_txt.markdown(
+                    f"📌 **Pedido {row_nt['Nº Pedido']}** ({row_nt['Cliente']} - {row_nt['Data']} {row_nt['Hora']}): "
+                    f"<span style='color: #0D3B16; font-weight: bold;'>{msg_exibir}</span>",
                     unsafe_allow_html=True
-                )                    
-            if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}", use_container_width=True):
-                df_plan["Notificação"] = df_plan["Notificação"].astype(object)
-                df_plan.at[idx_nt, "Notificação"] = ""
-                salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
-                st.rerun()        
+                )
+                if c_nt_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_{idx_nt}_{seq_nt}", use_container_width=True):
+                    df_plan["Notificação"] = df_plan["Notificação"].fillna("").astype(object)
+                    partes_atuais = [x.strip() for x in str(df_plan.at[idx_nt, "Notificação"]).split(" || ") if x.strip()]
+                    if msg_bruta in partes_atuais:
+                        partes_atuais.remove(msg_bruta)
+                    df_plan.at[idx_nt, "Notificação"] = " || ".join(partes_atuais)
+                    salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
+                    st.rerun()        
 
         f_col1, f_col2, f_col3 = st.columns(3)
         with f_col1:
@@ -2117,34 +2133,49 @@ elif aba == "📦 Conferência dos Pedidos":
         nome_conf_nt = st.session_state.get("nome_usuario", "")
         carga_alvo_limpa = limpar_texto(carga_selecionada)
 
-        def notif_conf_para_mim(row_p):
+        def extrair_notifs_conf(row_p):
             ped_plan_txt = limpar_texto(row_p["Nº Pedido"])
             if not ped_plan_txt or not carga_alvo_limpa:
-                return False
+                return list()
             if ped_plan_txt != carga_alvo_limpa and not re.search(rf"\b{re.escape(carga_alvo_limpa)}\b", ped_plan_txt):
-                return False
+                return list()
             txt_nt = str(row_p["Notificação"]).strip()
-            if not txt_nt:
-                return False
-            if "[PARA:" not in txt_nt:
-                return True
-            destino = txt_nt.split("[PARA:")[1].split("]")[0].strip()
-            return destino in ("TODOS", login_conf_nt, nome_conf_nt)
+            if not txt_nt or txt_nt.lower() in ("nan", "none", "null"):
+                return list()
+            minhas_c = list()
+            for parte in txt_nt.split(" || "):
+                p_limpa = parte.strip()
+                if not p_limpa:
+                    continue
+                if "[PARA:" not in p_limpa:
+                    minhas_c.append(p_limpa)
+                else:
+                    destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
+                    if destino in ("TODOS", login_conf_nt, nome_conf_nt):
+                        minhas_c.append(p_limpa)
+            return minhas_c
 
-        df_notifs_carga_conf = df_plan_conf[df_plan_conf.apply(notif_conf_para_mim, axis=1)]
-        if not df_notifs_carga_conf.empty:
+        lista_alertas_conf = list()
+        for idx_nc, row_nc in df_plan_conf.iterrows():
+            for msg_bruta_nc in extrair_notifs_conf(row_nc):
+                lista_alertas_conf.append((idx_nc, row_nc, msg_bruta_nc))
+
+        if lista_alertas_conf:
             with st.container(border=True):
-                st.error(f"🔔 **ATENÇÃO NESTA CARGA ({carga_selecionada}):**")
-                for idx_nc, row_nc in df_notifs_carga_conf.iterrows():
-                    cc_txt, cc_btn = st.columns([4, 1], vertical_alignment="center")
-                    msg_nc = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", str(row_nc["Notificação"]).strip()).replace("(DE: ", "(")
+                st.error(f"🔔 **ATENÇÃO NESTA CARGA ({carga_selecionada}) — {len(lista_alertas_conf)} notificação(ões):**")
+                for i_nc, (idx_nc, row_nc, msg_bruta_nc) in enumerate(lista_alertas_conf):
+                    cc_txt, cc_btn = st.columns((4, 1), vertical_alignment="center")
+                    msg_nc = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", msg_bruta_nc).strip().replace("(DE: ", "(")
                     cc_txt.markdown(
-                        f"📌 <span style='color: #38BDF8; font-weight: bold;'>{msg_nc}</span>",
+                        f"📌 <span style='color: #0D3B16; font-weight: bold;'>{msg_nc}</span>",
                         unsafe_allow_html=True
                     )
-                    if cc_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_conf_{idx_nc}", use_container_width=True):
-                        df_plan_conf["Notificação"] = df_plan_conf["Notificação"].astype(object)
-                        df_plan_conf.at[idx_nc, "Notificação"] = ""
+                    if cc_btn.button("✔️ Marcar como Lido", key=f"btn_ler_notif_conf_{idx_nc}_{i_nc}", use_container_width=True):
+                        df_plan_conf["Notificação"] = df_plan_conf["Notificação"].fillna("").astype(object)
+                        partes_c = [x.strip() for x in str(df_plan_conf.at[idx_nc, "Notificação"]).split(" || ") if x.strip()]
+                        if msg_bruta_nc in partes_c:
+                            partes_c.remove(msg_bruta_nc)
+                        df_plan_conf.at[idx_nc, "Notificação"] = " || ".join(partes_c)
                         salvar_dados(df_plan_conf[COLUNAS_PLANEJAMENTO], "planejamento")
                         st.toast("✔️ Notificação confirmada como lida!", icon="✔️")
                         st.rerun()
