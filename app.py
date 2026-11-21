@@ -1260,8 +1260,41 @@ if len(abas_nav) > 1:
     c_topo_esq, c_topo_clima, _, c_topo_cal = st.columns((1.30, 1.85, 0.35, 1.05), vertical_alignment="center")
 
     with c_topo_esq:
-        st.title(f"👋 Olá, {primeiro_nome_ini}!")
-        st.caption(f"Torre de Controle Logística • {hoje_str_ini}")
+        st.markdown(
+            f"""
+            <style>
+            @keyframes acenoGrano {{
+                0%, 100% {{ transform: rotate(0deg); }}
+                20% {{ transform: rotate(16deg); }}
+                40% {{ transform: rotate(-10deg); }}
+                60% {{ transform: rotate(14deg); }}
+                80% {{ transform: rotate(-5deg); }}
+            }}
+            .mao-aceno-grano {{
+                display: inline-block;
+                transform-origin: 70% 80%;
+                animation: acenoGrano 2.2s ease-in-out infinite;
+                vertical-align: middle;
+                margin-right: 8px;
+            }}
+            </style>
+            <div style="display:flex; align-items:center; margin-top:4px; margin-bottom:2px;">
+                <span class="mao-aceno-grano">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://w3.org">
+                        <path d="M12 18 V10 C12 8.8 13.8 8.8 13.8 10 V17" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M15.5 17 V7.5 C15.5 6.3 17.5 6.3 17.5 7.5 V17" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M19 17 V8.5 C19 7.3 21 7.3 21 8.5 V17.5" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M22.5 18 V11.5 C22.5 10.3 24.3 10.3 24.3 11.5 V21 C24.3 26.5 21.2 29.5 16.8 29.5 C12.5 29.5 9.8 26.5 9.2 22 L8.3 16.5 C8.1 15.3 9.8 14.8 10.3 16 L12 19.5" stroke="#141A16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="#EAE7E0"/>
+                        <path d="M5.5 11.5 C4.5 13 4.5 15 5.5 16.5" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+                        <path d="M27.5 8.5 C28.8 10 29 12 28.2 13.8" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span style="font-size:2.15rem; font-weight:800; color:#141A16; letter-spacing:-0.5px; line-height:1.1;">Olá, {primeiro_nome_ini}!</span>
+            </div>
+            <div style="font-size:0.82rem; color:#5A635C; margin-top:4px;">Torre de Controle Logística • {hoje_str_ini}</div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with c_topo_clima:
         try:
