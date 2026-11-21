@@ -90,10 +90,12 @@ st.markdown(
         background-color: #EAE7E0 !important;
     }
     section[data-testid="stSidebar"] div[data-baseweb="input"] button svg,
-    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg path {
+    section[data-testid="stSidebar"] div[data-baseweb="input"] button svg * {
         fill: #141A16 !important;
+        stroke: #141A16 !important;
         color: #141A16 !important;
-    }
+        opacity: 1 !important;
+ }
 
     /* Botões do menu lateral com fundo claro e letra escura */
     section[data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"],
