@@ -1389,7 +1389,7 @@ elif aba == "🚚 Planejamento Logística":
         nome_atual_nt = st.session_state.get("nome_usuario", "")
 
         def extrair_minhas_notifs(txt_raw):
-        s_nt = str(txt_raw).strip()
+            s_nt = str(txt_raw).strip()
             if not s_nt or s_nt.lower() in ("nan", "none", "null"):
                 return list()
             login_atual_nt = limpar_texto(st.session_state.login_usuario)
