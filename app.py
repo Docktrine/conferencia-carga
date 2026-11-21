@@ -1537,7 +1537,8 @@ if aba == "🏠 Início":
                 msg_limpa_i = re.sub(r"\s*\[LIDO:\s*[^\]]+\]", "", msg_limpa_i).strip().replace("(DE: ", "(")
                 ped_ref_i = limpar_texto(r_i.get("Nº Pedido", "")) or "GERAL"
                 cli_ref_i = str(r_i.get("Cliente", "")).strip()
-                ci_txt.markdown(f"📌 **Pedido {ped_ref_i}** ({cli_ref_i}): **{msg_limpa_i}**")
+                cli_tag_i = f" ({cli_ref_i})" if cli_ref_i and cli_ref_i.lower() not in ("nan", "none", "null") else ""
+                ci_txt.markdown(f"📌 **Pedido {ped_ref_i}**{cli_tag_i}: **{msg_limpa_i}**")
                 if ci_btn.button("✔️ Marcar como Lido", key=f"ini_ler_nt_{idx_i}_{seq_i}", use_container_width=True):
                     df_plan_ini["Notificação"] = df_plan_ini["Notificação"].fillna("").astype(object)
                     partes_at_i = [x.strip() for x in str(df_plan_ini.at[idx_i, "Notificação"]).split(" || ") if x.strip()]
