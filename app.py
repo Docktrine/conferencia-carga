@@ -1383,13 +1383,14 @@ if len(abas_nav) > 1:
                         <path d="M31 82 C34 74 35 62 35 45 M43 82 C40 74 39 62 39 45" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
                         <path d="M35 56 L24 44 M39 52 L50 41 M37 46 L37 33" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
-                    <div>
-                        <div style="display:flex; align-items:center; margin-bottom:2px;">
-                            <span style="font-size:2.45rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.08; white-space:nowrap;">Olá, {primeiro_nome_ini}!</span>
-                            <span class="ponto-vivo-grano"></span>
+                    <div style="padding-top: 10px;">
+                        <div style="display:flex; align-items:flex-end; margin-bottom:2px;">
+                            <span style="font-size:2.45rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.05; white-space:nowrap;">Olá, {primeiro_nome_ini}</span>
+                            <span class="ponto-vivo-grano" style="margin-left: 8px; margin-bottom: 5px;"></span>
                         </div>
-                        <div style="font-size:0.84rem; color:#5A635C; margin-top:5px;">Torre de Controle Logística • {hoje_str_ini}</div>
+                        <div style="font-size:0.84rem; color:#5A635C; margin-top:6px;">Torre de Controle Logística • {hoje_str_ini}</div>
                     </div>
+                    
                 </div>
             </div>
             """,
