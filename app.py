@@ -261,6 +261,7 @@ def contar_dias_uteis_entre(dt_inicio, dt_fim, feriados_set):
             uteis += 1
     return uteis * sinal
 
+@st.cache_data(ttl=900, show_spinner=False)
 def obter_mapa_lead_time():
     df_lt = carregar_dados("lead time")
     mapa = {}
@@ -539,7 +540,7 @@ def padronizar_df_maiusculo(df):
             )
     return df
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=900, show_spinner=False)
 def _ler_planilha_com_cache(aba):
     for tentativa in range(3):
         try:
