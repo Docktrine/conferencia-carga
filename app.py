@@ -1390,7 +1390,6 @@ if len(abas_nav) > 1:
                         </div>
                         <div style="font-size:0.84rem; color:#5A635C; margin-top:6px;">Torre de Controle Logística • {hoje_str_ini}</div>
                     </div>
-                    
                 </div>
             </div>
             """,
