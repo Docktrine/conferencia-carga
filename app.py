@@ -1189,6 +1189,23 @@ def _ao_mudar_guia():
         st.session_state.aba_ativa = sel
 
 if len(abas_nav) > 1:
+    st.markdown(
+        """
+        <style>
+        /* Congela a barra de guias no topo ao rolar a página (igual ao Congelar Painéis do Excel) */
+        div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stPills"]) {
+            position: sticky !important;
+            top: 2.8rem !important;
+            z-index: 998 !important;
+            background-color: #DCD9D0 !important;
+            padding: 8px 4px 10px 4px !important;
+            margin-bottom: 6px !important;
+            border-bottom: 1px solid rgba(27, 94, 32, 0.18) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.pills(
         "Guias abertas:",
         options=abas_nav + ["✕ Fechar guia atual"],
