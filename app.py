@@ -2487,7 +2487,8 @@ elif aba == "📥 Importação de Pedidos":
 
         texto_botao = "🚀 Importar Pedido" if len(arquivos_pedidos) == 1 else f"🚀 Enviar {len(arquivos_pedidos)} Pedidos para Conferência"
 
-        if st.button(texto_botao, type="primary", use_container_width=True, disabled=tem_erro_id):
+        _, col_btn_imp = st.columns((4, 1))
+        if col_btn_imp.button(texto_botao, type="primary", use_container_width=True, disabled=tem_erro_id):    
             try:
                 df_existente = carregar_dados("cargas")
                 existentes_agora = df_existente["id_carga"].unique().tolist() if (not df_existente.empty and "id_carga" in df_existente.columns) else list()
