@@ -1189,7 +1189,7 @@ if len(abas_nav) > 1:
         on_change=_ao_mudar_guia
     )
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
-    primeiro_nome_ini = st.session_state.nome_usuario.split().title() if st.session_state.nome_usuario else "Equipe"
+    primeiro_nome_ini = st.session_state.nome_usuario.split().pop(0).title() if st.session_state.nome_usuario else "Equipe"
 
     CIDADES_CLIMA_INI = {
         "Sapucaia do Sul/RS": (-29.8278, -51.1456),
