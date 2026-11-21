@@ -1386,7 +1386,7 @@ if len(abas_nav) > 1:
                     <div style="padding-top: 10px;">
                         <div style="display:flex; align-items:flex-end; margin-bottom:2px;">
                             <span style="font-size:2.45rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.05; white-space:nowrap;">Olá, {primeiro_nome_ini}</span>
-                            <span class="ponto-vivo-grano" style="margin-left: 8px; margin-bottom: 8px;"></span>
+                            <span class="ponto-vivo-grano" style="margin-left: 8px; margin-bottom: 9px;"></span>
                         </div>
                         <div style="font-size:0.84rem; color:#5A635C; margin-top:6px;">Torre de Controle Logística • {hoje_str_ini}</div>
                     </div>
