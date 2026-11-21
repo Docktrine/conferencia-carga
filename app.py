@@ -2065,13 +2065,42 @@ elif aba == "📋 Gestão de Pedidos":
 
     st.subheader("⏳ Pedidos Aguardando Conferir")
     if lista_pendentes:
-        st.dataframe(pd.DataFrame(lista_pendentes), use_container_width=True, hide_index=True)
+        st.dataframe(
+            pd.DataFrame(lista_pendentes),
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Carga / Pedido": st.column_config.TextColumn("📦 Carga / Pedido", width="medium"),
+                "Nota Fiscal": st.column_config.TextColumn("🧾 Nota Fiscal", width="small"),
+                "Qtd de SKUs": st.column_config.NumberColumn("🏷️ SKUs", width="small"),
+                "Volumes Pedidos": st.column_config.NumberColumn("📋 Pedidos", width="small"),
+                "Volumes Bipados": st.column_config.NumberColumn("✅ Bipados", width="small"),
+                "Falta Bipar": st.column_config.NumberColumn("⚠️ Falta Bipar", width="small"),
+                "Situação": st.column_config.TextColumn("🚦 Situação", width="medium"),
+            }
+        )
     else:
         st.success("🎉 Nenhuma carga pendente! Todas as cargas cadastradas já foram conferidas.")
 
     st.subheader("✅ Pedidos Conferidos (100% Concluídos)")
     if lista_concluidas:
-        st.dataframe(pd.DataFrame(lista_concluidas), use_container_width=True, hide_index=True)
+        st.dataframe(
+            pd.DataFrame(lista_concluidas),
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Carga / Pedido": st.column_config.TextColumn("📦 Carga / Pedido", width="medium"),
+                "Nota Fiscal": st.column_config.TextColumn("🧾 Nota Fiscal", width="small"),
+                "Qtd de SKUs": st.column_config.NumberColumn("🏷️ SKUs", width="small"),
+                "Volumes Pedidos": st.column_config.NumberColumn("📋 Pedidos", width="small"),
+                "Volumes Bipados": st.column_config.NumberColumn("✅ Bipados", width="small"),
+                "Conferido em": st.column_config.TextColumn("📅 Conferido em", width="small"),
+                "Conferido por": st.column_config.TextColumn("👤 Conferido por", width="medium"),
+                "Lacre": st.column_config.TextColumn("🔒 Lacre", width="small"),
+                "Situação": st.column_config.TextColumn("🚦 Situação", width="medium"),
+                "Validação Final": st.column_config.TextColumn("🛡️ Validação Final", width="medium"),
+            }
+        )
     else:
         st.info("Nenhuma carga atingiu 100% de conclusão ainda.")
 
