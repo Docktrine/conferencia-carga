@@ -1388,10 +1388,9 @@ elif aba == "🚚 Planejamento Logística":
     st.subheader("🖥️ Painel de Expedição")
     df_exibir_plan = df_plan[COLUNAS_PLANEJAMENTO].copy()
 
-    if not df_exibir_plan.empty:
-        df_plan["Notificação"] = df_plan["Notificação"].astype(str).str.strip()
-        login_atual_nt = st.session_state.get("login_usuario", "")
-        nome_atual_nt = st.session_state.get("nome_usuario", "")
+    df_plan["Notificação"] = df_plan["Notificação"].astype(str).str.strip()
+    login_atual_nt = st.session_state.get("login_usuario", "")
+    nome_atual_nt = st.session_state.get("nome_usuario", "")
 
         def extrair_minhas_notifs(txt_raw):
             s_nt = str(txt_raw).strip()
