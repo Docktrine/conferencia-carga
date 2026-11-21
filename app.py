@@ -945,10 +945,13 @@ with st.sidebar:
         """,
         unsafe_allow_html=True
     )
-    if "aba_ativa" not in st.session_state or st.session_state.aba_ativa not in modulos_disponiveis:
-        st.session_state.aba_ativa = next(iter(modulos_disponiveis))
+    usar_inicio = len(modulos_disponiveis) > 1
+    menu_lateral_itens = (["🏠 Início"] + modulos_disponiveis) if usar_inicio else modulos_disponiveis
 
-    for mod_item in modulos_disponiveis:
+    if "aba_ativa" not in st.session_state or st.session_state.aba_ativa not in menu_lateral_itens:
+        st.session_state.aba_ativa = "🏠 Início" if usar_inicio else next(iter(modulos_disponiveis))
+
+    for mod_item in menu_lateral_itens:
         eh_ativo = (st.session_state.aba_ativa == mod_item)
         if st.button(mod_item, key=f"nav_{mod_item}", use_container_width=True, type="primary" if eh_ativo else "secondary"):
             st.session_state.aba_ativa = mod_item
@@ -1096,7 +1099,7 @@ if qtd_online > 0:
 if "abas_abertas" not in st.session_state:
     st.session_state.abas_abertas = [aba]
 else:
-    st.session_state.abas_abertas = [m for m in st.session_state.abas_abertas if m in modulos_disponiveis]
+    st.session_state.abas_abertas = [m for m in st.session_state.abas_abertas if m in menu_lateral_itens]
     if aba not in st.session_state.abas_abertas:
         if len(st.session_state.abas_abertas) >= 5:
             st.session_state.abas_abertas.pop(0)
@@ -1122,8 +1125,293 @@ if len(abas_nav) > 1:
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
     )
+if aba == "🏠 Início":
+    hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
+    primeiro_nome_ini = st.session_state.nome_usuario.split()[0].title() if st.session_state.nome_usuario else "Equipe"
+    st.title(f"👋 Olá, {primeiro_nome_ini}!")
+    st.caption(f"Torre de Controle Logística • {hoje_str_ini} — Visão rápida do turno, recados e atalhos.")
+
+    df_plan_ini = carregar_dados("planejamento")
+    df_cargas_ini = carregar_dados("cargas")
+
+    # 1. Mural de Notificações Pendentes
+    alertas_ini = list()
+    if not df_plan_ini.empty and "Notificação" in df_plan_ini.columns:
+        login_u_ini = limpar_texto(st.session_state.login_usuario)
+        nome_u_ini = limpar_texto(st.session_state.nome_usuario)
+        for idx_i, r_i in df_plan_ini.iterrows():
+            txt_nt_i = str(r_i.get("Notificação", "")).strip()
+            if not txt_nt_i or txt_nt_i.lower() in ("nan", "none", "null"):
+                continue
+            for parte_i in txt_nt_i.split(" || "):
+                p_limpa_i = parte_i.strip()
+                if not p_limpa_i:
+                    continue
+                lidos_i = set()
+                if "[LIDO:" in p_limpa_i:
+                    trecho_l_i = p_limpa_i.split("[LIDO:").pop(1).split("]").pop(0)
+                    lidos_i = {limpar_texto(u) for u in trecho_l_i.split(",") if limpar_texto(u)}
+                if login_u_ini in lidos_i or nome_u_ini in lidos_i:
+                    continue
+                if "[PARA:" not in p_limpa_i:
+                    alertas_ini.append((idx_i, r_i, p_limpa_i))
+                else:
+                    dest_i = limpar_texto(p_limpa_i.split("[PARA:").pop(1).split("]").pop(0))
+                    if dest_i in ("TODOS", login_u_ini, nome_u_ini):
+                        alertas_ini.append((idx_i, r_i, p_limpa_i))
+
+    if alertas_ini:
+        with st.container(border=True):
+            st.error(f"🔔 **Você tem {len(alertas_ini)} recado(s) pendente(s) no sistema:**")
+            for seq_i, (idx_i, r_i, msg_b_i) in enumerate(alertas_ini):
+                ci_txt, ci_btn = st.columns((4, 1), vertical_alignment="center")
+                msg_limpa_i = re.sub(r"^\[PARA:\s*[^\]]+\]\s*", "", msg_b_i).strip()
+                msg_limpa_i = re.sub(r"\s*\[LIDO:\s*[^\]]+\]", "", msg_limpa_i).strip().replace("(DE: ", "(")
+                ped_ref_i = limpar_texto(r_i.get("Nº Pedido", "")) or "GERAL"
+                cli_ref_i = str(r_i.get("Cliente", "")).strip()
+                ci_txt.markdown(f"📌 **Pedido {ped_ref_i}** ({cli_ref_i}): **{msg_limpa_i}**")
+                if ci_btn.button("✔️ Marcar como Lido", key=f"ini_ler_nt_{idx_i}_{seq_i}", use_container_width=True):
+                    df_plan_ini["Notificação"] = df_plan_ini["Notificação"].fillna("").astype(object)
+                    partes_at_i = [x.strip() for x in str(df_plan_ini.at[idx_i, "Notificação"]).split(" || ") if x.strip()]
+                    if msg_b_i in partes_at_i:
+                        idx_m_i = partes_at_i.index(msg_b_i)
+                        if "[PARA: TODOS]" in msg_b_i.upper():
+                            if "[LIDO:" in msg_b_i:
+                                base_i, resto_i = msg_b_i.split("[LIDO:", 1)
+                                lidos_at_i = resto_i.split("]", 1).pop(0).strip()
+                                novos_l_i = f"{lidos_at_i}, {login_u_ini}" if lidos_at_i else login_u_ini
+                                partes_at_i[idx_m_i] = f"{base_i.strip()} [LIDO: {novos_l_i}]"
+                            else:
+                                partes_at_i[idx_m_i] = f"{msg_b_i} [LIDO: {login_u_ini}]"
+                        else:
+                            partes_at_i.remove(msg_b_i)
+                    df_plan_ini.at[idx_i, "Notificação"] = " || ".join(partes_at_i)
+                    salvar_dados(df_plan_ini[COLUNAS_PLANEJAMENTO], "planejamento")
+                    st.toast("✔️ Recado marcado como lido!", icon="✔️")
+                    st.rerun()
+
+    # 2. Pulso Rápido da Operação Hoje (4 Cartões)
+    prog_hoje, patio_conf_hoje, carreg_hoje, pend_auditoria = 0, 0, 0, 0
+    cargas_validadas_ini = set()
+
+    if not df_plan_ini.empty:
+        if "validado" in df_plan_ini.columns:
+            for _, r_v in df_plan_ini.iterrows():
+                val_s = str(r_v.get("validado", "")).strip()
+                if val_s and val_s.lower() not in ("nan", "none", "null", "nao", "não"):
+                    for c_k in ("Nº Pedido", "id_carga"):
+                        v_k = limpar_texto(r_v.get(c_k, ""))
+                        if v_k:
+                            cargas_validadas_ini.add(v_k)
+
+        df_p_ativos_ini = df_plan_ini[df_plan_ini["Nº Pedido"].astype(str).str.strip() != ""].copy()
+        if not df_p_ativos_ini.empty:
+            datas_ini = df_p_ativos_ini["Data"].apply(formatar_data_br_str)
+            status_ini = df_p_ativos_ini["Status"].apply(limpar_texto)
+            prog_hoje = int((datas_ini == hoje_str_ini).sum())
+            patio_conf_hoje = int(status_ini.isin((limpar_texto("🚚 Veículo no Pátio"), limpar_texto("📦 Em Conferência"))).sum())
+            carreg_hoje = int(((datas_ini == hoje_str_ini) & (status_ini == limpar_texto("✅ Carregado / Liberado"))).sum())
+
+    if not df_cargas_ini.empty and "id_carga" in df_cargas_ini.columns:
+        for cid_i, grp_i in df_cargas_ini.groupby("id_carga", sort=False):
+            if verificar_carga_100_concluida(grp_i) and limpar_texto(cid_i) not in cargas_validadas_ini:
+                pend_auditoria += 1
+
+    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
+    c_kpi1.metric("📅 Programados Hoje", prog_hoje)
+    c_kpi2.metric("🚚 Pátio / Conferindo", patio_conf_hoje)
+    c_kpi3.metric("✅ Carregados Hoje", carreg_hoje)
+    c_kpi4.metric("🛡️ Aguardando Auditoria", pend_auditoria)
+
+    st.divider()
+
+    # 3. Atalhos Rápidos para os Módulos
+    st.subheader("🚀 Acesso Rápido aos Módulos")
+    desc_modulos = {
+        "📊 Análise de Pedidos": "Importar carteira do BI, calcular SLA/dias úteis e vincular NF-e.",
+        "🚚 Planejamento Logística": "Programar frota, acompanhar status e disparar alertas.",
+        "📥 Importação de Pedidos": "Subir arquivos de pedidos para liberar ao conferente.",
+        "📦 Conferência dos Pedidos": "Bipagem de etiquetas, lotes e registro de lacre.",
+        "📈 Painel de Acompanhamento": "Progresso em tempo real e registro de cortes.",
+        "📋 Gestão de Pedidos": "Visão geral de cargas conferidas, pendentes e validadas.",
+        "✅ Auditoria e Ajustes": "Validação tripla (Pedido x Bipado x Cliente) e estornos.",
+        "👥 Central de Usuários": "Gerenciar logins, fotos, perfis e permissões da equipe."
+    }
+    cols_atalho = st.columns(2)
+    for idx_at, mod_at in enumerate(modulos_disponiveis):
+        with cols_atalho[idx_at % 2]:
+            with st.container(border=True):
+                st.markdown(f"**{mod_at}**")
+                st.caption(desc_modulos.get(mod_at, "Acessar módulo operacional."))
+                if st.button(f"Abrir {mod_at}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
+                    st.session_state.aba_ativa = mod_at
+                    st.rerun()
+
+    # 4. Banda de Vegetais Animada (Black Line + Verde Grano)
+    components.html(
+        """
+        <style>
+        body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+        @keyframes balancoVocal {
+            0%, 100% { transform: rotate(-3deg) translateY(0px); }
+            50% { transform: rotate(4deg) translateY(-3px); }
+        }
+        @keyframes tocarGuitarra {
+            0%, 100% { transform: rotate(-2deg) scaleY(1); }
+            50% { transform: rotate(3deg) scaleY(0.97); }
+        }
+        @keyframes baterBateria {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        @keyframes baquetaEsq {
+            0%, 100% { transform: rotate(-18deg); }
+            50% { transform: rotate(14deg); }
+        }
+        @keyframes baquetaDir {
+            0%, 100% { transform: rotate(14deg); }
+            50% { transform: rotate(-18deg); }
+        }
+        @keyframes grooveBaixo {
+            0%, 100% { transform: translateY(0px) rotate(2deg); }
+            50% { transform: translateY(-2.5px) rotate(-2deg); }
+        }
+        @keyframes notaFlutuante1 {
+            0% { transform: translate(0, 0) scale(0.7); opacity: 0; }
+            25% { opacity: 1; }
+            100% { transform: translate(-12px, -28px) scale(1.1); opacity: 0; }
+        }
+        @keyframes notaFlutuante2 {
+            0% { transform: translate(0, 0) scale(0.7); opacity: 0; }
+            25% { opacity: 1; }
+            100% { transform: translate(14px, -30px) scale(1.1); opacity: 0; }
+        }
+        .palco-wrap {
+            width: 100%;
+            max-width: 960px;
+            margin: 10px auto 0 auto;
+            height: 112px;
+            position: relative;
+        }
+        .cenoura-vocal { transform-box: fill-box; transform-origin: bottom center; animation: balancoVocal 1.1s ease-in-out infinite; }
+        .brocolis-guit { transform-box: fill-box; transform-origin: bottom center; animation: tocarGuitarra 0.85s ease-in-out infinite; }
+        .tomate-bat { transform-box: fill-box; transform-origin: bottom center; animation: baterBateria 0.55s ease-in-out infinite; }
+        .baq-e { transform-box: fill-box; transform-origin: bottom right; animation: baquetaEsq 0.55s ease-in-out infinite; }
+        .baq-d { transform-box: fill-box; transform-origin: bottom left; animation: baquetaDir 0.55s ease-in-out infinite; }
+        .milho-baixo { transform-box: fill-box; transform-origin: bottom center; animation: grooveBaixo 1.2s ease-in-out infinite; }
+        .nota-1 { animation: notaFlutuante1 2.4s ease-out infinite; }
+        .nota-2 { animation: notaFlutuante2 2.8s ease-out 0.9s infinite; }
+        .nota-3 { animation: notaFlutuante1 2.6s ease-out 1.6s infinite; }
+        </style>
+
+        <div class="palco-wrap">
+            <svg width="100%" height="112" viewBox="0 0 960 112" fill="none" xmlns="http://w3.org">
+                <!-- Linha do Chão / Palco -->
+                <line x1="40" y1="98" x2="920" y2="98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                <line x1="90" y1="104" x2="870" y2="104" stroke="#141A16" stroke-width="1.1" stroke-dasharray="6 8" opacity="0.4"/>
+
+                <!-- Notas Musicais Flutuando -->
+                <g class="nota-1" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="245" cy="34" r="3" fill="#1B5E20"/>
+                    <path d="M248 34 V20 L256 18 V31"/>
+                    <circle cx="253" cy="31" r="3" fill="#1B5E20"/>
+                </g>
+                <g class="nota-2" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round">
+                    <circle cx="485" cy="28" r="3.2" fill="#1B5E20"/>
+                    <path d="M488.2 28 V14 L495 16"/>
+                </g>
+                <g class="nota-3" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="715" cy="32" r="3" fill="#1B5E20"/>
+                    <path d="M718 32 V18 L726 16 V29"/>
+                    <circle cx="723" cy="29" r="3" fill="#1B5E20"/>
+                </g>
+
+                <!-- 1. BRÓCOLIS GUITARRISTA (Esquerda) -->
+                <g class="brocolis-guit">
+                    <!-- Pernas -->
+                    <path d="M214 82 V98 M226 82 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Tronco -->
+                    <path d="M212 62 L214 82 H226 L228 62" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <!-- Copa do Brócolis -->
+                    <path d="M203 62 C197 56 202 45 210 46 C213 39 227 39 230 46 C238 45 243 56 237 62 Z" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- Olhos e Sorriso -->
+                    <circle cx="217" cy="68" r="1.4" fill="#141A16"/>
+                    <circle cx="223" cy="68" r="1.4" fill="#141A16"/>
+                    <path d="M218 72 Q220 74 222 72" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
+                    <!-- Guitarra -->
+                    <ellipse cx="216" cy="76" rx="8" ry="5.5" transform="rotate(-18 216 76)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
+                    <line x1="223" y1="73" x2="243" y2="66" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="242" y1="64" x2="245" y2="68" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
+                </g>
+
+                <!-- 2. CENOURA VOCALISTA (Centro-Esquerda) -->
+                <g class="cenoura-vocal">
+                    <!-- Pernas -->
+                    <path d="M366 84 V98 M376 84 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Corpo da Cenoura -->
+                    <path d="M359 46 C359 40 383 40 383 46 L374 84 C373 87 369 87 368 84 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <!-- Folhas verdes no topo -->
+                    <path d="M371 41 C366 32 361 33 364 41 M371 41 C371 30 375 30 373 41 M372 41 C377 32 382 34 377 41" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Rosto cantando -->
+                    <circle cx="367" cy="54" r="1.4" fill="#141A16"/>
+                    <circle cx="375" cy="54" r="1.4" fill="#141A16"/>
+                    <circle cx="371" cy="60" r="2.3" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Pedestal e Microfone -->
+                    <line x1="392" y1="58" x2="392" y2="98" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <line x1="386" y1="98" x2="398" y2="98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <circle cx="389" cy="56" r="3.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                    <path d="M381 64 L388 58" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
+                </g>
+
+                <!-- 3. TOMATE BATERISTA (Centro-Direita) -->
+                <g>
+                    <g class="tomate-bat">
+                        <!-- Corpo do Tomate -->
+                        <ellipse cx="555" cy="66" rx="16" ry="13" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7"/>
+                        <!-- Folhinhas verdes -->
+                        <path d="M555 53 L549 49 M555 53 L555 47 M555 53 L561 49" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                        <!-- Olhos -->
+                        <circle cx="550" cy="64" r="1.4" fill="#141A16"/>
+                        <circle cx="560" cy="64" r="1.4" fill="#141A16"/>
+                        <path d="M552 69 Q555 72 558 69" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
+                    </g>
+                    <!-- Baquetas -->
+                    <line class="baq-e" x1="542" y1="68" x2="532" y2="57" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <line class="baq-d" x1="568" y1="68" x2="578" y2="57" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <!-- Bateria (Bumbo, Caixa e Prato) -->
+                    <circle cx="555" cy="85" r="13" fill="#DDD8CE" stroke="#141A16" stroke-width="1.8"/>
+                    <circle cx="555" cy="85" r="6" stroke="#1B5E20" stroke-width="1.4"/>
+                    <rect x="530" y="75" width="13" height="8" rx="1" fill="#EAE7E0" stroke="#141A16" stroke-width="1.5"/>
+                    <line x1="536.5" y1="83" x2="536.5" y2="98" stroke="#141A16" stroke-width="1.5"/>
+                    <line x1="578" y1="63" x2="578" y2="98" stroke="#141A16" stroke-width="1.5"/>
+                    <ellipse cx="578" cy="63" rx="10" ry="2.2" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.6"/>
+                </g>
+
+                <!-- 4. MILHO BAIXISTA (Direita) -->
+                <g class="milho-baixo">
+                    <!-- Pernas -->
+                    <path d="M716 83 V98 M726 83 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Espiga de Milho -->
+                    <rect x="712" y="42" width="18" height="38" rx="9" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7"/>
+                    <!-- Palhas verdes laterais -->
+                    <path d="M712 62 C705 68 707 80 715 82" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                    <path d="M730 62 C737 68 735 80 727 82" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Olhos e Sorriso -->
+                    <circle cx="718" cy="54" r="1.4" fill="#141A16"/>
+                    <circle cx="724" cy="54" r="1.4" fill="#141A16"/>
+                    <path d="M719 59 Q721 61 723 59" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
+                    <!-- Contrabaixo -->
+                    <ellipse cx="720" cy="70" rx="8.5" ry="5" transform="rotate(-15 720 70)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
+                    <line x1="727" y1="68" x2="749" y2="61" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="750" cy="60.5" r="2.2" fill="#1B5E20"/>
+                </g>
+            </svg>
+        </div>
+        """,
+        height=120
+    )
     
-if aba == "📊 Análise de Pedidos":
+elif aba == "📊 Análise de Pedidos":
     st.title("📊 Análise de Pedidos & Lead Time")
     st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação, vínculo de NF-e e envio ao Planejamento.")
 
