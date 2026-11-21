@@ -1268,32 +1268,32 @@ if len(abas_nav) > 1:
                 50% {{ transform: scale(1.35); opacity: 0.55; }}
             }}
             @keyframes rastroVentoGrano {{
-                0% {{ stroke-dashoffset: 210; opacity: 0; }}
-                20% {{ opacity: 0.50; }}
-                80% {{ opacity: 0.45; }}
-                100% {{ stroke-dashoffset: -210; opacity: 0; }}
+                0% {{ stroke-dashoffset: 240; opacity: 0; }}
+                20% {{ opacity: 0.48; }}
+                80% {{ opacity: 0.42; }}
+                100% {{ stroke-dashoffset: -240; opacity: 0; }}
             }}
-            @keyframes piruetaFolha1 {{
-                0% {{ transform: translate(-15px, 6px) rotate(0deg) scale(0.85); opacity: 0; }}
+            @keyframes pirueta3DFolha1 {{
+                0% {{ transform: perspective(350px) translate(-18px, 8px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.9); opacity: 0; }}
                 12% {{ opacity: 1; }}
-                35% {{ transform: translate(65px, 36px) rotate(170deg) scale(1.05); }}
-                68% {{ transform: translate(155px, 12px) rotate(360deg) scale(0.95); }}
-                88% {{ opacity: 0.9; }}
-                100% {{ transform: translate(245px, 42px) rotate(540deg) scale(0.85); opacity: 0; }}
+                30% {{ transform: perspective(350px) translate(65px, 42px) rotateX(180deg) rotateY(90deg) rotateZ(140deg) scale(1.1); }}
+                55% {{ transform: perspective(350px) translate(145px, 4px) rotateX(360deg) rotateY(220deg) rotateZ(290deg) scale(1); }}
+                82% {{ transform: perspective(350px) translate(220px, 38px) rotateX(520deg) rotateY(320deg) rotateZ(440deg) scale(0.95); opacity: 0.95; }}
+                100% {{ transform: perspective(350px) translate(275px, 14px) rotateX(680deg) rotateY(420deg) rotateZ(580deg) scale(0.85); opacity: 0; }}
             }}
-            @keyframes piruetaFolha2 {{
-                0% {{ transform: translate(0px, 38px) rotate(45deg) scale(0.8); opacity: 0; }}
+            @keyframes pirueta3DFolha2 {{
+                0% {{ transform: perspective(350px) translate(-5px, 40px) rotateX(40deg) rotateY(0deg) rotateZ(30deg) scale(0.85); opacity: 0; }}
                 15% {{ opacity: 0.95; }}
-                48% {{ transform: translate(115px, 8px) rotate(-190deg) scale(1); }}
-                82% {{ opacity: 0.85; }}
-                100% {{ transform: translate(255px, 34px) rotate(-410deg) scale(0.8); opacity: 0; }}
+                42% {{ transform: perspective(350px) translate(105px, 2px) rotateX(-190deg) rotateY(160deg) rotateZ(-150deg) scale(1.05); }}
+                72% {{ transform: perspective(350px) translate(195px, 40px) rotateX(-380deg) rotateY(300deg) rotateZ(-320deg) scale(0.95); opacity: 0.9; }}
+                100% {{ transform: perspective(350px) translate(265px, 18px) rotateX(-540deg) rotateY(420deg) rotateZ(-460deg) scale(0.8); opacity: 0; }}
             }}
-            @keyframes piruetaFolha3 {{
-                0% {{ transform: translate(-10px, 22px) rotate(-20deg) scale(0.8); opacity: 0; }}
-                15% {{ opacity: 0.85; }}
-                45% {{ transform: translate(85px, 44px) rotate(200deg) scale(0.95); }}
-                78% {{ transform: translate(170px, 14px) rotate(380deg) scale(0.9); opacity: 0.8; }}
-                100% {{ transform: translate(230px, 30px) rotate(520deg) scale(0.75); opacity: 0; }}
+            @keyframes pirueta3DFolha3 {{
+                0% {{ transform: perspective(350px) translate(-12px, 24px) rotateX(0deg) rotateY(30deg) rotateZ(-20deg) scale(0.85); opacity: 0; }}
+                15% {{ opacity: 0.9; }}
+                38% {{ transform: perspective(350px) translate(80px, 46px) rotateX(150deg) rotateY(-140deg) rotateZ(180deg) scale(1); }}
+                68% {{ transform: perspective(350px) translate(165px, 10px) rotateX(320deg) rotateY(-280deg) rotateZ(350deg) scale(0.92); opacity: 0.85; }}
+                100% {{ transform: perspective(350px) translate(240px, 34px) rotateX(480deg) rotateY(-400deg) rotateZ(500deg) scale(0.8); opacity: 0; }}
             }}
             .saudacao-wrap-grano {{
                 position: relative;
@@ -1314,44 +1314,45 @@ if len(abas_nav) > 1:
                 position: absolute;
                 left: 0;
                 top: 0;
-                height: 68px;
-                width: 285px;
+                height: 72px;
+                width: 300px;
                 z-index: 5;
                 overflow: visible;
                 pointer-events: none;
             }}
             .linha-brisa-1 {{
-                stroke-dasharray: 80 130;
-                animation: rastroVentoGrano 4.4s ease-in-out infinite;
+                stroke-dasharray: 90 150;
+                animation: rastroVentoGrano 4.6s ease-in-out infinite;
             }}
             .linha-brisa-2 {{
-                stroke-dasharray: 65 145;
-                animation: rastroVentoGrano 5.3s ease-in-out 1.5s infinite;
+                stroke-dasharray: 70 170;
+                animation: rastroVentoGrano 5.5s ease-in-out 1.6s infinite;
             }}
-            .f-voa-1 {{ position: absolute; left: 6px; top: 2px; animation: piruetaFolha1 5.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; }}
-            .f-voa-2 {{ position: absolute; left: 18px; top: 6px; animation: piruetaFolha2 6.9s cubic-bezier(0.4, 0, 0.2, 1) 1.8s infinite; }}
-            .f-voa-3 {{ position: absolute; left: 0px; top: 4px; animation: piruetaFolha3 6.3s cubic-bezier(0.4, 0, 0.2, 1) 3.3s infinite; }}
+            .f-voa-1 {{ position: absolute; left: 4px; top: 2px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.18)); animation: pirueta3DFolha1 6.2s cubic-bezier(0.37, 0, 0.63, 1) infinite; }}
+            .f-voa-2 {{ position: absolute; left: 16px; top: 6px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.15)); animation: pirueta3DFolha2 7.4s cubic-bezier(0.37, 0, 0.63, 1) 1.9s infinite; }}
+            .f-voa-3 {{ position: absolute; left: 0px; top: 4px; filter: drop-shadow(0 2px 3px rgba(20,26,22,0.15)); animation: pirueta3DFolha3 6.8s cubic-bezier(0.37, 0, 0.63, 1) 3.5s infinite; }}
             </style>
             <div class="saudacao-wrap-grano">
                 <div class="vento-overlay-grano">
-                    <svg width="280" height="68" viewBox="0 0 280 68" fill="none" style="position:absolute; left:0; top:0;">
-                        <path class="linha-brisa-1" d="M5 20 Q 75 48, 145 22 T 270 36" stroke="#1B5E20" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-                        <path class="linha-brisa-2" d="M18 44 Q 95 16, 175 42 T 275 26" stroke="#4CAF50" stroke-width="1" stroke-linecap="round" fill="none"/>
+                    <svg width="295" height="72" viewBox="0 0 295 72" fill="none" style="position:absolute; left:0; top:0;">
+                        <path class="linha-brisa-1" d="M4 22 Q 78 52, 152 20 T 285 38" stroke="#1B5E20" stroke-width="1.25" stroke-linecap="round" fill="none"/>
+                        <path class="linha-brisa-2" d="M16 46 Q 98 14, 180 44 T 290 24" stroke="#4CAF50" stroke-width="1.05" stroke-linecap="round" fill="none"/>
                     </svg>
-                    <svg class="f-voa-1" width="18" height="18" viewBox="0 0 28 28" fill="none">
-                        <path d="M4 23 L7 20" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                        <path d="M7 20 C6 11 13 5 23 5 C23 15 16 21 7 20 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M7 20 C12 15 17 10 21 7" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round"/>
+                    <svg class="f-voa-1" width="22" height="22" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M14 17 L15 13 M18 14 L22 14" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
                     </svg>
-                    <svg class="f-voa-2" width="15" height="15" viewBox="0 0 28 28" fill="none">
-                        <path d="M4 23 L7 20" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                        <path d="M7 20 C6 11 13 5 23 5 C23 15 16 21 7 20 Z" fill="#E8F5E9" stroke="#2E7D32" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M7 20 C12 15 17 10 21 7" stroke="#2E7D32" stroke-width="1.3" stroke-linecap="round"/>
+                    <svg class="f-voa-2" width="19" height="19" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#81C784" stroke="#2E7D32" stroke-width="1.5" stroke-linejoin="round"/>
                     </svg>
-                    <svg class="f-voa-3" width="16" height="16" viewBox="0 0 28 28" fill="none">
-                        <path d="M4 23 L7 20" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                        <path d="M7 20 C6 11 13 5 23 5 C23 15 16 21 7 20 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
-                        <path d="M7 20 C12 15 17 10 21 7" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round"/>
+                    <svg class="f-voa-3" width="20" height="20" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M10 21 C8 12 16 5 27 5 C22 11 16 16 10 21 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div style="display:flex; align-items:center; margin-bottom:2px; position:relative; z-index:1;">
