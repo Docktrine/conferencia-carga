@@ -1423,29 +1423,27 @@ if aba == "🏠 Início":
                     <ellipse cx="578" cy="63" rx="10" ry="2.2" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.6"/>
                 </g>
 
-                <!-- 4. MILHO BAIXISTA (Direita) -->
+                <!-- 4. VAGEM BAIXISTA (Direita) -->
                 <g class="milho-baixo">
                     <!-- Pernas -->
                     <path d="M716 84 V98 M726 84 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <!-- Espiga ovalada de milho -->
-                    <path d="M721 36 C714 36 712 47 713 62 C714 75 717 82 721 82 C725 82 728 75 729 62 C730 47 728 36 721 36 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                    <!-- Grãos quadriculados da espiga -->
-                    <line x1="717.5" y1="40" x2="717.5" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.5"/>
-                    <line x1="721" y1="38" x2="721" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.5"/>
-                    <line x1="724.5" y1="40" x2="724.5" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.5"/>
-                    <!-- Folhas / Palhas abertas para os lados -->
-                    <path d="M715 81 C705 76 699 63 701 51 C707 57 711 66 714 75 Z" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M727 81 C737 76 743 63 741 51 C735 57 731 66 728 75 Z" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M717 82 C711 77 708 69 709 62" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round"/>
-                    <path d="M725 82 C731 77 734 69 733 62" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round"/>
-                    <!-- Olhos e Sorriso -->
-                    <circle cx="718.5" cy="50" r="1.4" fill="#141A16"/>
-                    <circle cx="723.5" cy="50" r="1.4" fill="#141A16"/>
-                    <path d="M719.5 54 Q721 56 722.5 54" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
+                    <!-- Cabinho verde no topo da vagem -->
+                    <path d="M722 36 C722 31 726 30 728 32" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Casca curva da Vagem -->
+                    <path d="M722 36 C710 43 709 73 721 85 C733 73 732 43 722 36 Z" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- Abertura interna e ervilhas/grãos dentro da vagem -->
+                    <circle cx="721" cy="46" r="3.8" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
+                    <circle cx="721" cy="56" r="4.2" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
+                    <circle cx="721" cy="67" r="4.2" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
+                    <circle cx="721" cy="77" r="3.4" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
+                    <!-- Olhos e Sorriso no grão superior -->
+                    <circle cx="719.5" cy="45.5" r="1.1" fill="#141A16"/>
+                    <circle cx="722.5" cy="45.5" r="1.1" fill="#141A16"/>
+                    <path d="M719.8 47.8 Q721 49.2 722.2 47.8" stroke="#141A16" stroke-width="1.1" stroke-linecap="round"/>
                     <!-- Contrabaixo -->
-                    <ellipse cx="720" cy="70" rx="8.5" ry="5" transform="rotate(-15 720 70)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
-                    <line x1="727" y1="68" x2="749" y2="61" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="750" cy="60.5" r="2.2" fill="#1B5E20"/>
+                    <ellipse cx="720" cy="68" rx="8.5" ry="5" transform="rotate(-15 720 68)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
+                    <line x1="727" y1="66" x2="749" y2="59" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="750" cy="58.5" r="2.2" fill="#1B5E20"/>
                 </g>
             </svg>
         </div>
