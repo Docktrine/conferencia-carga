@@ -1588,7 +1588,30 @@ if aba == "🏠 Início":
                 ped_ref_i = limpar_texto(r_i.get("Nº Pedido", "")) or "GERAL"
                 cli_ref_i = str(r_i.get("Cliente", "")).strip()
                 cli_tag_i = f" ({cli_ref_i})" if cli_ref_i and cli_ref_i.lower() not in ("nan", "none", "null") else ""
-                ci_txt.markdown(f"📌 **Pedido {ped_ref_i}**{cli_tag_i}: **{msg_limpa_i}**")
+
+                autor_html_i = ""
+                corpo_msg_i = msg_limpa_i
+                m_autor = re.search(r"\(([^()]+)\)\s*$", msg_limpa_i)
+                if m_autor:
+                    autor_nome_i = m_autor.group(1).strip()
+                    corpo_msg_i = msg_limpa_i[:m_autor.start()].strip()
+                    autor_html_i = (
+                        f" <span style='background:#E3EEF8; color:#1E3A5F; border:1px solid #B6D2EC; "
+                        f"padding:1px 8px; border-radius:10px; font-size:0.74rem; font-weight:700; "
+                        f"margin-left:6px; white-space:nowrap;'>👤 {autor_nome_i}</span>"
+                    )
+
+                badge_ped_html = (
+                    f"<span style='background:#1F2922; color:#FFFFFF; border:1px solid #4CAF50; "
+                    f"padding:2px 9px; border-radius:10px; font-size:0.76rem; font-weight:700; "
+                    f"margin-right:6px; white-space:nowrap;'>📌 Pedido {ped_ref_i}{cli_tag_i}</span>"
+                )
+
+                ci_txt.markdown(
+                    f"{badge_ped_html} <span style='color:#0D3B16; font-weight:700;'>{corpo_msg_i}</span>{autor_html_i}",
+                    unsafe_allow_html=True
+                )
+                
                 if ci_btn.button("✔️ Marcar como Lido", key=f"ini_ler_nt_{idx_i}_{seq_i}", use_container_width=True):
                     df_plan_ini["Notificação"] = df_plan_ini["Notificação"].fillna("").astype(object)
                     partes_at_i = [x.strip() for x in str(df_plan_ini.at[idx_i, "Notificação"]).split(" || ") if x.strip()]
