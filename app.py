@@ -3604,45 +3604,102 @@ elif aba == "✅ Auditoria e Ajustes":
         
 elif aba == "👥 Central de Usuários":
     st.title("👥 Central de Usuários e Permissões")
-    st.caption("Gerencie logins, perfis, módulos liberados e travas de ações críticas da equipe.")
+    st.caption("Administração de acessos, perfis operacionais, módulos liberados e travas de segurança da equipe.")
 
     df_usuarios = carregar_usuarios_sistema()
 
-    u_m1, u_m2, u_m3 = st.columns(3)
-    u_m1.metric("👥 Total de Usuários", len(df_usuarios))
-    u_m2.metric("✅ Ativos", int((df_usuarios["ativo"].apply(limpar_texto) == "SIM").sum()))
-    u_m3.metric("🔒 Inativos", int((df_usuarios["ativo"].apply(limpar_texto) != "SIM").sum()))
+    u_m1, u_m2, u_m3, u_m4 = st.columns(4)
+    u_m1.metric("👥 Total da Equipe", len(df_usuarios))
+    u_m2.metric("🟢 Usuários Ativos", int((df_usuarios["ativo"].apply(limpar_texto) == "SIM").sum()))
+    u_m3.metric("🔴 Bloqueados / Inativos", int((df_usuarios["ativo"].apply(limpar_texto) != "SIM").sum()))
+    u_m4.metric("🛡️ Administradores", int((df_usuarios["perfil"].apply(limpar_texto) == "ADMIN").sum()))
 
     st.divider()
 
-    st.subheader("📋 Usuários Cadastrados")
-    df_vis_users = df_usuarios[["login", "nome", "perfil", "modulos_liberados", "permissoes", "ativo"]].copy()
-    st.dataframe(df_vis_users, use_container_width=True, hide_index=True)
+    c_tit_u, c_busca_u = st.columns((2.5, 1.5), vertical_alignment="center")
+    c_tit_u.subheader("📋 Diretório da Equipe")
+    busca_u = c_busca_u.text_input("Buscar usuário:", placeholder="🔍 Filtrar por nome, login ou perfil...", label_visibility="collapsed")
+
+    df_vis_users = df_usuarios.copy()
+    if busca_u.strip():
+        t_u = busca_u.strip().lower()
+        mask_u = (
+            df_vis_users["nome"].astype(str).str.lower().str.contains(t_u, na=False) |
+            df_vis_users["login"].astype(str).str.lower().str.contains(t_u, na=False) |
+            df_vis_users["perfil"].astype(str).str.lower().str.contains(t_u, na=False)
+        )
+        df_vis_users = df_vis_users[mask_u]
+
+    def fmt_lista_tags(val_str, vazio_txt="—"):
+        s = str(val_str).strip()
+        if not s or s.lower() in ("nan", "none", "null"):
+            return vazio_txt
+        itens = [x.strip() for x in s.split("|") if x.strip() and x.strip().lower() != "none"]
+        return "  •  ".join(itens) if itens else vazio_txt
+
+    df_tabela_u = pd.DataFrame({
+        "Login": df_vis_users["login"].apply(limpar_texto),
+        "Colaborador": df_vis_users["nome"].apply(limpar_texto),
+        "Cargo / Perfil": df_vis_users["perfil"].apply(limpar_texto),
+        "Módulos Liberados": df_vis_users["modulos_liberados"].apply(lambda v: fmt_lista_tags(v, "Nenhum módulo")),
+        "Permissões Críticas": df_vis_users["permissoes"].apply(lambda v: fmt_lista_tags(v, "Padrão (Sem ações críticas)")),
+        "Status": df_vis_users["ativo"].apply(lambda v: "🟢 Ativo" if limpar_texto(v) == "SIM" else "🔴 Inativo")
+    })
+
+    st.dataframe(
+        df_tabela_u,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Login": st.column_config.TextColumn("🔑 Login", width="small"),
+            "Colaborador": st.column_config.TextColumn("👤 Colaborador", width="medium"),
+            "Cargo / Perfil": st.column_config.TextColumn("🏷️ Perfil", width="small"),
+            "Módulos Liberados": st.column_config.TextColumn("📂 Módulos Liberados", width="large"),
+            "Permissões Críticas": st.column_config.TextColumn("🛡️ Permissões Críticas", width="large"),
+            "Status": st.column_config.TextColumn("🚦 Status", width="small"),
+        }
+    )
 
     st.divider()
 
-    with st.expander("➕ Cadastrar Novo Usuário", expanded=True):
-        nu_foto = st.file_uploader("📷 Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
+    PRESETS_PERFIL = {
+        "CONFERENTE": (["📦 Conferência dos Pedidos"], []),
+        "AUXILIAR ADMINISTRATIVO": (["🚚 Planejamento Logística", "📥 Importação de Pedidos", "📋 Gestão de Pedidos"], ["🔔 Lançar Notificações"]),
+        "ANALISTA": (["📊 Análise de Pedidos", "🚚 Planejamento Logística", "📥 Importação de Pedidos", "📈 Painel de Acompanhamento", "📋 Gestão de Pedidos", "✅ Auditoria e Ajustes"], ["✂️ Gerar e Editar Cortes", "🔔 Lançar Notificações"]),
+        "SUPERVISOR": (TODOS_MODULOS_SISTEMA[:-1], ["✂️ Gerar e Editar Cortes", "↩️ Estornar Etiquetas e Corrigir Lotes", "🔔 Lançar Notificações", "👁️ Ver Conferência Completa (Supervisão)"]),
+        "GERENTE": (TODOS_MODULOS_SISTEMA[:-1], TODAS_PERMISSOES_CRITICAS),
+        "ADMIN": (TODOS_MODULOS_SISTEMA, TODAS_PERMISSOES_CRITICAS),
+    }
+
+    with st.expander("➕ Cadastrar Novo Colaborador", expanded=False):
+        c_nu_top1, c_nu_top2 = st.columns((1.5, 2.5), vertical_alignment="center")
+        nu_perfil = c_nu_top1.selectbox(
+            "1️⃣ Escolha o Perfil Base (preenche acessos automaticamente):",
+            ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"],
+            key="nu_perfil_preset"
+        )
+        nu_foto = c_nu_top2.file_uploader("📷 Foto de Perfil (Opcional — PNG ou JPG):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
+
+        mods_sugeridos, perms_sugeridas = PRESETS_PERFIL.get(nu_perfil, (["📦 Conferência dos Pedidos"], []))
+
         with st.form("form_novo_usuario", clear_on_submit=True):
-            nu_c1, nu_c2, nu_c3, nu_c4 = st.columns(4)
+            nu_c1, nu_c2, nu_c3 = st.columns(3)
             nu_nome = nu_c1.text_input("Nome Completo*:", placeholder="Ex: JOÃO SILVA")
             nu_login = nu_c2.text_input("Login de Acesso*:", placeholder="Ex: JOAO.SILVA")
             nu_senha = nu_c3.text_input("Senha Inicial*:", type="password", placeholder="Mínimo 4 caracteres")
-            nu_perfil = nu_c4.selectbox("Perfil Base:", ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"])
-            
+
             nu_mods = st.multiselect(
-                "📂 Módulos / Telas Liberadas:",
+                "📂 Módulos / Telas Liberadas (personalizável):",
                 TODOS_MODULOS_SISTEMA,
-                default=["📦 Conferência dos Pedidos"]
+                default=mods_sugeridos
             )
             nu_perms = st.multiselect(
-                "🛡️ Permissões de Ações Críticas:",
+                "🛡️ Permissões de Ações Críticas (personalizável):",
                 TODAS_PERMISSOES_CRITICAS,
-                default=list()
+                default=perms_sugeridas
             )
 
-            if st.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
-
+            if st.form_submit_button("💾 Criar Colaborador", type="primary", use_container_width=True):
                 login_novo = limpar_texto(nu_login).replace(" ", "")
                 nome_novo = limpar_texto(nu_nome)
                 if not login_novo or not nome_novo or len(nu_senha.strip()) < 4:
@@ -3660,7 +3717,8 @@ elif aba == "👥 Central de Usuários":
                         "modulos_liberados": " | ".join(mods_salvar),
                         "permissoes": " | ".join(perms_salvar),
                         "ativo": "SIM",
-                        "foto_b64": processar_foto_avatar(nu_foto)
+                        "foto_b64": processar_foto_avatar(nu_foto),
+                        "ultimo_acesso": ""
                     }])
                     df_u_final = pd.concat([df_usuarios, novo_u], ignore_index=True)
                     salvar_dados(df_u_final[COLUNAS_USUARIOS], "usuarios")
@@ -3668,42 +3726,73 @@ elif aba == "👥 Central de Usuários":
                         ok_gh, msg_gh = salvar_foto_github(login_novo, nu_foto)
                         if not ok_gh:
                             st.warning(f"⚠️ Usuário criado, mas houve falha ao enviar a foto: {msg_gh}")
-                    
-                    st.success(f"✅ Usuário **{nome_novo}** (`{login_novo}`) criado com sucesso!")
+
+                    st.success(f"✅ Colaborador **{nome_novo}** (`{login_novo}`) cadastrado com sucesso!")
                     st.rerun()
 
-    with st.expander("✏️ Editar Permissões, Resetar Senha ou Bloquear Usuário"):
+    with st.expander("✏️ Editar Acessos, Foto, Senha ou Bloquear Colaborador", expanded=True):
         opcoes_u = {
-            f"{r['nome']} ({r['login']}) — Perfil: {r['perfil']} [{r['ativo']}]": idx
+            f"{limpar_texto(r['nome'])} ({limpar_texto(r['login'])}) — {limpar_texto(r['perfil'])} [{'🟢 Ativo' if limpar_texto(r['ativo']) == 'SIM' else '🔴 Inativo'}]": idx
             for idx, r in df_usuarios.iterrows()
         }
-        sel_u_label = st.selectbox("Selecione o usuário para editar:", list(opcoes_u.keys()), key="sel_edit_usuario")
+        sel_u_label = st.selectbox("Selecione o colaborador:", list(opcoes_u.keys()), key="sel_edit_usuario")
         idx_u_edit = opcoes_u[sel_u_label]
         reg_u = df_usuarios.loc[idx_u_edit]
+
+        login_ed_limpo = limpar_texto(reg_u["login"])
+        nome_ed_limpo = limpar_texto(reg_u["nome"])
+        foto_ed_b64 = carregar_foto_usuario(login_ed_limpo)
+        ini_ed = "".join(p[:1] for p in nome_ed_limpo.split()[:2]).upper() if nome_ed_limpo else "U"
+        cor_badge_st = "#2E7D32" if limpar_texto(reg_u["ativo"]) == "SIM" else "#C62828"
+        txt_badge_st = "ATIVO" if limpar_texto(reg_u["ativo"]) == "SIM" else "INATIVO"
+
+        if foto_ed_b64:
+            av_card_html = f'<img src="data:image/png;base64,{foto_ed_b64}" style="width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid #4CAF50;">'
+        else:
+            av_card_html = f'<div style="width:52px; height:52px; border-radius:50%; background:#1F2922; color:#E6E1D6; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.05rem; border:2px solid #4CAF50;">{ini_ed}</div>'
+
+        c_card_u, c_foto_u = st.columns((2.2, 1.8), vertical_alignment="center")
+        with c_card_u:
+            st.markdown(
+                f"""
+                <div style="background:#E4E0D6; border:1px solid rgba(27,94,32,0.35); border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:12px;">
+                    {av_card_html}
+                    <div>
+                        <div style="font-weight:700; font-size:0.95rem; color:#141A16;">{nome_ed_limpo} <span style="font-size:0.75rem; color:#4A524C;">(@{login_ed_limpo})</span></div>
+                        <div style="margin-top:4px; display:flex; gap:6px; align-items:center;">
+                            <span style="background:#1F2922; color:#FFFFFF; padding:2px 8px; border-radius:12px; font-size:0.72rem; font-weight:600;">{limpar_texto(reg_u['perfil'])}</span>
+                            <span style="background:{cor_badge_st}; color:#FFFFFF; padding:2px 8px; border-radius:12px; font-size:0.72rem; font-weight:600;">{txt_badge_st}</span>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        with c_foto_u:
+            ed_foto = st.file_uploader("📷 Atualizar Foto (PNG/JPG):", type=["png", "jpg", "jpeg"], key=f"ed_foto_{idx_u_edit}")
 
         mods_atuais = [m.strip() for m in str(reg_u["modulos_liberados"]).split("|") if m.strip() in TODOS_MODULOS_SISTEMA]
         perms_atuais = [p.strip() for p in str(reg_u["permissoes"]).split("|") if p.strip() in TODAS_PERMISSOES_CRITICAS]
         perfis_lista = ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"]
         idx_perf = perfis_lista.index(limpar_texto(reg_u["perfil"])) if limpar_texto(reg_u["perfil"]) in perfis_lista else 0
-        
-        ed_foto = st.file_uploader("📷 Alterar Foto de Perfil (Opcional):", type=["png", "jpg", "jpeg"], key=f"ed_foto_{idx_u_edit}")
+
         with st.form("form_editar_usuario"):
             eu_c1, eu_c2, eu_c3, eu_c4 = st.columns(4)
             eu_nome = eu_c1.text_input("Nome Completo:", value=str(reg_u["nome"]))
             eu_perfil = eu_c2.selectbox("Perfil Base:", perfis_lista, index=idx_perf)
             eu_ativo = eu_c3.selectbox("Status de Acesso:", ["SIM", "NÃO"], index=0 if limpar_texto(reg_u["ativo"]) == "SIM" else 1)
-            eu_nova_senha = eu_c4.text_input("Nova Senha (deixe vazio para manter):", type="password")
+            eu_nova_senha = eu_c4.text_input("Nova Senha (vazio p/ manter):", type="password")
 
             eu_mods = st.multiselect("📂 Módulos / Telas Liberadas:", TODOS_MODULOS_SISTEMA, default=mods_atuais)
             eu_perms = st.multiselect("🛡️ Permissões de Ações Críticas:", TODAS_PERMISSOES_CRITICAS, default=perms_atuais)
 
-            if st.form_submit_button("💾 Salvar Alterações do Usuário", type="primary", use_container_width=True):
+            if st.form_submit_button("💾 Salvar Alterações do Colaborador", type="primary", use_container_width=True):
                 mods_ed = TODOS_MODULOS_SISTEMA if eu_perfil == "ADMIN" else eu_mods
                 perms_ed = TODAS_PERMISSOES_CRITICAS if eu_perfil == "ADMIN" else eu_perms
 
-                if limpar_texto(reg_u["login"]) == st.session_state.login_usuario:
+                if login_ed_limpo == st.session_state.login_usuario:
                     st.session_state.nome_usuario = eu_nome.strip().upper()
-                    st.session_state.perfil_usuario = eu_perfil                
+                    st.session_state.perfil_usuario = eu_perfil
 
                 df_usuarios["nome"] = df_usuarios["nome"].astype(object)
                 df_usuarios["perfil"] = df_usuarios["perfil"].astype(object)
@@ -3719,7 +3808,7 @@ elif aba == "👥 Central de Usuários":
                 if ed_foto is not None:
                     ok_gh, msg_gh = salvar_foto_github(reg_u["login"], ed_foto)
                     if not ok_gh:
-                        st.warning(f"⚠️ Dados salvos, mas houve falha ao enviar a foto: {msg_gh}")                
+                        st.warning(f"⚠️ Dados salvos, mas houve falha ao enviar a foto: {msg_gh}")
 
                 if eu_nova_senha.strip():
                     if len(eu_nova_senha.strip()) < 4:
@@ -3730,5 +3819,6 @@ elif aba == "👥 Central de Usuários":
 
                 salvar_dados(df_usuarios[COLUNAS_USUARIOS], "usuarios")
                 st.cache_data.clear()
-                st.success(f"✅ Permissões e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
+                st.success(f"✅ Acessos e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
                 st.rerun()
+
