@@ -1100,12 +1100,12 @@ else:
 abas_nav = st.session_state.abas_abertas
 if len(abas_nav) > 1:
     opcoes_pills = abas_nav + ["✕ Fechar guia atual"]
+    st.session_state["barra_guias_topo"] = aba
     escolha_pill = st.pills(
         "Guias abertas:",
         options=opcoes_pills,
-        default=aba,
         label_visibility="collapsed",
-        key=f"pills_nav_{len(abas_nav)}_{aba}"
+        key="barra_guias_topo"
     )
     if escolha_pill == "✕ Fechar guia atual":
         st.session_state.abas_abertas.remove(aba)
