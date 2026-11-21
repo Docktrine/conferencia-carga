@@ -2912,7 +2912,7 @@ elif aba == "✅ Auditoria e Ajustes":
     carga_ja_encerrada = limpar_texto(carga_selecionada) in cargas_ja_validadas
     if carga_ja_encerrada:
         st.info("🔒 **Carga já validada e encerrada:** correções de lote, quantidade e estornos estão bloqueados para preservar o histórico.")
-        if st.session_state.get("perfil_usuario", "") in ("ADMIN", "GERENTE"):
+        if st.session_state.get("perfil_usuario", "") in ("ADMIN", "GERENTE","SUPERVISOR"):
             if st.button("🔓 Reabrir Carga para Correção (Exclusivo Gestão)", key="btn_reabrir_auditoria"):
                 df_p_reab = carregar_dados("planejamento")
                 if not df_p_reab.empty and "id_carga" in df_p_reab.columns and "validado" in df_p_reab.columns:
