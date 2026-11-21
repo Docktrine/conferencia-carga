@@ -3255,6 +3255,31 @@ elif aba == "📈 Painel de Acompanhamento":
 
 elif aba == "✅ Auditoria e Ajustes":
     st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
+    st.markdown(
+        """
+        <style>
+        section[data-testid="stMain"] button[data-testid="stBaseButton-primary"] {
+            background-color: #1F2922 !important;
+            border: 1px solid #4CAF50 !important;
+            border-radius: 20px !important;
+            min-height: 38px !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+            transition: all 0.15s ease !important;
+        }
+        section[data-testid="stMain"] button[data-testid="stBaseButton-primary"] p {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+        section[data-testid="stMain"] button[data-testid="stBaseButton-primary"]:hover {
+            background-color: #1B5E20 !important;
+            transform: translateY(-1px) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
@@ -3458,7 +3483,9 @@ elif aba == "✅ Auditoria e Ajustes":
         with c3:
             c_lote = st.selectbox("Coluna do LOTE (Cliente):", ["(Não informar lote)"] + cols_cli)
 
-        if st.button("⚖️ Gerar Validação Tripla + Lotes", type="primary", use_container_width=True):
+        _, col_btn_gerar_aud = st.columns((3.5, 1.5))
+        if col_btn_gerar_aud.button("⚖️ Gerar Validação Tripla + Lotes", type="primary", use_container_width=True):
+                
             df_cli_prep = pd.DataFrame({
                 "codigo": df_cli[c_cod].apply(limpar_texto),
                 "informado_cliente": pd.to_numeric(df_cli[c_qtd], errors="coerce").fillna(0).astype(int),
@@ -3574,7 +3601,8 @@ elif aba == "✅ Auditoria e Ajustes":
         else:
             if erro_skus > 0:
                 st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
-            if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True, disabled=(erro_skus > 0)):
+            _, col_btn_val_aud = st.columns((3.2, 1.8))
+            if col_btn_val_aud.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):    
                 df_plan_salvar = carregar_dados("planejamento")
                 agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
                 carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
