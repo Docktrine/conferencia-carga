@@ -1061,9 +1061,12 @@ with st.sidebar:
             padding: 0 !important;
         }
         section[data-testid="stSidebar"] [data-testid="stTextInputRootElement"] button {
-            background-color: #1F2922 !important;
-            border-left: 1px solid rgba(76, 175, 80, 0.45) !important;
-        }        
+         background-color: #1F2922 !important;
+         border-left: 1px solid rgba(76, 175, 80, 0.45) !important;
+         height: 100% !important;
+         align-self: stretch !important;
+         border-radius: 0 7px 7px 0 !important;
+     }       
         </style>
         """,
         unsafe_allow_html=True
