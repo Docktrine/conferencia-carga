@@ -18,7 +18,7 @@ import requests
 ARQUIVO_LOGO = next((f for f in ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"] if os.path.exists(f)), None)
 
 st.set_page_config(
-    page_title="WMS Grano — Gestão Logística",
+    page_title="WMS Grano — Inteligência Logística",
     page_icon=ARQUIVO_LOGO if ARQUIVO_LOGO else "📦",
     layout="wide"
 )
