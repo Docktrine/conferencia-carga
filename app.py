@@ -3233,7 +3233,7 @@ elif aba == "📈 Painel de Acompanhamento":
     if verificar_carga_100_concluida(df):
         st.success("✅ Carga 100% concluída!")
         with st.container(border=True):
-            if cp_lac2.button("💾 Salvar Lacre", type="primary", key=f"btn_lacre_painel_{carga_selecionada}"):
+            cp_lac1, cp_lac2 = st.columns((4.3, 0.7), vertical_alignment="bottom")
             novo_lacre_painel = cp_lac1.text_input(
                 "🔒 Número do Lacre da Carga:",
                 value="",
