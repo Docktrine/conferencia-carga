@@ -1088,6 +1088,82 @@ if qtd_online > 0:
         """,
         unsafe_allow_html=True
     )
+if "abas_abertas" not in st.session_state:
+    st.session_state.abas_abertas = [aba]
+else:
+    st.session_state.abas_abertas = [m for m in st.session_state.abas_abertas if m in modulos_disponiveis]
+    if aba not in st.session_state.abas_abertas:
+        if len(st.session_state.abas_abertas) >= 5:
+            st.session_state.abas_abertas.pop(0)
+        st.session_state.abas_abertas.append(aba)
+
+st.markdown(
+    """
+    <style>
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type {
+        background-color: #DCD7CC !important;
+        padding: 6px 8px 0px 8px !important;
+        border-radius: 12px 12px 0px 0px !important;
+        border-bottom: 2px solid #1B5E20 !important;
+        margin-bottom: 14px !important;
+        gap: 6px !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button {
+        border-radius: 8px 8px 0px 0px !important;
+        padding: 5px 8px !important;
+        min-height: 34px !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button p {
+        font-size: 0.78rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"] {
+        background-color: #CFC9BC !important;
+        border: 1px solid rgba(27, 94, 32, 0.25) !important;
+        opacity: 0.88;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"]:hover {
+        background-color: #E6E1D6 !important;
+        opacity: 1;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] {
+        background-color: #1F2922 !important;
+        border: 1px solid #1B5E20 !important;
+        border-top: 3px solid #4CAF50 !important;
+    }
+    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] p {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+abas_nav = st.session_state.abas_abertas
+cols_nav = st.columns(len(abas_nav))
+for idx_n, mod_n in enumerate(abas_nav):
+    ativo_n = (aba == mod_n)
+    partes_n = mod_n.split(" ", 1)
+    icone_n = partes_n.pop(0) if len(partes_n) > 1 else ""
+    nome_n = partes_n.pop(0) if partes_n else mod_n
+    if len(abas_nav) > 1:
+        c_guia, c_fechar = cols_nav[idx_n].columns((5, 1), gap="small")
+        if c_guia.button(f"{icone_n} {nome_n}", key=f"nav_tab_{idx_n}", use_container_width=True, type="primary" if ativo_n else "secondary"):
+            st.session_state.aba_ativa = mod_n
+            st.rerun()
+        if c_fechar.button("✕", key=f"close_tab_{idx_n}", use_container_width=True, help=f"Fechar {nome_n}"):
+            st.session_state.abas_abertas.remove(mod_n)
+            if ativo_n:
+                st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
+            st.rerun()
+    else:
+        cols_nav[idx_n].button(f"{icone_n} {nome_n}", key=f"nav_tab_{idx_n}", use_container_width=True, type="primary")
+    
 if aba == "📊 Análise de Pedidos":
     st.title("📊 Análise de Pedidos & Lead Time")
     st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação, vínculo de NF-e e envio ao Planejamento.")
@@ -1141,8 +1217,13 @@ if aba == "📊 Análise de Pedidos":
         limite_critico = st.number_input("⚠️ Limite Crítico (dias úteis p/ carregar):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
 
     if arquivo_bi is not None:
+        st.session_state["bi_cache_nome"] = arquivo_bi.name
+        st.session_state["bi_cache_bytes"] = arquivo_bi.getvalue()
+
+    if st.session_state.get("bi_cache_bytes") is not None:
         try:
-            nome_arq_bi = arquivo_bi.name.lower()
+            nome_arq_bi = st.session_state["bi_cache_nome"].lower()
+            arquivo_bi = io.BytesIO(st.session_state["bi_cache_bytes"])
             if nome_arq_bi.endswith(".csv"):
                 df_bi = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str)
             else:
