@@ -1192,20 +1192,17 @@ if len(abas_nav) > 1:
     st.markdown(
         """
         <style>
-        /* Congela a barra de guias no cabeçalho superior (position: fixed) */
-        div[data-testid="stElementContainer"]:has(div[data-testid="stPills"]),
-        div.element-container:has(div[data-testid="stPills"]) {
+        /* Congela diretamente o componente stPills no cabeçalho superior */
+        [data-testid="stPills"] {
             position: fixed !important;
-            top: 8px !important;
+            top: 9px !important;
             left: 22rem !important;
             width: auto !important;
             max-width: calc(100vw - 38rem) !important;
             z-index: 999990 !important;
-            background-color: transparent !important;
         }
-        /* Ajusta automaticamente quando o menu lateral está recolhido */
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stElementContainer"]:has(div[data-testid="stPills"]),
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div.element-container:has(div[data-testid="stPills"]) {
+        /* Ajusta automaticamente se o menu lateral estiver recolhido */
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stPills"] {
             left: 4.5rem !important;
             max-width: calc(100vw - 22rem) !important;
         }
