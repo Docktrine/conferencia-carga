@@ -1257,7 +1257,7 @@ if len(abas_nav) > 1:
         """,
         unsafe_allow_html=True
     )
-    c_topo_esq, c_topo_clima, c_topo_cal = st.columns((1.55, 1.85, 1.05), vertical_alignment="center")
+    c_topo_esq, c_topo_clima, _, c_topo_cal = st.columns((1.35, 1.85, 0.25, 1.05), vertical_alignment="center")
 
     with c_topo_esq:
         st.title(f"👋 Olá, {primeiro_nome_ini}!")
@@ -1338,7 +1338,7 @@ if len(abas_nav) > 1:
             linhas_cal_html += "</tr>"
 
         st.markdown(
-            f'<div style="padding:2px 6px; border-left:1px solid rgba(27,94,32,0.16);">'
+            f'<div style="background:rgba(255,255,255,0.45); border:1px solid rgba(27,94,32,0.20); border-radius:14px; padding:8px 10px; box-shadow:0 2px 6px rgba(0,0,0,0.03);">'
             f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; padding-bottom:2px; border-bottom:1px solid rgba(27,94,32,0.15);">'
             f'<span style="font-size:0.72rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]} {ano_i}</span>'
             f'<span style="font-size:0.58rem; color:#B71C1C; font-weight:600;">● Feriado</span>'
