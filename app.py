@@ -2873,7 +2873,8 @@ elif aba == "✅ Auditoria e Ajustes":
                 options=cargas_disponiveis_aud,
                 default=cargas_disponiveis_aud if selecionar_todos_lote else []
             )
-            st.cache_data.clear()
+            if st.button("✅ Marcar Selecionados como Auditado (Histórico)", disabled=len(cargas_lote_escolhidas) == 0):
+                st.cache_data.clear()
                 df_plan_lote = carregar_dados("planejamento")
                 if df_plan_lote is None:
                     st.error("⚠️ Falha temporária ao ler a aba 'planejamento'. Tente novamente em 3 segundos.")
