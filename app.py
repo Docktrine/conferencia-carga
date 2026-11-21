@@ -3208,7 +3208,7 @@ elif aba == "📈 Painel de Acompanhamento":
     carga_selecionada = c_sel_pa.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist(), key="sel_carga_painel")
     if c_btn_pa.button("🔄 Atualizar Dados", type="primary"):
         st.cache_data.clear()
-        st.rerun(
+        st.rerun()
     
     if st.button("🔄 Atualizar Dados"):
         st.cache_data.clear()
