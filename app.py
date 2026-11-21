@@ -1855,7 +1855,7 @@ elif aba == "🚚 Planejamento Logística":
                         "Observação": in_obs.strip(),
                         "Status": in_status,
                         "Notificação": "",
-                        "Nota Fiscal"": "",
+                        "Nota Fiscal": ""
                     }])
                     df_plan_atualizado = pd.concat([df_plan, nova_linha_plan], ignore_index=True)
                     salvar_dados(df_plan_atualizado[COLUNAS_PLANEJAMENTO], "planejamento")
