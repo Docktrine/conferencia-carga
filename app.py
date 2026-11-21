@@ -1191,7 +1191,7 @@ if len(abas_nav) > 1:
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
     primeiro_nome_ini = st.session_state.nome_usuario.split().pop(0).title() if st.session_state.nome_usuario else "Equipe"
 
-    CIDADES_CLIMA_INI = {
+        CIDADES_CLIMA_INI = {
         "Sapucaia do Sul/RS": (-29.8278, -51.1456),
         "Canoas/RS": (-29.9178, -51.1836),
         "Esteio/RS": (-29.8525, -51.1844),
@@ -1231,15 +1231,17 @@ if len(abas_nav) > 1:
             return "⛈️", "Trovoada"
         return "🌤️", "Estável"
 
-    c_topo_esq, c_topo_clima, c_topo_cal = st.columns((1.55, 1.75, 1.0), vertical_alignment="top")
+    c_topo_esq, c_topo_clima, c_topo_cal = st.columns((1.65, 1.85, 1.05), vertical_alignment="center")
 
     with c_topo_esq:
         st.title(f"👋 Olá, {primeiro_nome_ini}!")
-        st.caption(f"Torre de Controle Logística • {hoje_str_ini} — Visão rápida do turno, recados e atalhos.")
-        cidade_sel_ini = st.selectbox(
-            "📍 Cidade do Clima:",
+        st.caption(f"Torre de Controle Logística • {hoje_str_ini} — Visão rápida do turno.")
+        c_sel_cid, _ = st.columns((1.5, 1.0))
+        cidade_sel_ini = c_sel_cid.selectbox(
+            "Cidade:",
             options=list(CIDADES_CLIMA_INI.keys()),
             index=0,
+            label_visibility="collapsed",
             key="sel_cidade_clima_ini"
         )
 
@@ -1253,48 +1255,49 @@ if len(abas_nav) > 1:
             daily_i = dw["daily"]
 
             cols_dias_html = ""
-            for idx_d in range(len(daily_i["time"])):
+            total_dias_w = len(daily_i["time"])
+            for idx_d in range(total_dias_w):
                 dt_d = datetime.strptime(daily_i["time"][idx_d], "%Y-%m-%d")
                 nm_d = "Hoje" if idx_d == 0 else dias_pt_i[dt_d.weekday()]
                 dt_curta = dt_d.strftime("%d/%m")
                 ic_d, _ = _icone_clima_ini(daily_i["weather_code"][idx_d])
                 tmax_d = round(daily_i["temperature_2m_max"][idx_d])
                 tmin_d = round(daily_i["temperature_2m_min"][idx_d])
-                bg_col = "#2A382E" if idx_d == 0 else ("#232E27" if idx_d % 2 == 1 else "#1F2922")
-                borda_top = "3px solid #4CAF50" if idx_d == 0 else "3px solid transparent"
+                borda_dir = "border-right:1px solid rgba(27,94,32,0.16);" if idx_d < total_dias_w - 1 else ""
+                destaque_hoje = "border-bottom:2px solid #1B5E20; background:rgba(27,94,32,0.05); border-radius:8px;" if idx_d == 0 else ""
                 cols_dias_html += f"""
-                <div style="background:{bg_col}; border-top:{borda_top}; padding:8px 4px; text-align:center; border-right:1px solid rgba(255,255,255,0.06);">
-                    <div style="font-size:0.86rem; font-weight:700; color:#FFFFFF;">{nm_d}</div>
-                    <div style="font-size:0.68rem; color:#B8C2BC; margin-bottom:4px;">{dt_curta}</div>
-                    <div style="font-size:1.55rem; line-height:1.15; margin:4px 0;">{ic_d}</div>
-                    <div style="font-size:0.74rem; font-weight:700; color:#FFFFFF; margin-top:4px;">{tmax_d}° <span style="font-weight:400; color:#9AA69E;">/ {tmin_d}°</span></div>
+                <div style="{borda_dir} {destaque_hoje} padding:4px 4px; text-align:center;">
+                    <div style="font-size:0.80rem; font-weight:700; color:#141A16;">{nm_d}</div>
+                    <div style="font-size:0.64rem; color:#5A635C; margin-bottom:2px;">{dt_curta}</div>
+                    <div style="font-size:1.35rem; line-height:1.1; margin:2px 0;">{ic_d}</div>
+                    <div style="font-size:0.72rem; font-weight:700; color:#141A16; margin-top:2px;">{tmax_d}° <span style="font-weight:400; color:#5A635C;">/ {tmin_d}°</span></div>
                 </div>
                 """
 
             st.markdown(
                 f"""
-                <div style="background:#1F2922; border:1px solid #4CAF50; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.12);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:#161E18; border-bottom:1px solid rgba(76,175,80,0.3);">
-                        <span style="font-size:0.76rem; font-weight:700; color:#E6E1D6;">📍 {cidade_sel_ini} • {desc_ag}</span>
-                        <span style="background:#4CAF50; color:#141A16; border-radius:12px; padding:1px 9px; font-size:0.78rem; font-weight:800;">Agora: {ic_ag} {t_agora}°C</span>
+                <div style="background:transparent; border:1px solid rgba(27,94,32,0.22); border-radius:12px; padding:6px 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid rgba(27,94,32,0.12);">
+                        <span style="font-size:0.72rem; font-weight:600; color:#3A423C;">📍 {cidade_sel_ini} • {desc_ag}</span>
+                        <span style="font-size:0.75rem; font-weight:700; color:#1B5E20;">Agora: {ic_ag} {t_agora}°C</span>
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(5, 1fr);">
+                    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:2px;">
                         {cols_dias_html}
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-        except Exception as e_w:
-            st.warning(f"🌤️ Não foi possível carregar o clima ({e_w})")
+        except Exception:
+            st.caption("🌤️ Clima indisponível no momento")
 
     with c_topo_cal:
         import calendar
         agora_c = datetime.now(FUSO_BR)
         ano_i, mes_i, dia_i = agora_c.year, agora_c.month, agora_c.day
         meses_nomes_i = [
-            "", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+            "", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
         ]
         feriados_i = set()
         try:
@@ -1306,13 +1309,13 @@ if len(abas_nav) > 1:
 
         mat_cal = calendar.Calendar(firstweekday=6).monthdayscalendar(ano_i, mes_i)
         cal_html_i = f"""
-        <div style="background:#E4E0D6; border:1px solid rgba(27,94,32,0.35); border-radius:12px; padding:8px 10px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; border-bottom:1px solid rgba(27,94,32,0.15); padding-bottom:3px;">
-                <span style="font-size:0.78rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]}/{ano_i}</span>
-                <span style="font-size:0.64rem; color:#B71C1C; font-weight:600;">● Feriado</span>
+        <div style="background:transparent; border:1px solid rgba(27,94,32,0.22); border-radius:12px; padding:6px 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; padding-bottom:2px; border-bottom:1px solid rgba(27,94,32,0.12);">
+                <span style="font-size:0.73rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]} {ano_i}</span>
+                <span style="font-size:0.60rem; color:#B71C1C; font-weight:600;">● Feriado</span>
             </div>
-            <table style="width:100%; border-collapse:collapse; text-align:center; font-size:0.68rem; line-height:1.38;">
-                <tr style="color:#4A524C; font-weight:700;">
+            <table style="width:100%; border-collapse:collapse; text-align:center; font-size:0.62rem; line-height:1.18;">
+                <tr style="color:#5A635C; font-weight:700;">
                     <th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th>
                 </tr>
         """
@@ -1322,16 +1325,18 @@ if len(abas_nav) > 1:
                 if d_i == 0:
                     cal_html_i += "<td></td>"
                 elif d_i == dia_i:
-                    cal_html_i += f"<td><span style='background:#1F2922; color:#FFFFFF; border:1px solid #4CAF50; border-radius:50%; padding:1px 5px; font-weight:700;'>{d_i}</span></td>"
+                    cal_html_i += f"<td><span style='background:#1B5E20; color:#FFFFFF; border-radius:50%; padding:0px 4px; font-weight:700;'>{d_i}</span></td>"
                 elif d_i in feriados_i:
-                    cal_html_i += f"<td><span style='background:#FFCDD2; color:#B71C1C; border-radius:50%; padding:1px 5px; font-weight:700;' title='Feriado'>{d_i}</span></td>"
+                    cal_html_i += f"<td><span style='background:#FFCDD2; color:#B71C1C; border-radius:50%; padding:0px 4px; font-weight:700;' title='Feriado'>{d_i}</span></td>"
                 elif idx_s in (0, 6):
-                    cal_html_i += f"<td style='color:#7A827C;'>{d_i}</td>"
+                    cal_html_i += f"<td style='color:#8A928C;'>{d_i}</td>"
                 else:
                     cal_html_i += f"<td style='color:#141A16;'>{d_i}</td>"
             cal_html_i += "</tr>"
         cal_html_i += "</table></div>"
         st.markdown(cal_html_i, unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
     df_plan_ini = carregar_dados("planejamento")
     df_cargas_ini = carregar_dados("cargas")
