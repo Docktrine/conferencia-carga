@@ -1264,18 +1264,8 @@ if len(abas_nav) > 1:
         st.caption(f"Torre de Controle Logística • {hoje_str_ini}")
 
     with c_topo_clima:
-        c_lbl_w, c_sel_w = st.columns((1.2, 1.3), vertical_alignment="center")
-        c_lbl_w.markdown("<div style='font-size:0.74rem; font-weight:700; color:#3A423C;'>🌦️ Previsão do Tempo</div>", unsafe_allow_html=True)
-        cidade_sel_ini = c_sel_w.selectbox(
-            "Cidade:",
-            options=list(CIDADES_CLIMA_INI.keys()),
-            index=0,
-            label_visibility="collapsed",
-            key="sel_cidade_clima_ini"
-        )
-        lat_sel, lon_sel = CIDADES_CLIMA_INI[cidade_sel_ini]
         try:
-            dw = obter_clima_inicio(lat_sel, lon_sel)
+            dw = obter_clima_inicio(-29.8278, -51.1456)
             t_agora = round(dw["current"]["temperature_2m"])
             ic_ag, desc_ag = _icone_clima_ini(dw["current"]["weather_code"])
             dias_pt_i = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
@@ -1304,7 +1294,7 @@ if len(abas_nav) > 1:
             st.markdown(
                 f'<div style="padding:2px 4px;">'
                 f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; padding-bottom:2px; border-bottom:1px solid rgba(27,94,32,0.15);">'
-                f'<span style="font-size:0.70rem; font-weight:600; color:#4A524C;">{desc_ag}</span>'
+                f'<span style="font-size:0.72rem; font-weight:700; color:#141A16;">📍 Sapucaia do Sul/RS • <span style="font-weight:500; color:#4A524C;">{desc_ag}</span></span>'
                 f'<span style="font-size:0.73rem; font-weight:700; color:#1B5E20;">Agora: {ic_ag} {t_agora}°C</span>'
                 f'</div>'
                 f'<div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:2px;">{cols_dias_html}</div>'
