@@ -1099,70 +1099,20 @@ else:
 
 abas_nav = st.session_state.abas_abertas
 if len(abas_nav) > 1:
-    st.markdown(
-        """
-        <style>
-        /* Cola todas as guias à esquerda sem buracos entre colunas */
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: wrap !important;
-            justify-content: flex-start !important;
-            align-items: center !important;
-            gap: 6px !important;
-            padding-bottom: 8px !important;
-            border-bottom: 1px solid rgba(27, 94, 32, 0.25) !important;
-            margin-bottom: 8px !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="stColumn"],
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"] {
-            width: fit-content !important;
-            flex: 0 0 auto !important;
-            min-width: 0 !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button {
-            border-radius: 8px !important;
-            padding: 3px 12px !important;
-            min-height: 28px !important;
-            height: 28px !important;
-            box-shadow: none !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button p {
-            font-size: 0.76rem !important;
-            white-space: nowrap !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"] {
-            background-color: #DCD7CC !important;
-            border: 1px solid rgba(27, 94, 32, 0.25) !important;
-            color: #141A16 !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"]:hover {
-            background-color: #CFC9BC !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] {
-            background-color: #1F2922 !important;
-            border: 1px solid #4CAF50 !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] p {
-            color: #FFFFFF !important;
-            font-weight: 600 !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
+    opcoes_pills = abas_nav + ["✕ Fechar guia atual"]
+    escolha_pill = st.pills(
+        "Guias abertas:",
+        options=opcoes_pills,
+        default=aba,
+        label_visibility="collapsed",
+        key=f"pills_nav_{len(abas_nav)}_{aba}"
     )
-    cols_nav = st.columns(len(abas_nav) + 1, gap="small")
-    for idx_n, mod_n in enumerate(abas_nav):
-        ativo_n = (aba == mod_n)
-        partes_n = mod_n.split(" ", 1)
-        icone_n = partes_n.pop(0) if len(partes_n) > 1 else ""
-        nome_n = partes_n.pop(0) if partes_n else mod_n
-        if cols_nav[idx_n].button(f"{icone_n} {nome_n}", key=f"nav_tab_{idx_n}", type="primary" if ativo_n else "secondary"):
-            st.session_state.aba_ativa = mod_n
-            st.rerun()
-    if cols_nav[-1].button("✕", key="close_active_tab", type="secondary", help="Fechar guia atual"):
+    if escolha_pill == "✕ Fechar guia atual":
         st.session_state.abas_abertas.remove(aba)
         st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
+        st.rerun()
+    elif escolha_pill and escolha_pill != aba:
+        st.session_state.aba_ativa = escolha_pill
         st.rerun()
     
 if aba == "📊 Análise de Pedidos":
