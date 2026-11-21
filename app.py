@@ -1235,6 +1235,28 @@ if len(abas_nav) > 1:
             left: 4.5rem !important;
             max-width: calc(100vw - 21rem) !important;
         }
+        /* Destaca o último botão ("✕ Fechar guia atual") em vermelho suave */
+        [data-testid="stButtonGroup"] button:last-of-type,
+        [data-testid="stPills"] button:last-of-type {
+            background-color: #FDECEA !important;
+            border: 1px solid #E57373 !important;
+            margin-left: 6px !important;
+            transition: all 0.18s ease !important;
+        }
+        [data-testid="stButtonGroup"] button:last-of-type p,
+        [data-testid="stPills"] button:last-of-type p {
+            color: #B71C1C !important;
+            font-weight: 700 !important;
+        }
+        [data-testid="stButtonGroup"] button:last-of-type:hover,
+        [data-testid="stPills"] button:last-of-type:hover {
+            background-color: #B71C1C !important;
+            border-color: #B71C1C !important;
+        }
+        [data-testid="stButtonGroup"] button:last-of-type:hover p,
+        [data-testid="stPills"] button:last-of-type:hover p {
+            color: #FFFFFF !important;
+        }        
         </style>
         """,
         unsafe_allow_html=True
