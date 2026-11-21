@@ -1487,8 +1487,8 @@ elif aba == "🚚 Planejamento Logística":
         key="kpi_plan_mes_selecionado"
     )
 
-df_plan_ativos = df_plan[df_plan["Nº Pedido"].astype(str).str.strip() != ""].copy()
-df_kpi_plan = df_plan_ativos.copy() if mes_escolhido == "Todos os meses" else df_plan_ativos[df_plan_ativos["_mes_ano_kpi"] == mes_escolhido].copy()
+    df_plan_ativos = df_plan[df_plan["Nº Pedido"].astype(str).str.strip() != ""].copy()
+    df_kpi_plan = df_plan_ativos.copy() if mes_escolhido == "Todos os meses" else df_plan_ativos[df_plan_ativos["_mes_ano_kpi"] == mes_escolhido].copy()
 
     total_prog_kpi = int(len(df_kpi_plan))
     soma_pedidos_kpi = float(pd.to_numeric(df_kpi_plan["Valor Pedido"].apply(converter_moeda_para_float), errors="coerce").fillna(0.0).sum()) if not df_kpi_plan.empty else 0.0
