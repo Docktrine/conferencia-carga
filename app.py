@@ -1230,7 +1230,33 @@ if len(abas_nav) > 1:
         elif c in (95, 96, 99):
             return "⛈️", "Trovoada"
         return "🌤️", "Estável"
-
+        
+    st.markdown(
+        """
+        <style>
+        /* Sobe a barra de abas para perto da linha do topo e deixa o seletor da cidade discreto */
+        .stMainBlockContainer, [data-testid="stMainBlockContainer"], .block-container {
+            padding-top: 1.1rem !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label="Cidade:"]) div[data-baseweb="select"] > div {
+            min-height: 28px !important;
+            height: 28px !important;
+            font-size: 0.76rem !important;
+            background-color: rgba(255, 255, 255, 0.45) !important;
+            border: 1px solid rgba(27, 94, 32, 0.25) !important;
+            border-radius: 16px !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+        /* Remove bordas de grade internas do mini-calendário */
+        .mini-cal-grano, .mini-cal-grano tr, .mini-cal-grano th, .mini-cal-grano td {
+            border: none !important;
+            background: transparent !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     c_topo_esq, c_topo_clima, c_topo_cal = st.columns((1.55, 1.85, 1.05), vertical_alignment="center")
 
     with c_topo_esq:
@@ -1327,7 +1353,7 @@ if len(abas_nav) > 1:
             f'<span style="font-size:0.72rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]} {ano_i}</span>'
             f'<span style="font-size:0.58rem; color:#B71C1C; font-weight:600;">● Feriado</span>'
             f'</div>'
-            f'<table style="width:100%; border-collapse:collapse; text-align:center; font-size:0.62rem; line-height:1.22;">'
+            f'<table class="mini-cal-grano" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.62rem; line-height:1.22;">'
             f'<tr style="color:#5A635C; font-weight:700;"><th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th></tr>'
             f'{linhas_cal_html}'
             f'</table></div>',
