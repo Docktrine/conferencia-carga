@@ -1426,16 +1426,22 @@ if aba == "🏠 Início":
                 <!-- 4. MILHO BAIXISTA (Direita) -->
                 <g class="milho-baixo">
                     <!-- Pernas -->
-                    <path d="M716 83 V98 M726 83 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <!-- Espiga de Milho -->
-                    <rect x="712" y="42" width="18" height="38" rx="9" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7"/>
-                    <!-- Palhas verdes laterais -->
-                    <path d="M712 62 C705 68 707 80 715 82" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
-                    <path d="M730 62 C737 68 735 80 727 82" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
+                    <path d="M716 84 V98 M726 84 V98" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Cabelinho de milho no topo -->
+                    <path d="M721 38 C719 32 715 33 717 38 M721 38 C721 31 725 32 723 38" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Espiga cônica de milho -->
+                    <path d="M713 54 C713 40 729 40 729 54 L727 78 C727 83 715 83 715 78 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <!-- Textura sutil dos grãos de milho -->
+                    <line x1="721" y1="44" x2="721" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.5"/>
+                    <line x1="717" y1="46" x2="717" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.45"/>
+                    <line x1="725" y1="46" x2="725" y2="62" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2.5 2.5" opacity="0.45"/>
+                    <!-- Palhas verdes abertas em V abraçando a base -->
+                    <path d="M714 58 C704 63 704 79 717 83 C714 75 714 66 714 58 Z" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                    <path d="M728 58 C738 63 738 79 725 83 C728 75 728 66 728 58 Z" fill="#DDD8CE" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
                     <!-- Olhos e Sorriso -->
-                    <circle cx="718" cy="54" r="1.4" fill="#141A16"/>
-                    <circle cx="724" cy="54" r="1.4" fill="#141A16"/>
-                    <path d="M719 59 Q721 61 723 59" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="718.5" cy="52" r="1.4" fill="#141A16"/>
+                    <circle cx="723.5" cy="52" r="1.4" fill="#141A16"/>
+                    <path d="M719.5 56 Q721 58 722.5 56" stroke="#141A16" stroke-width="1.3" stroke-linecap="round"/>
                     <!-- Contrabaixo -->
                     <ellipse cx="720" cy="70" rx="8.5" ry="5" transform="rotate(-15 720 70)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
                     <line x1="727" y1="68" x2="749" y2="61" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
