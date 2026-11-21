@@ -1268,45 +1268,45 @@ if len(abas_nav) > 1:
                 50% {{ transform: scale(1.35); opacity: 0.55; }}
             }}
             @keyframes balancoArvoreGrano {{
-                0%, 100% {{ transform: rotate(0deg); }}
+                0%, 100% {{ transform: rotate(-1.5deg); }}
                 50% {{ transform: rotate(2.5deg); }}
             }}
             @keyframes rastroVentoGrano {{
-                0% {{ stroke-dashoffset: 310; opacity: 0; }}
+                0% {{ stroke-dashoffset: 330; opacity: 0; }}
                 20% {{ opacity: 0.45; }}
                 80% {{ opacity: 0.38; }}
-                100% {{ stroke-dashoffset: -310; opacity: 0; }}
+                100% {{ stroke-dashoffset: -330; opacity: 0; }}
             }}
             @keyframes pirueta3DFolha1 {{
-                0% {{ transform: perspective(380px) translate(32px, 12px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.95); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(54px, 16px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.95); opacity: 0; }}
                 12% {{ opacity: 1; }}
-                32% {{ transform: perspective(380px) translate(115px, 48px) rotateX(180deg) rotateY(90deg) rotateZ(140deg) scale(1.12); }}
-                60% {{ transform: perspective(380px) translate(215px, 8px) rotateX(360deg) rotateY(220deg) rotateZ(290deg) scale(1.02); }}
-                85% {{ transform: perspective(380px) translate(300px, 42px) rotateX(520deg) rotateY(320deg) rotateZ(440deg) scale(0.95); opacity: 0.92; }}
-                100% {{ transform: perspective(380px) translate(365px, 18px) rotateX(680deg) rotateY(420deg) rotateZ(580deg) scale(0.85); opacity: 0; }}
+                32% {{ transform: perspective(380px) translate(140px, 56px) rotateX(180deg) rotateY(90deg) rotateZ(140deg) scale(1.12); }}
+                60% {{ transform: perspective(380px) translate(240px, 14px) rotateX(360deg) rotateY(220deg) rotateZ(290deg) scale(1.02); }}
+                85% {{ transform: perspective(380px) translate(325px, 50px) rotateX(520deg) rotateY(320deg) rotateZ(440deg) scale(0.95); opacity: 0.92; }}
+                100% {{ transform: perspective(380px) translate(390px, 24px) rotateX(680deg) rotateY(420deg) rotateZ(580deg) scale(0.85); opacity: 0; }}
             }}
             @keyframes pirueta3DFolha2 {{
-                0% {{ transform: perspective(380px) translate(38px, 26px) rotateX(40deg) rotateY(0deg) rotateZ(30deg) scale(0.9); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(60px, 34px) rotateX(40deg) rotateY(0deg) rotateZ(30deg) scale(0.9); opacity: 0; }}
                 15% {{ opacity: 0.95; }}
-                45% {{ transform: perspective(380px) translate(155px, 4px) rotateX(-190deg) rotateY(160deg) rotateZ(-150deg) scale(1.08); }}
-                75% {{ transform: perspective(380px) translate(265px, 46px) rotateX(-380deg) rotateY(300deg) rotateZ(-320deg) scale(0.98); opacity: 0.88; }}
-                100% {{ transform: perspective(380px) translate(355px, 22px) rotateX(-540deg) rotateY(420deg) rotateZ(-460deg) scale(0.85); opacity: 0; }}
+                45% {{ transform: perspective(380px) translate(180px, 10px) rotateX(-190deg) rotateY(160deg) rotateZ(-150deg) scale(1.08); }}
+                75% {{ transform: perspective(380px) translate(290px, 54px) rotateX(-380deg) rotateY(300deg) rotateZ(-320deg) scale(0.98); opacity: 0.88; }}
+                100% {{ transform: perspective(380px) translate(380px, 28px) rotateX(-540deg) rotateY(420deg) rotateZ(-460deg) scale(0.85); opacity: 0; }}
             }}
             @keyframes pirueta3DFolha3 {{
-                0% {{ transform: perspective(380px) translate(28px, 18px) rotateX(0deg) rotateY(30deg) rotateZ(-20deg) scale(0.88); opacity: 0; }}
+                0% {{ transform: perspective(380px) translate(48px, 24px) rotateX(0deg) rotateY(30deg) rotateZ(-20deg) scale(0.88); opacity: 0; }}
                 15% {{ opacity: 0.9; }}
-                40% {{ transform: perspective(380px) translate(135px, 52px) rotateX(150deg) rotateY(-140deg) rotateZ(180deg) scale(1.04); }}
-                70% {{ transform: perspective(380px) translate(240px, 12px) rotateX(320deg) rotateY(-280deg) rotateZ(350deg) scale(0.95); opacity: 0.82; }}
-                100% {{ transform: perspective(380px) translate(335px, 36px) rotateX(480deg) rotateY(-400deg) rotateZ(500deg) scale(0.82); opacity: 0; }}
+                40% {{ transform: perspective(380px) translate(160px, 60px) rotateX(150deg) rotateY(-140deg) rotateZ(180deg) scale(1.04); }}
+                70% {{ transform: perspective(380px) translate(265px, 18px) rotateX(320deg) rotateY(-280deg) rotateZ(350deg) scale(0.95); opacity: 0.82; }}
+                100% {{ transform: perspective(380px) translate(360px, 44px) rotateX(480deg) rotateY(-400deg) rotateZ(500deg) scale(0.82); opacity: 0; }}
             }}
             .saudacao-wrap-grano {{
                 position: relative;
-                padding-top: 10px;
+                padding-top: 6px;
             }}
             .arvore-grano-anim {{
                 transform-origin: bottom center;
-                animation: balancoArvoreGrano 4s ease-in-out infinite;
-                margin-right: 12px;
+                animation: balancoArvoreGrano 4.2s ease-in-out infinite;
+                margin-right: 14px;
                 flex-shrink: 0;
             }}
             .ponto-vivo-grano {{
@@ -1325,18 +1325,18 @@ if len(abas_nav) > 1:
                 position: absolute;
                 left: 0;
                 top: 0;
-                height: 86px;
-                width: 390px;
+                height: 92px;
+                width: 415px;
                 z-index: 5;
                 overflow: visible;
                 pointer-events: none;
             }}
             .linha-brisa-1 {{
-                stroke-dasharray: 110 200;
+                stroke-dasharray: 120 210;
                 animation: rastroVentoGrano 4.8s ease-in-out infinite;
             }}
             .linha-brisa-2 {{
-                stroke-dasharray: 90 220;
+                stroke-dasharray: 95 235;
                 animation: rastroVentoGrano 5.7s ease-in-out 1.6s infinite;
             }}
             .f-voa-1 {{ position: absolute; left: 0px; top: 4px; filter: drop-shadow(0 3px 4px rgba(20,26,22,0.20)); animation: pirueta3DFolha1 6.4s cubic-bezier(0.37, 0, 0.63, 1) infinite; }}
@@ -1345,9 +1345,9 @@ if len(abas_nav) > 1:
             </style>
             <div class="saudacao-wrap-grano">
                 <div class="vento-overlay-grano">
-                    <svg width="385" height="86" viewBox="0 0 385 86" fill="none" style="position:absolute; left:0; top:0;">
-                        <path class="linha-brisa-1" d="M36 22 Q 125 56, 215 20 T 375 40" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round" fill="none"/>
-                        <path class="linha-brisa-2" d="M44 48 Q 145 14, 245 46 T 380 24" stroke="#4CAF50" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+                    <svg width="410" height="92" viewBox="0 0 410 92" fill="none" style="position:absolute; left:0; top:0;">
+                        <path class="linha-brisa-1" d="M58 26 Q 150 62, 240 24 T 400 46" stroke="#1B5E20" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+                        <path class="linha-brisa-2" d="M64 54 Q 170 18, 270 52 T 405 30" stroke="#4CAF50" stroke-width="1.1" stroke-linecap="round" fill="none"/>
                     </svg>
                     <svg class="f-voa-1" width="28" height="28" viewBox="0 0 32 32" fill="none">
                         <path d="M4 27 C6 25 8 23 10 21" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
@@ -1365,22 +1365,30 @@ if len(abas_nav) > 1:
                         <path d="M10 21 C19 22 26 15 27 5 C22 11 16 16 10 21 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <div style="display:flex; align-items:flex-end; position:relative; z-index:1;">
-                    <svg class="arvore-grano-anim" width="48" height="58" viewBox="0 0 48 58" fill="none">
-                        <!-- Solo -->
-                        <line x1="10" y1="55" x2="38" y2="55" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                        <!-- Tronco e galhos -->
-                        <path d="M24 55 V32 M24 41 L17 34 M24 38 L31 31" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
-                        <!-- Copa da árvore minimalista -->
-                        <path d="M13 33 C7 31 6 22 12 19 C11 11 20 6 27 9 C34 7 41 13 38 20 C43 24 41 33 34 33 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M17 24 C19 19 25 18 28 21" stroke="#2E7D32" stroke-width="1.3" stroke-linecap="round" opacity="0.6"/>
+                <div style="display:flex; align-items:center; position:relative; z-index:1;">
+                    <svg class="arvore-grano-anim" width="74" height="86" viewBox="0 0 74 86" fill="none">
+                        <!-- Solo e gramínea sutil -->
+                        <line x1="12" y1="82" x2="62" y2="82" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M18 82 L16 78 M21 82 L22 79 M54 82 L55 78" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
+                        <!-- Copa traseira mais escura (profundidade) -->
+                        <circle cx="24" cy="40" r="16" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6"/>
+                        <circle cx="50" cy="38" r="15" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6"/>
+                        <circle cx="37" cy="24" r="18" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6"/>
+                        <!-- Copa frontal clara -->
+                        <path d="M18 48 C10 47 7 37 14 31 C11 21 20 12 30 14 C34 7 46 8 49 16 C59 16 65 26 59 35 C65 42 59 51 50 50 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Detalhes de folhagem interna -->
+                        <path d="M23 26 C27 22 33 22 36 25" stroke="#2E7D32" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M43 32 C47 29 52 30 54 34" stroke="#2E7D32" stroke-width="1.4" stroke-linecap="round"/>
+                        <!-- Tronco orgânico com raízes e galhos -->
+                        <path d="M31 82 C34 74 35 62 35 45 M43 82 C40 74 39 62 39 45" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M35 56 L24 44 M39 52 L50 41 M37 46 L37 33" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
                     <div>
                         <div style="display:flex; align-items:center; margin-bottom:2px;">
                             <span style="font-size:2.45rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.08; white-space:nowrap;">Olá, {primeiro_nome_ini}!</span>
                             <span class="ponto-vivo-grano"></span>
                         </div>
-                        <div style="font-size:0.84rem; color:#5A635C; margin-top:4px;">Torre de Controle Logística • {hoje_str_ini}</div>
+                        <div style="font-size:0.84rem; color:#5A635C; margin-top:5px;">Torre de Controle Logística • {hoje_str_ini}</div>
                     </div>
                 </div>
             </div>
