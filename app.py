@@ -1489,11 +1489,11 @@ elif aba == "🚚 Planejamento Logística":
 
     df_kpi_plan = df_plan.copy() if mes_escolhido == "Todos os meses" else df_plan[df_plan["_mes_ano_kpi"] == mes_escolhido].copy()
 
-    total_prog_kpi = len(df_kpi_plan)
-    soma_pedidos_kpi = df_kpi_plan["Valor Pedido"].apply(converter_moeda_para_float).sum()
-    soma_frete_kpi = df_kpi_plan["Valor de Frete"].apply(converter_moeda_para_float).sum()
-    perc_frete_kpi = (soma_frete_kpi / soma_pedidos_kpi * 100) if soma_pedidos_kpi > 0 else 0.0
-
+    total_prog_kpi = int(len(df_kpi_plan))
+    soma_pedidos_kpi = float(pd.to_numeric(df_kpi_plan["Valor Pedido"].apply(converter_moeda_para_float), errors="coerce").fillna(0.0).sum()) if not df_kpi_plan.empty else 0.0
+    soma_frete_kpi = float(pd.to_numeric(df_kpi_plan["Valor de Frete"].apply(converter_moeda_para_float), errors="coerce").fillna(0.0).sum()) if not df_kpi_plan.empty else 0.0
+    perc_frete_kpi = (soma_frete_kpi / soma_pedidos_kpi * 100.0) if soma_pedidos_kpi > 0 else 0.0
+    
     fmt_pedidos_kpi = f"R$ {soma_pedidos_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     fmt_frete_kpi = f"R$ {soma_frete_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
