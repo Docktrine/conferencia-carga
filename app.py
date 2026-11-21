@@ -3162,14 +3162,24 @@ elif aba == "📦 Conferência dos Pedidos":
         carga_alvo_limpa = limpar_texto(carga_selecionada)
 
         def extrair_notifs_conf(row_p):
-            ped_plan_txt = limpar_texto(row_p["Nº Pedido"])
-            if not ped_plan_txt or not carga_alvo_limpa:
-                return list()
-            if ped_plan_txt != carga_alvo_limpa and not re.search(rf"\b{re.escape(carga_alvo_limpa)}\b", ped_plan_txt):
-                return list()
-            txt_nt = str(row_p["Notificação"]).strip()
+            ped_plan_txt = limpar_texto(row_p.get("Nº Pedido", ""))
+            id_carga_plan_txt = limpar_texto(row_p.get("id_carga", ""))
+            txt_nt = str(row_p.get("Notificação", "")).strip()
             if not txt_nt or txt_nt.lower() in ("nan", "none", "null"):
                 return list()
+
+            # Aceita notificação geral (sem pedido) ou que contenha o número do pedido/carga
+            eh_geral = (not ped_plan_txt and not id_carga_plan_txt) or ped_plan_txt == "GERAL"
+            bate_carga = False
+            if carga_alvo_limpa:
+                if carga_alvo_limpa in ped_plan_txt or (ped_plan_txt and ped_plan_txt in carga_alvo_limpa):
+                    bate_carga = True
+                elif carga_alvo_limpa in id_carga_plan_txt or (id_carga_plan_txt and id_carga_plan_txt in carga_alvo_limpa):
+                    bate_carga = True
+
+            if not eh_geral and not bate_carga:
+                return list()
+
             login_u_c = limpar_texto(login_conf_nt)
             nome_u_c = limpar_texto(nome_conf_nt)
             minhas_c = list()
@@ -3187,7 +3197,7 @@ elif aba == "📦 Conferência dos Pedidos":
                     minhas_c.append(p_limpa)
                 else:
                     destino = limpar_texto(p_limpa.split("[PARA:").pop(1).split("]").pop(0))
-                    if destino in ("TODOS", login_u_c, nome_u_c):
+                    if destino in ("TODOS", "CONFERENTE", "CONFERENTES", login_u_c, nome_u_c):
                         minhas_c.append(p_limpa)
             return minhas_c
 
@@ -3212,7 +3222,7 @@ elif aba == "📦 Conferência dos Pedidos":
                         partes_c = [x.strip() for x in str(df_plan_conf.at[idx_nc, "Notificação"]).split(" || ") if x.strip()]
                         if msg_bruta_nc in partes_c:
                             idx_mc = partes_c.index(msg_bruta_nc)
-                            if "[PARA: TODOS]" in msg_bruta_nc.upper():
+                            if "[PARA: TODOS]" in msg_bruta_nc.upper() or "[PARA: CONFERENTE" in msg_bruta_nc.upper():
                                 leitor_c = limpar_texto(login_conf_nt)
                                 if "[LIDO:" in msg_bruta_nc:
                                     base_c, resto_c = msg_bruta_nc.split("[LIDO:", 1)
@@ -3226,7 +3236,8 @@ elif aba == "📦 Conferência dos Pedidos":
                         df_plan_conf.at[idx_nc, "Notificação"] = " || ".join(partes_c)
                         salvar_dados(df_plan_conf[COLUNAS_PLANEJAMENTO], "planejamento")
                         st.toast("✔️ Notificação confirmada como lida!", icon="✔️")
-                        st.rerun()        
+                        st.rerun()
+    
     df_carga_selecionada_atual = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada]
     if verificar_carga_100_concluida(df_carga_selecionada_atual):
         st.success("✅ Conferência realizada com sucesso!")
