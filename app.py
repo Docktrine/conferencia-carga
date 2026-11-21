@@ -438,7 +438,12 @@ def carregar_dados(aba):
         st.stop()
 
 def salvar_dados(df, aba):
+    if df is None or df.empty:
+        st.warning(f"⚠️ Operação de gravação bloqueada na aba '{aba}' para proteger os dados existentes contra sobrescrita vazia.")
+        return
     df_padronizado = padronizar_df_maiusculo(df)
+    if df_padronizado.empty:
+        return
     for tentativa in range(3):
         try:
             conn.update(worksheet=aba, data=df_padronizado)
