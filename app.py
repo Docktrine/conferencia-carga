@@ -3234,7 +3234,7 @@ elif aba == "📈 Painel de Acompanhamento":
     if verificar_carga_100_concluida(df):
         st.success("✅ Carga 100% concluída!")
         with st.container(border=True):
-            cp_lac1, cp_lac2 = st.columns((4.3, 0.7), vertical_alignment="bottom")
+            cp_lac1, cp_lac2, _ = st.columns((2.0, 0.8, 2.2), vertical_alignment="bottom")
             novo_lacre_painel = cp_lac1.text_input(
                 "🔒 Número do Lacre da Carga:",
                 value="",
