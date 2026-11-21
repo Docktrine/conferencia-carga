@@ -461,6 +461,7 @@ def processar_foto_avatar(arquivo_upload):
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=45)
     return "IMG_" + base64.b64encode(buf.getvalue()).decode("utf-8")
+@st.cache_data(ttl=600, show_spinner=False)    
 def carregar_foto_usuario(login_user):
     login_limpo = limpar_texto(login_user)
     for ext in ["jpg", "jpeg", "png", "webp"]:
@@ -1052,33 +1053,36 @@ if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds
             st.cache_data.clear()
     st.session_state.ultimo_ping_ts = agora_ping
     
-df_u_online = carregar_dados("usuarios")
-avatares_online_html = ""
-qtd_online = 0
-if not df_u_online.empty and "ultimo_acesso" in df_u_online.columns:
-    for idx_on, r_on in df_u_online.iterrows():
-        ts_str = str(r_on.get("ultimo_acesso", "")).strip()
-        if ts_str and ts_str.lower() not in ("nan", "none", "null"):
-            try:
-                dt_acesso = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
-                if dt_acesso.tzinfo is None and agora_ping.tzinfo is not None:
-                    dt_acesso = dt_acesso.replace(tzinfo=agora_ping.tzinfo)
-                if (agora_ping - dt_acesso).total_seconds() <= 600:
-                    qtd_online += 1
-                    l_on = limpar_texto(r_on.get("login", ""))
-                    n_on = str(r_on.get("nome", l_on)).strip()
-                    p_on = str(r_on.get("perfil", "")).strip()
-                    ini_on = "".join(p[:1] for p in n_on.split()[:2]).upper() if n_on else "U"
-                    foto_on = carregar_foto_usuario(l_on)
-                    ml_style = "margin-left: -10px;" if qtd_online > 1 else ""
-                    if foto_on:
-                        bolinha = f'<img src="data:image/png;base64,{foto_on}" title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #1F2922; {ml_style}">'
-                    else:
-                        bolinha = f'<div title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; background-color: #1B5E20; color: #E6E1D6; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; border: 2px solid #4CAF50; {ml_style}">{ini_on}</div>'
-                    avatares_online_html += bolinha
-            except Exception:
-                pass
+@st.cache_data(ttl=60, show_spinner=False)
+def montar_html_usuarios_online():
+    df_u_on = _ler_planilha_com_cache("usuarios")
+    agora_ref = datetime.now()
+    html_res = ""
+    qtd_on = 0
+    if not df_u_on.empty and "ultimo_acesso" in df_u_on.columns:
+        for _, r_on in df_u_on.iterrows():
+            ts_str = str(r_on.get("ultimo_acesso", "")).strip()
+            if ts_str and ts_str.lower() not in ("nan", "none", "null"):
+                try:
+                    dt_acesso = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+                    if (agora_ref - dt_acesso).total_seconds() <= 600:
+                        qtd_on += 1
+                        l_on = limpar_texto(r_on.get("login", ""))
+                        n_on = str(r_on.get("nome", l_on)).strip()
+                        p_on = str(r_on.get("perfil", "")).strip()
+                        ini_on = "".join(p[:1] for p in n_on.split()[:2]).upper() if n_on else "U"
+                        foto_on = carregar_foto_usuario(l_on)
+                        ml_style = "margin-left: -10px;" if qtd_on > 1 else ""
+                        if foto_on:
+                            bolinha = f'<img src="data:image/png;base64,{foto_on}" title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #1F2922; {ml_style}">'
+                        else:
+                            bolinha = f'<div title="{n_on} ({p_on}) - Online" style="width: 36px; height: 36px; border-radius: 50%; background-color: #1B5E20; color: #E6E1D6; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; border: 2px solid #4CAF50; {ml_style}">{ini_on}</div>'
+                        html_res += bolinha
+                except Exception:
+                    pass
+    return qtd_on, html_res
 
+qtd_online, avatares_online_html = montar_html_usuarios_online()
 if qtd_online > 0:
     st.markdown(
         f"""
