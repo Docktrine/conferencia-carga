@@ -2485,7 +2485,7 @@ elif aba == "📥 Importação de Pedidos":
         with c3:
             p_qtd = st.selectbox("Coluna da QUANTIDADE PEDIDA:", cols_ped)
 
-        texto_botao = "🚀 Enviar Pedido para a Conferência" if len(arquivos_pedidos) == 1 else f"🚀 Enviar {len(arquivos_pedidos)} Pedidos para Conferência"
+        texto_botao = "🚀 Importar Pedido" if len(arquivos_pedidos) == 1 else f"🚀 Enviar {len(arquivos_pedidos)} Pedidos para Conferência"
 
         if st.button(texto_botao, type="primary", use_container_width=True, disabled=tem_erro_id):
             try:
