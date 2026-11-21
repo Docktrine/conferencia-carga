@@ -387,7 +387,7 @@ COLUNAS_PLANEJAMENTO = [
     "Data", "Hora", "Local de Carregamento", "Ordem de Carregamento",
     "Nº Pedido", "Valor Pedido", "Cliente", "Transportadora", "Placa do veículo",
     "Tipo de Veículo", "Valor de Frete", "UF", "Cidade", "CIF/FOB",
-    "Veículo compartilhado", "Data da entrega", "Observação", "Status", "Notificação", "Nota Fiscal, "id_carga", "validado"
+    "Veículo compartilhado", "Data da entrega", "Observação", "Status", "Notificação", "Nota Fiscal", "id_carga", "validado"
 ]
 
 STATUS_PLANEJAMENTO = [
