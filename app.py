@@ -3605,7 +3605,38 @@ elif aba == "✅ Auditoria e Ajustes":
 elif aba == "👥 Central de Usuários":
     st.title("👥 Central de Usuários e Permissões")
     st.caption("Administração de acessos, perfis operacionais, módulos liberados e travas de segurança da equipe.")
-
+    st.markdown(
+        """
+        <style>
+        /* Botões de ação de formulário compactos e modernos */
+        section[data-testid="stMain"] [data-testid="stForm"] button[kind="primaryFormSubmit"],
+        section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"] {
+            background-color: #1F2922 !important;
+            border: 1px solid #4CAF50 !important;
+            border-radius: 20px !important;
+            padding: 6px 24px !important;
+            min-height: 36px !important;
+            width: auto !important;
+            float: right !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+            transition: all 0.15s ease !important;
+        }
+        section[data-testid="stMain"] [data-testid="stForm"] button[kind="primaryFormSubmit"] p,
+        section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"] p {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+        }
+        section[data-testid="stMain"] [data-testid="stForm"] button[kind="primaryFormSubmit"]:hover,
+        section[data-testid="stMain"] [data-testid="stForm"] button[data-testid="stBaseButton-primaryFormSubmit"]:hover {
+            background-color: #1B5E20 !important;
+            transform: translateY(-1px) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
     df_usuarios = carregar_usuarios_sistema()
 
     u_m1, u_m2, u_m3, u_m4 = st.columns(4)
