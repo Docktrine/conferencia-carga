@@ -1502,7 +1502,7 @@ if aba == "🏠 Início":
         ]
         feriados_i = set()
         try:
-            for dt_f in obter_conjunto_feriados():
+            for dt_f in obter_feriados_sistema():
                 if dt_f.year == ano_i and dt_f.month == mes_i:
                     feriados_i.add(dt_f.day)
         except Exception:
@@ -3565,10 +3565,6 @@ elif aba == "📈 Painel de Acompanhamento":
     c_sel_pa, c_btn_pa, _ = st.columns((2.0, 1.0, 3.0), vertical_alignment="bottom")
     carga_selecionada = c_sel_pa.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist(), key="sel_carga_painel")
     if c_btn_pa.button("🔄 Atualizar Dados", type="primary"):
-        st.cache_data.clear()
-        st.rerun()
-    
-    if st.button("🔄 Atualizar Dados"):
         st.cache_data.clear()
         st.rerun()
 
