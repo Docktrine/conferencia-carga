@@ -2909,7 +2909,21 @@ elif aba == "✅ Auditoria e Ajustes":
     if carga_possui_corte(df_carga_aud):
         st.warning(f"✂️ **OBSERVAÇÃO:** Este pedido foi gerado/finalizado **COM CORTE**: **{extrair_detalhes_corte(df_carga_aud)}**")
         
-    if tem_permissao("↩️ Estornar Etiquetas e Corrigir Lotes"):
+    carga_ja_encerrada = limpar_texto(carga_selecionada) in cargas_ja_validadas
+    if carga_ja_encerrada:
+        st.info("🔒 **Carga já validada e encerrada:** correções de lote, quantidade e estornos estão bloqueados para preservar o histórico.")
+        if st.session_state.get("perfil_usuario", "") in ("ADMIN", "GERENTE"):
+            if st.button("🔓 Reabrir Carga para Correção (Exclusivo Gestão)", key="btn_reabrir_auditoria"):
+                df_p_reab = carregar_dados("planejamento")
+                if not df_p_reab.empty and "id_carga" in df_p_reab.columns and "validado" in df_p_reab.columns:
+                    df_p_reab["validado"] = df_p_reab["validado"].astype(object)
+                    df_p_reab.loc[df_p_reab["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada), "validado"] = ""
+                    salvar_dados(df_p_reab, "planejamento")
+                    st.cache_data.clear()
+                    st.warning(f"🔓 Carga **{carga_selecionada}** reaberta pela gestão para ajustes!")
+                    st.rerun()
+
+    if not carga_ja_encerrada and tem_permissao("↩️ Estornar Etiquetas e Corrigir Lotes"):
         with st.expander("🛠️ Administrativo: Corrigir Lote ou Estornar Etiqueta (Solicitar Rebipagem)"):
             df_bipes_adm = carregar_dados("bipes")
             if not df_bipes_adm.empty and "id_carga" in df_bipes_adm.columns:
