@@ -1097,63 +1097,61 @@ else:
             st.session_state.abas_abertas.pop(0)
         st.session_state.abas_abertas.append(aba)
 
-st.markdown(
-    """
-    <style>
-    /* Barra de Guias Compacta Estilo Navegador */
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        gap: 6px !important;
-        padding: 4px 0px 8px 0px !important;
-        border-bottom: 1px solid rgba(27, 94, 32, 0.28) !important;
-        margin-bottom: 12px !important;
-        background: transparent !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type > div {
-        width: auto !important;
-        flex: 0 0 auto !important;
-        min-width: unset !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button {
-        border-radius: 20px !important;
-        padding: 4px 14px !important;
-        min-height: 30px !important;
-        height: 30px !important;
-        box-shadow: none !important;
-        transition: all 0.15s ease !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button p {
-        font-size: 0.78rem !important;
-        white-space: nowrap !important;
-        margin: 0 !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"] {
-        background-color: rgba(207, 201, 188, 0.65) !important;
-        border: 1px solid rgba(27, 94, 32, 0.25) !important;
-        color: #141A16 !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"]:hover {
-        background-color: #DCD7CC !important;
-        border-color: #1B5E20 !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] {
-        background-color: #1F2922 !important;
-        border: 1px solid #4CAF50 !important;
-    }
-    section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] p {
-        color: #FFFFFF !important;
-        font-weight: 600 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 abas_nav = st.session_state.abas_abertas
 if len(abas_nav) > 1:
-    cols_nav = st.columns(len(abas_nav) + 1)
+    st.markdown(
+        """
+        <style>
+        /* Cola todas as guias à esquerda sem buracos entre colunas */
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 6px !important;
+            padding-bottom: 8px !important;
+            border-bottom: 1px solid rgba(27, 94, 32, 0.25) !important;
+            margin-bottom: 8px !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="stColumn"],
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"] {
+            width: fit-content !important;
+            flex: 0 0 auto !important;
+            min-width: 0 !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button {
+            border-radius: 8px !important;
+            padding: 3px 12px !important;
+            min-height: 28px !important;
+            height: 28px !important;
+            box-shadow: none !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button p {
+            font-size: 0.76rem !important;
+            white-space: nowrap !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"] {
+            background-color: #DCD7CC !important;
+            border: 1px solid rgba(27, 94, 32, 0.25) !important;
+            color: #141A16 !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-secondary"]:hover {
+            background-color: #CFC9BC !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] {
+            background-color: #1F2922 !important;
+            border: 1px solid #4CAF50 !important;
+        }
+        section[data-testid="stMain"] div[data-testid="stHorizontalBlock"]:first-of-type button[data-testid="stBaseButton-primary"] p {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    cols_nav = st.columns(len(abas_nav) + 1, gap="small")
     for idx_n, mod_n in enumerate(abas_nav):
         ativo_n = (aba == mod_n)
         partes_n = mod_n.split(" ", 1)
@@ -1162,7 +1160,7 @@ if len(abas_nav) > 1:
         if cols_nav[idx_n].button(f"{icone_n} {nome_n}", key=f"nav_tab_{idx_n}", type="primary" if ativo_n else "secondary"):
             st.session_state.aba_ativa = mod_n
             st.rerun()
-    if cols_nav[-1].button("✕ Fechar Guia", key="close_active_tab", type="secondary", help="Fechar a guia atual"):
+    if cols_nav[-1].button("✕", key="close_active_tab", type="secondary", help="Fechar guia atual"):
         st.session_state.abas_abertas.remove(aba)
         st.session_state.aba_ativa = st.session_state.abas_abertas[-1]
         st.rerun()
