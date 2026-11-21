@@ -1350,7 +1350,7 @@ if len(abas_nav) > 1:
             unsafe_allow_html=True
         )
 
-    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 26px;'></div>", unsafe_allow_html=True)
 
     df_plan_ini = carregar_dados("planejamento")
     df_cargas_ini = carregar_dados("cargas")
