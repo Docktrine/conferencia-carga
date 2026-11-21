@@ -1236,7 +1236,7 @@ if len(abas_nav) > 1:
         <style>
         /* Sobe a barra de abas para perto da linha do topo e deixa o seletor da cidade discreto */
         .stMainBlockContainer, [data-testid="stMainBlockContainer"], .block-container {
-            padding-top: 1.1rem !important;
+             padding-top: 3.1rem !important;
         }
         div[data-testid="stSelectbox"]:has(input[aria-label="Cidade:"]) div[data-baseweb="select"] > div {
             min-height: 28px !important;
