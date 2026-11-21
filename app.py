@@ -1194,9 +1194,12 @@ if len(abas_nav) > 1:
         <style>
         /* Faz o header nativo do Streamlit deixar cliques passarem na faixa central */
         header[data-testid="stHeader"] {
-            background: transparent !important;
+            background-color: #C9C5BA !important;
+            border-bottom: 1px solid rgba(27, 94, 32, 0.16) !important;
+            height: 3.35rem !important;
             pointer-events: none !important;
         }
+            
         header[data-testid="stHeader"] * {
             pointer-events: auto !important;
         }
