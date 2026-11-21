@@ -1227,6 +1227,39 @@ if aba == "🏠 Início":
 
     # 3. Atalhos Rápidos para os Módulos
     st.subheader("🚀 Acesso Rápido aos Módulos")
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key^="btn_atalho_ini_"]) {
+            background-color: #E3DFD5 !important;
+            border: 1px solid rgba(27, 94, 32, 0.35) !important;
+            border-radius: 12px !important;
+            padding: 4px 8px !important;
+            transition: all 0.2s ease !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(button[key^="btn_atalho_ini_"]):hover {
+            border-color: #1B5E20 !important;
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.12) !important;
+        }
+        button[key^="btn_atalho_ini_"] {
+            background-color: #1F2922 !important;
+            border: 1px solid #4CAF50 !important;
+            border-radius: 8px !important;
+            padding: 6px 14px !important;
+            min-height: 36px !important;
+        }
+        button[key^="btn_atalho_ini_"] p {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 0.82rem !important;
+        }
+        button[key^="btn_atalho_ini_"]:hover {
+            background-color: #1B5E20 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     desc_modulos = {
         "📊 Análise de Pedidos": "Importar carteira do BI, calcular SLA/dias úteis e vincular NF-e.",
         "🚚 Planejamento Logística": "Programar frota, acompanhar status e disparar alertas.",
@@ -1241,11 +1274,14 @@ if aba == "🏠 Início":
     for idx_at, mod_at in enumerate(modulos_disponiveis):
         with cols_atalho[idx_at % 2]:
             with st.container(border=True):
-                st.markdown(f"**{mod_at}**")
-                st.caption(desc_modulos.get(mod_at, "Acessar módulo operacional."))
-                if st.button(f"Abrir {mod_at}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
-                    st.session_state.aba_ativa = mod_at
-                    st.rerun()
+                c_info, c_btn = st.columns((3.2, 1.1), vertical_alignment="center")
+                with c_info:
+                    st.markdown(f"<div style='font-weight:700; font-size:0.95rem; color:#141A16; margin-bottom:2px;'>{mod_at}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='font-size:0.78rem; color:#4A524C; line-height:1.25;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
+                with c_btn:
+                    if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
+                        st.session_state.aba_ativa = mod_at
+                        st.rerun()
 
     # 4. Banda de Vegetais Animada (Black Line + Verde Grano)
     components.html(
