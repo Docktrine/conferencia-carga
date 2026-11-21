@@ -1261,10 +1261,10 @@ if len(abas_nav) > 1:
         """,
         unsafe_allow_html=True
     )
+    st.session_state["barra_guias_topo"] = st.session_state.aba_ativa
     st.pills(
         "Guias abertas:",
         options=abas_nav + ["✕ Fechar guia atual"],
-        default=st.session_state.aba_ativa,
         label_visibility="collapsed",
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
