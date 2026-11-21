@@ -1277,18 +1277,15 @@ if aba == "🏠 Início":
         "✅ Auditoria e Ajustes": "Validação tripla (Pedido x Bipado x Cliente) e estornos.",
         "👥 Central de Usuários": "Gerenciar logins, fotos, perfis e permissões da equipe."
     }
-    cols_atalho = st.columns(2)
+    cols_atalho = st.columns(4)
     for idx_at, mod_at in enumerate(modulos_disponiveis):
-        with cols_atalho[idx_at % 2]:
+        with cols_atalho[idx_at % 4]:
             with st.container(border=True):
-                c_info, c_btn = st.columns((3.6, 1.0), vertical_alignment="center")
-                with c_info:
-                    st.markdown(f"<div style='font-weight:700; font-size:0.90rem; color:#141A16; margin-bottom:1px;'>{mod_at}</div>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='font-size:0.75rem; color:#4A524C; line-height:1.2;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
-                with c_btn:
-                    if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", type="primary"):
-                        st.session_state.aba_ativa = mod_at
-                        st.rerun()
+                st.markdown(f"<div style='font-weight:700; font-size:0.86rem; color:#141A16; margin-bottom:3px;'>{mod_at}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:0.72rem; color:#4A524C; line-height:1.25; min-height:34px; margin-bottom:6px;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
+                if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", type="primary", use_container_width=True):
+                    st.session_state.aba_ativa = mod_at
+                    st.rerun()
 
     # 4. Banda de Vegetais Animada (Black Line + Verde Grano)
     components.html(
