@@ -1188,11 +1188,145 @@ if len(abas_nav) > 1:
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
     )
-if aba == "🏠 Início":
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
-    primeiro_nome_ini = st.session_state.nome_usuario.split()[0].title() if st.session_state.nome_usuario else "Equipe"
-    st.title(f"👋 Olá, {primeiro_nome_ini}!")
-    st.caption(f"Torre de Controle Logística • {hoje_str_ini} — Visão rápida do turno, recados e atalhos.")
+    primeiro_nome_ini = st.session_state.nome_usuario.split().title() if st.session_state.nome_usuario else "Equipe"
+
+    CIDADES_CLIMA_INI = {
+        "Sapucaia do Sul/RS": (-29.8278, -51.1456),
+        "Canoas/RS": (-29.9178, -51.1836),
+        "Esteio/RS": (-29.8525, -51.1844),
+        "São Leopoldo/RS": (-29.7604, -51.1480),
+        "Novo Hamburgo/RS": (-29.6875, -51.1328),
+        "Porto Alegre/RS": (-30.0346, -51.2177),
+        "Gravataí/RS": (-29.9444, -50.9919),
+    }
+
+    @st.cache_data(ttl=1800, show_spinner=False)
+    def obter_clima_inicio(lat_c, lon_c):
+        import requests
+        url_w = (
+            "https://open-meteo.com"
+            f"?latitude={lat_c}&longitude={lon_c}"
+            "&current=temperature_2m,weather_code"
+            "&daily=weather_code,temperature_2m_max,temperature_2m_min"
+            "&timezone=America%2FSao_Paulo&forecast_days=5"
+        )
+        resp = requests.get(url_w, timeout=4)
+        resp.raise_for_status()
+        return resp.json()
+
+    def _icone_clima_ini(c):
+        if c == 0:
+            return "☀️", "Céu limpo"
+        elif c in (1, 2, 3):
+            return "⛅", "Parc. nublado"
+        elif c in (45, 48):
+            return "🌫️", "Neblina"
+        elif c in (51, 53, 55, 61, 63, 65, 80, 81, 82):
+            return "🌧️", "Chuva"
+        elif c in (95, 96, 99):
+            return "⛈️", "Trovoada"
+        return "🌤️", "Estável"
+
+    c_topo_esq, c_topo_clima, c_topo_cal = st.columns((1.7, 1.5, 1.1), vertical_alignment="center")
+
+    with c_topo_esq:
+        st.title(f"👋 Olá, {primeiro_nome_ini}!")
+        st.caption(f"Torre de Controle Logística • {hoje_str_ini} — Visão rápida do turno, recados e atalhos.")
+
+    with c_topo_clima:
+        cidade_sel_ini = st.selectbox(
+            "Cidade:",
+            options=list(CIDADES_CLIMA_INI.keys()),
+            index=0,
+            label_visibility="collapsed",
+            key="sel_cidade_clima_ini"
+        )
+        lat_sel, lon_sel = CIDADES_CLIMA_INI[cidade_sel_ini]
+        try:
+            dw = obter_clima_inicio(lat_sel, lon_sel)
+            t_agora = round(dw["current"]["temperature_2m"])
+            ic_ag, desc_ag = _icone_clima_ini(dw["current"]["weather_code"])
+            dias_pt_i = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+            daily_i = dw["daily"]
+
+            cols_dias_html = ""
+            for idx_d in range(len(daily_i["time"])):
+                dt_d = datetime.strptime(daily_i["time"][idx_d], "%Y-%m-%d")
+                nm_d = "Hoje" if idx_d == 0 else dias_pt_i[dt_d.weekday()]
+                ic_d, _ = _icone_clima_ini(daily_i["weather_code"][idx_d])
+                tmax_d = round(daily_i["temperature_2m_max"][idx_d])
+                tmin_d = round(daily_i["temperature_2m_min"][idx_d])
+                bg_d = "rgba(27,94,32,0.12)" if idx_d == 0 else "transparent"
+                cols_dias_html += f"""
+                <div style="background:{bg_d}; border-radius:6px; padding:3px 2px; text-align:center;">
+                    <div style="font-size:0.65rem; font-weight:700; color:#141A16;">{nm_d}</div>
+                    <div style="font-size:0.95rem; line-height:1.1;">{ic_d}</div>
+                    <div style="font-size:0.65rem; font-weight:700; color:#141A16;">{tmax_d}°<span style="font-weight:400; color:#4A524C;">/{tmin_d}°</span></div>
+                </div>
+                """
+
+            st.markdown(
+                f"""
+                <div style="background:#E4E0D6; border:1px solid rgba(27,94,32,0.30); border-radius:12px; padding:7px 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid rgba(27,94,32,0.15); padding-bottom:4px;">
+                        <span style="font-size:0.73rem; font-weight:700; color:#141A16;">📍 {cidade_sel_ini} • {desc_ag}</span>
+                        <span style="background:#1F2922; color:#FFFFFF; border:1px solid #4CAF50; border-radius:12px; padding:1px 8px; font-size:0.78rem; font-weight:700;">{ic_ag} {t_agora}°C</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:2px;">
+                        {cols_dias_html}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        except Exception:
+            st.info("🌤️ Clima indisponível")
+
+    with c_topo_cal:
+        import calendar
+        agora_c = datetime.now(FUSO_BR)
+        ano_i, mes_i, dia_i = agora_c.year, agora_c.month, agora_c.day
+        meses_nomes_i = [
+            "", "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+        ]
+        feriados_i = set()
+        try:
+            for dt_f in obter_conjunto_feriados():
+                if dt_f.year == ano_i and dt_f.month == mes_i:
+                    feriados_i.add(dt_f.day)
+        except Exception:
+            pass
+
+        mat_cal = calendar.Calendar(firstweekday=6).monthdayscalendar(ano_i, mes_i)
+        cal_html_i = f"""
+        <div style="background:#E4E0D6; border:1px solid rgba(27,94,32,0.30); border-radius:12px; padding:6px 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                <span style="font-size:0.74rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]}/{ano_i}</span>
+                <span style="font-size:0.62rem; color:#B71C1C; font-weight:600;">● Feriado</span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; text-align:center; font-size:0.64rem; line-height:1.25;">
+                <tr style="color:#4A524C; font-weight:700;">
+                    <th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th>
+                </tr>
+        """
+        for sem_i in mat_cal:
+            cal_html_i += "<tr>"
+            for idx_s, d_i in enumerate(sem_i):
+                if d_i == 0:
+                    cal_html_i += "<td></td>"
+                elif d_i == dia_i:
+                    cal_html_i += f"<td><span style='background:#1F2922; color:#FFFFFF; border:1px solid #4CAF50; border-radius:50%; padding:0px 4px; font-weight:700;'>{d_i}</span></td>"
+                elif d_i in feriados_i:
+                    cal_html_i += f"<td><span style='background:#FFCDD2; color:#B71C1C; border-radius:50%; padding:0px 4px; font-weight:700;' title='Feriado'>{d_i}</span></td>"
+                elif idx_s in (0, 6):
+                    cal_html_i += f"<td style='color:#7A827C;'>{d_i}</td>"
+                else:
+                    cal_html_i += f"<td style='color:#141A16;'>{d_i}</td>"
+            cal_html_i += "</tr>"
+        cal_html_i += "</table></div>"
+        st.markdown(cal_html_i, unsafe_allow_html=True)
 
     df_plan_ini = carregar_dados("planejamento")
     df_cargas_ini = carregar_dados("cargas")
