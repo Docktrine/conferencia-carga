@@ -3730,7 +3730,9 @@ elif aba == "👥 Central de Usuários":
                 default=perms_sugeridas
             )
 
-            if st.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
+            _, col_btn_criar = st.columns((4, 1))
+            if col_btn_criar.form_submit_button("💾 Criar Usuário", type="primary", use_container_width=True):
+                
                 login_novo = limpar_texto(nu_login).replace(" ", "")
                 nome_novo = limpar_texto(nu_nome)
                 if not login_novo or not nome_novo or len(nu_senha.strip()) < 4:
@@ -3817,7 +3819,9 @@ elif aba == "👥 Central de Usuários":
             eu_mods = st.multiselect("📂 Módulos / Telas Liberadas:", TODOS_MODULOS_SISTEMA, default=mods_atuais)
             eu_perms = st.multiselect("🛡️ Permissões de Ações Críticas:", TODAS_PERMISSOES_CRITICAS, default=perms_atuais)
 
-            if st.form_submit_button("💾 Salvar Alterações do Usuário", type="primary", use_container_width=True):
+            _, col_btn_salvar = st.columns((4, 1))
+            if col_btn_salvar.form_submit_button("💾 Salvar Alterações do Usuário", type="primary", use_container_width=True):
+                
                 mods_ed = TODOS_MODULOS_SISTEMA if eu_perfil == "ADMIN" else eu_mods
                 perms_ed = TODAS_PERMISSOES_CRITICAS if eu_perfil == "ADMIN" else eu_perms
 
