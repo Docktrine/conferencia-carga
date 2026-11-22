@@ -1570,7 +1570,7 @@ if aba == "🏠 Início":
         """,
         unsafe_allow_html=True
     )
-    c_topo_esq, c_topo_clima, _, c_topo_cal = st.columns((1.30, 1.85, 0.35, 1.05), vertical_alignment="center")
+    c_topo_esq, c_topo_clima, c_topo_cal, _ = st.columns([1.05, 1.85, 1.05, 0.45], vertical_alignment="center")
 
     with c_topo_esq:
         st.markdown(
