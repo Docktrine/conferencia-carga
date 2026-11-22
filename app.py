@@ -862,7 +862,7 @@ if not st.session_state.usuario_autenticado:
 
                     <!-- Nuvens de Chuva Minimalistas -->
                     <g class="nuvem-1" opacity="0.84">
-                        <path d="M95 18 H131 C135 18 138 15 138 11.5 C138 8.2 135.5 5.6 132.2 5.3 C130.8 2 127.5 0 123.6 0 C120.2 0 117.2 1.6 115.6 4.1 C114.4 3.4 113 3 111.5 3 C107.2 3 103.6 6.2 103.1 10.3 C99 10.6 95.8 14 95.8 18 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                        <path d="M95 16 H131 C135 16 138 13 138 9.5 C138 6.2 135.5 3.6 132.2 3.3 C130.8 0 127.5 -2 123.6 -2 C120.2 -2 117.2 -0.4 115.6 2.1 C114.4 1.4 113 1 111.5 1 C107.2 1 103.6 4.2 103.1 8.3 C99 8.6 95.8 12 95.8 16 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
                     <g class="nuvem-2" opacity="0.84">
                         <path d="M430 15 H474 C479 15 482.5 11.5 482.5 7.2 C482.5 3.3 479.5 0.2 475.6 0 C473.8 -3.8 469.8 -6 465.2 -6 C461.1 -6 457.5 -4.1 455.5 -1.1 C454 -1.9 452.3 -2.4 450.5 -2.4 C445.3 -2.4 441 1.4 440.4 6.4 C435.5 6.8 431.8 10.8 431.8 15 Z" transform="translate(0, 7)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
@@ -871,48 +871,68 @@ if not st.session_state.usuario_autenticado:
                         <path d="M745 17 H783 C787.2 17 790.5 13.8 790.5 9.8 C790.5 6.1 787.8 3.2 784.2 2.9 C782.7 -0.6 779.2 -2.8 775 -2.8 C771.3 -2.8 768.1 -1.1 766.3 1.6 C765 0.8 763.5 0.4 761.8 0.4 C757.2 0.4 753.3 3.9 752.8 8.3 C748.4 8.6 745 12.2 745 17 Z" transform="translate(0, 4)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
 
-                    <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Esquerda) -->
+                    <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Estrutura Ampliada + Letreiro Encaixado + Paletes + Árvores) -->
                     <g>
-                        <ellipse cx="185" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
-                        <rect x="109" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                        <rect x="114" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="125" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="118" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
+                        <ellipse cx="185" cy="110" rx="90" ry="3.6" fill="#141A16" opacity="0.16"/>
 
-                        <path d="M137 110 V54 L191 32 L245 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <polygon points="138,56 191,35 244,56 244,61 191,40 138,61" fill="#D5D0C5"/>
-                        <path d="M131 57 L191 30 L251 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="178" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <!-- Árvore Copada à Esquerda -->
+                        <line x1="88" y1="110" x2="88" y2="85" stroke="#141A16" stroke-width="1.7"/>
+                        <circle cx="83" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="93" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="88" cy="74" r="8.5" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
 
-                        <!-- Placa CD GRANO -->
-                        <rect x="158" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="191" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
+                        <!-- Bloco Administrativo Lateral -->
+                        <rect x="103" y="65" width="30" height="45" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                        <rect x="108" y="71" width="8.5" height="7.5" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="120" y="71" width="8.5" height="7.5" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="113" y="89" width="10" height="21" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
-                        <rect x="141" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
+                        <!-- Galpão Principal Mais Largo e Alto (Placa 100% interna) -->
+                        <path d="M133 110 V49 L191 25 L249 49 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <polygon points="134,51 191,28 248,51 248,56 191,33 134,56" fill="#D5D0C5"/>
+                        <path d="M126 52 L191 23 L256 52" stroke="#1B5E20" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="178" y="18" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+
+                        <!-- Placa CD GRANO totalmente dentro da fachada -->
+                        <rect x="160" y="42" width="62" height="13" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="191" y="51.2" text-anchor="middle" font-family="sans-serif" font-size="8.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD GRANO</text>
+
+                        <!-- Plataforma das Docas -->
+                        <rect x="138" y="102" width="106" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
                         <!-- Doca 01 -->
-                        <rect x="147" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="147" y1="71" x2="173" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="147" y1="78" x2="173" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="145" y="62" width="27" height="40" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="145" y1="69" x2="172" y2="69" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="145" y1="76" x2="172" y2="76" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="143" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="171" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Doca 02 (Onde a traseira da carreta encosta de ré) -->
-                        <rect class="doca-cd-luz" x="179" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect class="doca-cd-luz" x="178" y="62" width="27" height="40" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="178" y1="69" x2="205" y2="69" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="178" y1="76" x2="205" y2="76" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="176" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Doca 03 -->
-                        <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="211" y="62" width="27" height="40" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="211" y1="69" x2="238" y2="69" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="211" y1="76" x2="238" y2="76" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="236" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="237" y="102" width="3" height="8" fill="#141A16"/>
+
+                        <!-- Pilha de Paletes com Caixas + Árvore Copada à Direita do CD -->
+                        <line x1="251" y1="109" x2="266" y2="109" stroke="#141A16" stroke-width="1.6"/>
+                        <rect x="252" y="103" width="6.5" height="5.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
+                        <rect x="258.5" y="103" width="6.5" height="5.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.2"/>
+                        <rect x="255" y="97.5" width="7" height="5.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
+                        <line x1="274" y1="110" x2="274" y2="85" stroke="#141A16" stroke-width="1.7"/>
+                        <circle cx="269" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="279" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="274" cy="74" r="8.5" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
-                    <!-- 2. CD MERCADO / CENTRO DE DISTRIBUIÇÃO DO CLIENTE (Direita) -->
+                    <!-- 2. CD MERCADO / CENTRO DE DISTRIBUIÇÃO DO CLIENTE (Direita + Paletes + Árvore) -->
                     <g>
                         <ellipse cx="654" cy="110" rx="76" ry="3.4" fill="#141A16" opacity="0.16"/>
 
@@ -946,6 +966,15 @@ if not st.session_state.usuario_autenticado:
                         <rect x="656" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="687" y="102" width="3" height="8" fill="#141A16"/>
 
+                        <!-- Palete Recebido + Árvore Copada à Direita do CD Mercado -->
+                        <line x1="700" y1="109" x2="713" y2="109" stroke="#141A16" stroke-width="1.6"/>
+                        <rect x="701" y="103.5" width="5.5" height="5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="706.5" y="103.5" width="5.5" height="5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.1"/>
+                        <line x1="722" y1="110" x2="722" y2="85" stroke="#141A16" stroke-width="1.7"/>
+                        <circle cx="717" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="727" cy="81" r="7" fill="#81C784" stroke="#1B5E20" stroke-width="1.4"/>
+                        <circle cx="722" cy="74" r="8.5" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
+
                         <!-- Selo Verde de Descarga Concluída -->
                         <g class="badge-entregue">
                             <circle cx="654" cy="21" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
@@ -953,7 +982,7 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Recuo curto na Doca 2 do CD e Doca 1 do Mercado) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -961,10 +990,8 @@ if not st.session_state.usuario_autenticado:
                         <circle class="fumo-2" cx="141" cy="60" r="2.1" fill="#8A928C"/>
 
                         <g class="carreta-carroceria">
-                            <!-- Feixe do farol dianteiro -->
                             <polygon points="178,94 216,86 216,103" fill="url(#feixeFarol)"/>
 
-                            <!-- Sinalização de Marcha à Ré (Luz traseira + Giroflex piscando) -->
                             <g class="sinal-re-wrap">
                                 <polygon points="50,94 16,86 16,102" fill="url(#feixeRe)"/>
                                 <circle cx="50" cy="94" r="2.5" fill="#FFFFFF" stroke="#141A16" stroke-width="0.9"/>
