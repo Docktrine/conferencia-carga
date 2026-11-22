@@ -658,7 +658,7 @@ for chave_sessao, valor_padrao in [
     if chave_sessao not in st.session_state:
         st.session_state[chave_sessao] = valor_padrao
 
-        
+if not st.session_state.usuario_autenticado:    
     st.markdown(
         """
         <style>
