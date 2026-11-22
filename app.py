@@ -945,10 +945,12 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- MOLDURA FRONTAL DOS TÚNEIS (Cobre a carreta ao entrar/sair) -->
+                    <!-- MOLDURA FRONTAL DOS TÚNEIS COM MÁSCARA SÓLIDA -->
                     <!-- Túnel Esquerdo (Origem) -->
                     <g>
-                        <!-- Encosta/Morro verde sutil -->
+                        <!-- Máscara sólida na cor do fundo da tela para esconder a carreta antes da boca -->
+                        <path d="M0 28 H64 V112 H44 V77 C44 65 36 56 24 56 H0 Z" fill="#C9C5BA"/>
+                        <!-- Encosta/Morro verde -->
                         <path d="M0 32 C26 32 48 48 56 76 L62 110 H44 V77 C44 65 36 56 24 56 H0 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
                         <!-- Portal de concreto do Túnel -->
                         <path d="M0 48 H26 C41 48 51 59 51 75 V110 H43 V76 C43 64 35 56 24 56 H0 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
@@ -958,7 +960,9 @@ if not st.session_state.usuario_autenticado:
 
                     <!-- Túnel Direito (Destino) -->
                     <g>
-                        <!-- Encosta/Morro verde sutil -->
+                        <!-- Máscara sólida na cor do fundo da tela para esconder a carreta após entrar -->
+                        <path d="M880 28 H816 V112 H836 V77 C836 65 844 56 856 56 H880 Z" fill="#C9C5BA"/>
+                        <!-- Encosta/Morro verde -->
                         <path d="M880 32 C854 32 832 48 824 76 L818 110 H836 V77 C836 65 844 56 856 56 H880 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
                         <!-- Portal de concreto do Túnel -->
                         <path d="M880 48 H854 C839 48 829 59 829 75 V110 H837 V76 C837 64 845 56 856 56 H880 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
