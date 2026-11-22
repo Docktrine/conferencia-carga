@@ -742,11 +742,11 @@ if not st.session_state.usuario_autenticado:
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
                 0% { transform: translateX(-230px); }
-                26% { transform: translateX(75px); }
-                40% { transform: translateX(75px); }
-                74% { transform: translateX(485px); }
-                86% { transform: translateX(485px); }
-                100% { transform: translateX(900px); }
+                24% { transform: translateX(95px); }
+                38% { transform: translateX(95px); }
+                76% { transform: translateX(745px); }
+                88% { transform: translateX(745px); }
+                100% { transform: translateX(1180px); }
             }
             @keyframes suspensaoCarreta {
                 0%, 100% { transform: translateY(0px); }
@@ -759,12 +759,12 @@ if not st.session_state.usuario_autenticado:
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
             @keyframes brilhoDocaCD {
-                0%, 24%, 42%, 100% { fill: #D5D0C5; }
-                28%, 38% { fill: #C8E6C9; }
+                0%, 22%, 40%, 100% { fill: #D5D0C5; }
+                26%, 36% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 72%, 88%, 100% { transform: scale(0); opacity: 0; }
-                76%, 84% { transform: scale(1.1); opacity: 1; }
+                0%, 74%, 90%, 100% { transform: scale(0); opacity: 0; }
+                78%, 86% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -782,19 +782,19 @@ if not st.session_state.usuario_autenticado:
             }
             .rota-wrap {
                 width: 100%;
-                max-width: 880px;
+                max-width: 1220px;
                 margin: 14px auto 0 auto;
                 height: 132px;
                 position: relative;
                 overflow: hidden;
             }
-            .carreta-grupo { animation: viagemCarretaGrano 13s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 14s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 13s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 13s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 14s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 14s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -804,7 +804,7 @@ if not st.session_state.usuario_autenticado:
             </style>
 
             <div class="rota-wrap">
-                <svg width="100%" height="132" viewBox="0 0 880 132" fill="none" xmlns="http://w3.org">
+                <svg width="100%" height="132" viewBox="0 0 1160 132" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="feixeFarol" x1="0%" y1="50%" x2="100%" y2="50%">
                             <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.82"/>
@@ -812,92 +812,92 @@ if not st.session_state.usuario_autenticado:
                         </linearGradient>
                     </defs>
 
-                    <!-- Estrada / Asfalto de ponta a ponta -->
-                    <line x1="0" y1="110" x2="880" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <line x1="0" y1="117" x2="880" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
+                    <!-- Estrada / Asfalto Largo de ponta a ponta -->
+                    <line x1="0" y1="110" x2="1160" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <line x1="0" y1="117" x2="1160" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
 
                     <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Esquerda) -->
                     <g>
-                        <ellipse cx="185" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
-                        <rect x="109" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                        <rect x="114" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="125" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="118" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
+                        <ellipse cx="205" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
+                        <rect x="129" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                        <rect x="134" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="145" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="138" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
-                        <path d="M137 110 V54 L191 32 L245 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <polygon points="138,56 191,35 244,56 244,61 191,40 138,61" fill="#D5D0C5"/>
-                        <path d="M131 57 L191 30 L251 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="178" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <path d="M157 110 V54 L211 32 L265 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <polygon points="158,56 211,35 264,56 264,61 211,40 158,61" fill="#D5D0C5"/>
+                        <path d="M151 57 L211 30 L271 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="198" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Placa CD GRANO ampliada -->
-                        <rect x="158" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="191" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
+                        <!-- Placa CD GRANO -->
+                        <rect x="178" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="211" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
 
-                        <rect x="141" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="161" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
                         <!-- Doca 01 (Ativa no carregamento) -->
-                        <rect class="doca-cd-luz" x="147" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="147" y1="71" x2="173" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="147" y1="78" x2="173" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect class="doca-cd-luz" x="167" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="167" y1="71" x2="193" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="167" y1="78" x2="193" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="165" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="192" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Doca 02 -->
-                        <rect x="179" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="199" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="199" y1="71" x2="225" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="199" y1="78" x2="225" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="197" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="224" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Doca 03 -->
-                        <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="236" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="231" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="231" y1="71" x2="257" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="231" y1="78" x2="257" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="229" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="256" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Paletes + Árvore -->
-                        <rect x="249" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
-                        <line x1="248" y1="103" x2="260" y2="103" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="266" y1="110" x2="266" y2="92" stroke="#141A16" stroke-width="1.6"/>
-                        <circle cx="266" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
+                        <rect x="269" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
+                        <line x1="268" y1="103" x2="280" y2="103" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="286" y1="110" x2="286" y2="92" stroke="#141A16" stroke-width="1.6"/>
+                        <circle cx="286" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
                     <!-- 2. SUPERMERCADO / CLIENTE (Direita) -->
                     <g>
-                        <ellipse cx="705" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="965" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
 
-                        <rect x="663" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="666" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
-                        <rect x="668" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="677" y1="80" x2="677" y2="110" stroke="#141A16" stroke-width="1.4"/>
-                        <rect x="669" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <rect x="923" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="926" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
+                        <rect x="928" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="937" y1="80" x2="937" y2="110" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="929" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <rect x="691" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Placa MERCADO ampliada -->
-                        <rect x="691" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="721" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
+                        <rect x="951" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Placa MERCADO -->
+                        <rect x="951" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="981" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
 
-                        <path d="M690 59 H754 L750 67 H690 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
-                        <line x1="704" y1="59" x2="704" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="719" y1="59" x2="719" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="734" y1="59" x2="734" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <path d="M950 59 H1014 L1010 67 H950 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+                        <line x1="964" y1="59" x2="964" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="979" y1="59" x2="979" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="994" y1="59" x2="994" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
 
-                        <rect x="699" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="703" y1="84" x2="739" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="703" y1="91" x2="739" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="704" y1="79" x2="711" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+                        <rect x="959" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="963" y1="84" x2="999" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="963" y1="91" x2="999" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="964" y1="79" x2="971" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
 
-                        <rect x="755" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
-                        <circle cx="758.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
+                        <rect x="1015" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
+                        <circle cx="1018.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
 
                         <g class="badge-entregue">
-                            <circle cx="707" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M702.5 24 L706 27.5 L712.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="967" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M962.5 24 L966 27.5 L972.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Esquerda -> CD Grano -> Mercado -> Sai pela Direita) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -953,35 +953,36 @@ if not st.session_state.usuario_autenticado:
                     <!-- 4. CAMADA DE CHUVA SUAVE E RESPINGOS -->
                     <g stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
                         <g class="gota-chuva-1">
-                            <line x1="85" y1="0" x2="81" y2="11"/><line x1="185" y1="8" x2="181" y2="19"/>
-                            <line x1="295" y1="2" x2="291" y2="13"/><line x1="415" y1="10" x2="411" y2="21"/>
-                            <line x1="535" y1="4" x2="531" y2="15"/><line x1="655" y1="12" x2="651" y2="23"/>
-                            <line x1="775" y1="3" x2="771" y2="14"/>
+                            <line x1="85" y1="0" x2="81" y2="11"/><line x1="215" y1="8" x2="211" y2="19"/>
+                            <line x1="355" y1="2" x2="351" y2="13"/><line x1="495" y1="10" x2="491" y2="21"/>
+                            <line x1="635" y1="4" x2="631" y2="15"/><line x1="775" y1="12" x2="771" y2="23"/>
+                            <line x1="915" y1="3" x2="911" y2="14"/><line x1="1055" y1="9" x2="1051" y2="20"/>
                         </g>
                         <g class="gota-chuva-2">
-                            <line x1="115" y1="5" x2="111" y2="16"/><line x1="225" y1="0" x2="221" y2="11"/>
-                            <line x1="335" y1="9" x2="331" y2="20"/><line x1="455" y1="3" x2="451" y2="14"/>
-                            <line x1="575" y1="11" x2="571" y2="22"/><line x1="695" y1="4" x2="691" y2="15"/>
-                            <line x1="805" y1="8" x2="801" y2="19"/>
+                            <line x1="125" y1="5" x2="121" y2="16"/><line x1="265" y1="0" x2="261" y2="11"/>
+                            <line x1="405" y1="9" x2="401" y2="20"/><line x1="545" y1="3" x2="541" y2="14"/>
+                            <line x1="685" y1="11" x2="681" y2="22"/><line x1="825" y1="4" x2="821" y2="15"/>
+                            <line x1="965" y1="8" x2="961" y2="19"/><line x1="1105" y1="2" x2="1101" y2="13"/>
                         </g>
                         <g class="gota-chuva-3">
-                            <line x1="145" y1="10" x2="141" y2="21"/><line x1="255" y1="4" x2="251" y2="15"/>
-                            <line x1="375" y1="12" x2="371" y2="23"/><line x1="495" y1="2" x2="491" y2="13"/>
-                            <line x1="615" y1="8" x2="611" y2="19"/><line x1="735" y1="5" x2="731" y2="16"/>
+                            <line x1="165" y1="10" x2="161" y2="21"/><line x1="305" y1="4" x2="301" y2="15"/>
+                            <line x1="445" y1="12" x2="441" y2="23"/><line x1="585" y1="2" x2="581" y2="13"/>
+                            <line x1="725" y1="8" x2="721" y2="19"/><line x1="865" y1="5" x2="861" y2="16"/>
+                            <line x1="1005" y1="11" x2="1001" y2="22"/>
                         </g>
                         <g class="gota-chuva-4">
-                            <line x1="70" y1="6" x2="66" y2="17"/><line x1="165" y1="12" x2="161" y2="23"/>
-                            <line x1="275" y1="3" x2="271" y2="14"/><line x1="395" y1="9" x2="391" y2="20"/>
-                            <line x1="515" y1="5" x2="511" y2="16"/><line x1="635" y1="11" x2="631" y2="22"/>
-                            <line x1="755" y1="2" x2="751" y2="13"/>
+                            <line x1="65" y1="6" x2="61" y2="17"/><line x1="195" y1="12" x2="191" y2="23"/>
+                            <line x1="335" y1="3" x2="331" y2="14"/><line x1="475" y1="9" x2="471" y2="20"/>
+                            <line x1="615" y1="5" x2="611" y2="16"/><line x1="755" y1="11" x2="751" y2="22"/>
+                            <line x1="895" y1="2" x2="891" y2="13"/><line x1="1035" y1="7" x2="1031" y2="18"/>
                         </g>
                     </g>
 
                     <g stroke="#1B5E20" stroke-width="1" stroke-linecap="round" fill="none">
                         <path class="respingo-1" d="M120 110 Q123 106 126 110"/>
-                        <path class="respingo-2" d="M350 110 Q353 106 356 110"/>
-                        <path class="respingo-1" d="M510 110 Q513 106 516 110"/>
-                        <path class="respingo-2" d="M620 110 Q623 106 626 110"/>
+                        <path class="respingo-2" d="M410 110 Q413 106 416 110"/>
+                        <path class="respingo-1" d="M620 110 Q623 106 626 110"/>
+                        <path class="respingo-2" d="M810 110 Q813 106 816 110"/>
                     </g>
                 </svg>
             </div>
