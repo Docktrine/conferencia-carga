@@ -2188,7 +2188,7 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 4. MILHO BAIXISTA (Palhas Abertas para o Alto + Contrabaixo) -->
+            <!-- 4. MILHO BAIXISTA (Topo com Cabelo de Sabugo + Palhas Suaves + Baixo Verde Escuro) -->
             <div class="musico-box m-vagem">
                 <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
                     <ellipse cx="32" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
@@ -2196,36 +2196,38 @@ if aba == "🏠 Início":
                     <path d="M27 69 V83 M37 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <path d="M22 84 H29 C29 81.5 24 81.5 22 84 Z M36 84 H43 C43 81.5 38 81.5 36 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
 
-                    <!-- Palhas Internas Altas (Camada de trás abrindo para cima) -->
-                    <path d="M32 69 C21 62 18 40 7 29 C17 31 24 44 28 57 Z" fill="#81C784" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
-                    <path d="M32 69 C43 62 46 40 57 29 C47 31 40 44 36 57 Z" fill="#81C784" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+                    <!-- Palhas Internas Suaves (Camada de trás) -->
+                    <path d="M32 69 C22 63 18 44 10 34 C18 35 24 46 28 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M32 69 C42 63 46 44 54 34 C46 35 40 46 36 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
 
-                    <!-- Espiga de Milho Pontuda -->
-                    <path d="M32 13 C23 20 21 48 32 67 C43 48 41 20 32 13 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- Cabelo de Sabugo no Topo (igual à segunda imagem) -->
+                    <path d="M29 16 C25 9 20 11 22 16 M32 15 C31 7 35 7 34 15 M35 16 C39 9 43 12 40 17" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
+
+                    <!-- Espiga de Milho Arredondada -->
+                    <path d="M32 15 C22 15 21 56 32 67 C43 56 42 15 32 15 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <!-- Sombra Lateral da Espiga -->
-                    <path d="M35 17 C40 24 40 48 32 65 C36 50 37 26 35 17 Z" fill="#D5D0C5"/>
+                    <path d="M36 17 C41 23 41 53 32 65 C37 54 38 24 36 17 Z" fill="#D5D0C5"/>
 
-                    <!-- Grãos Arredondados nas Bordas -->
-                    <path d="M25 22 Q27.5 24 25 26 Q27.5 28 24.5 30 Q27 32 24.5 34 Q27 36 25 38" stroke="#141A16" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
-                    <path d="M39 22 Q36.5 24 39 26 Q36.5 28 39.5 30 Q37 32 39.5 34 Q37 36 39 38" stroke="#141A16" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
+                    <!-- Textura Sutil dos Grãos -->
+                    <path d="M27 23 V48 M32 20 V50 M37 23 V48" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round" opacity="0.32"/>
 
-                    <!-- Rostinho Concentrado no Groove -->
-                    <circle cx="28.8" cy="28" r="1.8" fill="#141A16"/>
-                    <circle cx="28.2" cy="27.4" r="0.6" fill="#FFFFFF"/>
-                    <circle cx="35.5" cy="28" r="1.8" fill="#141A16"/>
-                    <circle cx="34.9" cy="27.4" r="0.6" fill="#FFFFFF"/>
-                    <path d="M29.5 33.5 Q32.5 35.8 35.5 33" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+                    <!-- Rostinho com Olhinhos Brilhantes -->
+                    <circle cx="28.8" cy="28.5" r="1.9" fill="#141A16"/>
+                    <circle cx="28.2" cy="27.9" r="0.65" fill="#FFFFFF"/>
+                    <circle cx="35.5" cy="28.5" r="1.9" fill="#141A16"/>
+                    <circle cx="34.9" cy="27.9" r="0.65" fill="#FFFFFF"/>
+                    <path d="M29.5 34 Q32.5 36.5 35.5 33.8" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
 
-                    <!-- Palhas Externas Principais (Camada da frente com nervura central) -->
-                    <path d="M32 70 C18 66 13 51 4 42 C14 42 22 49 32 62 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M28 65 Q19 54 9 45" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
+                    <!-- Palhas Externas Suaves (Camada da frente) -->
+                    <path d="M32 70 C19 66 14 53 7 45 C16 45 23 51 32 63 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M28 65 Q20 55 12 48" stroke="#1B5E20" stroke-width="1" stroke-linecap="round" opacity="0.65"/>
 
-                    <path d="M32 70 C46 66 51 51 60 42 C50 42 42 49 32 62 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M36 65 Q45 54 55 45" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M32 70 C45 66 50 53 57 45 C48 45 41 51 32 63 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M36 65 Q44 55 52 48" stroke="#1B5E20" stroke-width="1" stroke-linecap="round" opacity="0.65"/>
 
-                    <!-- Contrabaixo + Bracinhos -->
-                    <ellipse cx="31" cy="52" rx="10" ry="5.8" transform="rotate(-15 31 52)" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7"/>
-                    <circle cx="29" cy="52.5" r="2" fill="#141A16"/>
+                    <!-- Contrabaixo Verde-Floresta para Destaque + Bracinhos -->
+                    <ellipse cx="31" cy="52" rx="10" ry="5.8" transform="rotate(-15 31 52)" fill="#2E7D32" stroke="#141A16" stroke-width="1.7"/>
+                    <circle cx="29" cy="52.5" r="2" fill="#EAE7E0"/>
                     <line x1="40" y1="49" x2="66" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
                     <rect x="65" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 65 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
                     <path d="M22 47 Q20 51 25 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
