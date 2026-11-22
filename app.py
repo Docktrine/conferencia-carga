@@ -2188,38 +2188,48 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 4. VAGEM BAIXISTA (4 Ervilhas Expressivas + Contrabaixo) -->
+            <!-- 4. MILHO BAIXISTA (Espiga Dourada + Palha Verde + Contrabaixo) -->
             <div class="musico-box m-vagem">
-                <svg width="80" height="88" viewBox="0 0 80 88" fill="none">
+                <svg width="82" height="88" viewBox="0 0 82 88" fill="none">
                     <ellipse cx="26" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
                     <!-- Pernas e Sapatinhos -->
                     <path d="M21 69 V83 M31 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <path d="M16 84 H23 C23 81.5 18 81.5 16 84 Z M30 84 H37 C37 81.5 32 81.5 30 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
-                    <!-- Cabinho Curvo no Topo -->
-                    <path d="M27 15 C27 9 32 8 34 11" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
-                    <!-- Casca da Vagem em 2 Tons -->
-                    <path d="M27 15 C13 23 12 56 26 70 C40 56 39 23 27 15 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
-                    <path d="M27 18 C17 25 16 54 26 66 C36 54 35 25 27 18 Z" fill="#E8F5E9"/>
-                    <!-- 4 Ervilhas / Grãos Internos -->
-                    <circle cx="26" cy="27" r="4.6" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
-                    <circle cx="26" cy="38" r="5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
-                    <circle cx="26" cy="50" r="5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
-                    <circle cx="26" cy="61" r="4" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
-                    <!-- Rostinho da Ervilha Líder (Topo) -->
-                    <circle cx="24.3" cy="26.2" r="1.2" fill="#141A16"/>
-                    <circle cx="27.7" cy="26.2" r="1.2" fill="#141A16"/>
-                    <path d="M24.5 28.8 Q26 30.5 27.5 28.8" stroke="#141A16" stroke-width="1.2" stroke-linecap="round"/>
-                    <!-- Rostinho Sorrindo na 2ª Ervilha -->
-                    <circle cx="24.5" cy="37.3" r="1" fill="#141A16"/>
-                    <circle cx="27.5" cy="37.3" r="1" fill="#141A16"/>
-                    <path d="M24.8 39.5 Q26 40.8 27.2 39.5" stroke="#141A16" stroke-width="1.1" stroke-linecap="round"/>
+                    
+                    <!-- Cabelo de Seda do Milho no Topo -->
+                    <path d="M24 16 C20 9 15 11 17 16 M26 15 C25 7 29 7 28 15 M29 16 C33 9 37 12 34 17" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+                    
+                    <!-- Espiga de Milho -->
+                    <path d="M26 15 C16 15 15 58 26 68 C37 58 36 15 26 15 Z" fill="#F5E6B3" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- Sombra Lateral da Espiga -->
+                    <path d="M31 17 C35 23 35 55 26 67 C31 56 32 24 31 17 Z" fill="#E6D28B"/>
+                    
+                    <!-- Textura Sutil dos Grãos -->
+                    <path d="M21 23 V50 M26 20 V52 M31 23 V50" stroke="#D4BC6A" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round"/>
+                    <path d="M19 42 H33 M19 47 H33" stroke="#D4BC6A" stroke-width="1" opacity="0.7"/>
+
+                    <!-- Rostinho Concentrado no Groove -->
+                    <circle cx="22.8" cy="29" r="1.8" fill="#141A16"/>
+                    <circle cx="22.2" cy="28.4" r="0.6" fill="#FFFFFF"/>
+                    <circle cx="29.5" cy="29" r="1.8" fill="#141A16"/>
+                    <circle cx="28.9" cy="28.4" r="0.6" fill="#FFFFFF"/>
+                    <!-- Sorriso de canto -->
+                    <path d="M23.5 34.5 Q26.5 36.8 29.5 34" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+
+                    <!-- Palha Verde Abraçando a Base como Jaqueta -->
+                    <path d="M16 42 C10 50 13 64 26 70 C20 62 18 52 20 44 Z" fill="#81C784" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M36 42 C42 50 39 64 26 70 C32 62 34 52 32 44 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M19 52 C17 60 20 66 26 70 C32 66 35 60 33 52 C30 58 22 58 19 52 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+
                     <!-- Contrabaixo + Bracinhos -->
                     <ellipse cx="25" cy="52" rx="10" ry="5.8" transform="rotate(-15 25 52)" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7"/>
                     <circle cx="23" cy="52.5" r="2" fill="#141A16"/>
                     <line x1="34" y1="49" x2="60" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
                     <rect x="59" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 59 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                    <path d="M16 45 Q14 50 19 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                    <path d="M36 44 Q42 46 46 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M16 46 Q14 50 19 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M36 45 Q42 46 46 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    
+                    <!-- Onda Sonora -->
                     <path class="onda-1" d="M67 34 C71 38 71 44 67 48" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </div>
