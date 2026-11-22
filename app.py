@@ -668,8 +668,9 @@ if not st.session_state.usuario_autenticado:
         }
         [data-testid="stVerticalBlockBorderWrapper"] {
             background-color: #DCD9D0 !important;
-            border-radius: 14px !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid rgba(20, 26, 22, 0.14) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 14px 36px rgba(20, 26, 22, 0.10) !important;
         }
         </style>
         """,
@@ -695,8 +696,8 @@ if not st.session_state.usuario_autenticado:
                 st.caption("Identifique-se para continuar")
 
             with st.form("form_login_wms"):
-                in_login = st.text_input("👤 Usuário (Login):", placeholder="Ex: GRANO.LOG")
-                in_senha = st.text_input("🔑 Senha:", type="password", placeholder="Digite sua senha...")
+                in_login = st.text_input("Usuário", placeholder="Ex: GRANO.LOG")
+                in_senha = st.text_input("Senha", type="password", placeholder="Digite sua senha...")
                 btn_entrar = st.form_submit_button("Login", type="primary", use_container_width=True)
 
                 if btn_entrar:
