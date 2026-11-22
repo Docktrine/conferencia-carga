@@ -741,12 +741,24 @@ if not st.session_state.usuario_autenticado:
             <style>
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
-                0% { transform: translateX(-230px); }
-                26% { transform: translateX(75px); }
-                40% { transform: translateX(75px); }
-                74% { transform: translateX(485px); }
-                86% { transform: translateX(485px); }
-                100% { transform: translateX(920px); }
+                0%   { transform: translateX(-230px); }
+                18%  { transform: translateX(280px); }
+                21%  { transform: translateX(280px); }
+                29%  { transform: translateX(187px); }
+                41%  { transform: translateX(187px); }
+                62%  { transform: translateX(730px); }
+                65%  { transform: translateX(730px); }
+                73%  { transform: translateX(638px); }
+                85%  { transform: translateX(638px); }
+                100% { transform: translateX(1180px); }
+            }
+            @keyframes sinalManobraRe {
+                0%, 20%, 30%, 64%, 74%, 100% { opacity: 0; }
+                21.5%, 28.5%, 65.5%, 72.5% { opacity: 1; }
+            }
+            @keyframes piscaGiroflex {
+                0%, 100% { fill: #F59E0B; opacity: 1; }
+                50% { fill: #FEF3C7; opacity: 0.35; }
             }
             @keyframes suspensaoCarreta {
                 0%, 100% { transform: translateY(0px); }
@@ -759,16 +771,16 @@ if not st.session_state.usuario_autenticado:
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
             @keyframes brilhoDocaCD {
-                0%, 24%, 42%, 100% { fill: #D5D0C5; }
-                28%, 38% { fill: #C8E6C9; }
+                0%, 28.5%, 41.5%, 100% { fill: #D5D0C5; }
+                30%, 40% { fill: #C8E6C9; }
             }
             @keyframes brilhoDocaDestino {
-                0%, 72%, 88%, 100% { fill: #D5D0C5; }
-                75%, 85% { fill: #C8E6C9; }
+                0%, 72.5%, 85.5%, 100% { fill: #D5D0C5; }
+                74%, 84% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 72%, 88%, 100% { transform: scale(0); opacity: 0; }
-                76%, 84% { transform: scale(1.1); opacity: 1; }
+                0%, 73%, 86.5%, 100% { transform: scale(0); opacity: 0; }
+                76%, 83.5% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -812,16 +824,18 @@ if not st.session_state.usuario_autenticado:
                 height: 2px;
                 background-image: repeating-linear-gradient(to right, rgba(20, 26, 22, 0.45) 0 10px, transparent 10px 22px);
             }
-            .carreta-grupo { animation: viagemCarretaGrano 13s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 17s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
+            .sinal-re-wrap { animation: sinalManobraRe 17s ease-in-out infinite; }
+            .giroflex-luz { animation: piscaGiroflex 0.35s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .nuvem-1 { animation: nuvemFlutua 18s ease-in-out infinite; }
             .nuvem-2 { animation: nuvemFlutua 24s ease-in-out 4s infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 13s ease-in-out infinite; }
-            .doca-dest-luz { animation: brilhoDocaDestino 13s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 13s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 17s ease-in-out infinite; }
+            .doca-dest-luz { animation: brilhoDocaDestino 17s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 17s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -840,6 +854,10 @@ if not st.session_state.usuario_autenticado:
                             <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.82"/>
                             <stop offset="100%" stop-color="#C8E6C9" stop-opacity="0"/>
                         </linearGradient>
+                        <linearGradient id="feixeRe" x1="100%" y1="50%" x2="0%" y2="50%">
+                            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                        </linearGradient>
                     </defs>
 
                     <!-- Nuvens de Chuva Minimalistas -->
@@ -850,7 +868,7 @@ if not st.session_state.usuario_autenticado:
                         <path d="M430 15 H474 C479 15 482.5 11.5 482.5 7.2 C482.5 3.3 479.5 0.2 475.6 0 C473.8 -3.8 469.8 -6 465.2 -6 C461.1 -6 457.5 -4.1 455.5 -1.1 C454 -1.9 452.3 -2.4 450.5 -2.4 C445.3 -2.4 441 1.4 440.4 6.4 C435.5 6.8 431.8 10.8 431.8 15 Z" transform="translate(0, 7)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
                     <g class="nuvem-1" opacity="0.84">
-                        <path d="M765 17 H803 C807.2 17 810.5 13.8 810.5 9.8 C810.5 6.1 807.8 3.2 804.2 2.9 C802.7 -0.6 799.2 -2.8 795 -2.8 C791.3 -2.8 788.1 -1.1 786.3 1.6 C785 0.8 783.5 0.4 781.8 0.4 C777.2 0.4 773.3 3.9 772.8 8.3 C768.4 8.6 765 12.2 765 17 Z" transform="translate(0, 4)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                        <path d="M745 17 H783 C787.2 17 790.5 13.8 790.5 9.8 C790.5 6.1 787.8 3.2 784.2 2.9 C782.7 -0.6 779.2 -2.8 775 -2.8 C771.3 -2.8 768.1 -1.1 766.3 1.6 C765 0.8 763.5 0.4 761.8 0.4 C757.2 0.4 753.3 3.9 752.8 8.3 C748.4 8.6 745 12.2 745 17 Z" transform="translate(0, 4)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
 
                     <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Esquerda) -->
@@ -872,73 +890,70 @@ if not st.session_state.usuario_autenticado:
 
                         <rect x="141" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <rect class="doca-cd-luz" x="147" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca 01 -->
+                        <rect x="147" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="147" y1="71" x2="173" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="147" y1="78" x2="173" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
 
+                        <!-- Doca 02 -->
                         <rect x="179" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca 03 (Onde a traseira da carreta encosta de ré) -->
+                        <rect class="doca-cd-luz" x="211" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="236" y="102" width="3" height="8" fill="#141A16"/>
-
-                        <rect x="249" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
-                        <line x1="248" y1="103" x2="260" y2="103" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="266" y1="110" x2="266" y2="92" stroke="#141A16" stroke-width="1.6"/>
-                        <circle cx="266" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
                     <!-- 2. CD MERCADO / CENTRO DE DISTRIBUIÇÃO DO CLIENTE (Direita) -->
                     <g>
-                        <ellipse cx="715" cy="110" rx="76" ry="3.4" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="654" cy="110" rx="76" ry="3.4" fill="#141A16" opacity="0.16"/>
+
+                        <!-- Guarita / Controle de Acesso à Esquerda -->
+                        <rect x="586" y="72" width="24" height="38" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                        <rect x="591" y="78" width="14" height="8" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
+                        <rect x="593" y="92" width="10" height="18" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
                         <!-- Galpão Logístico Principal (Platibanda Moderna) -->
-                        <rect x="662" y="52" width="88" height="58" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Friso superior verde -->
-                        <rect x="662" y="52" width="88" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="610" y="52" width="88" height="58" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="610" y="52" width="88" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4"/>
 
                         <!-- Placa CD MERCADO -->
-                        <rect x="671" y="38" width="70" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="706" y="47.8" text-anchor="middle" font-family="sans-serif" font-size="8.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD MERCADO</text>
+                        <rect x="619" y="38" width="70" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="654" y="47.8" text-anchor="middle" font-family="sans-serif" font-size="8.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD MERCADO</text>
 
                         <!-- Plataforma Elevada de Recebimento -->
-                        <rect x="666" y="102" width="80" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="614" y="102" width="80" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <!-- Doca de Recebimento 01 (Acende verde na descarga) -->
-                        <rect class="doca-dest-luz" x="673" y="65" width="30" height="37" rx="1" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="673" y1="72" x2="703" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="673" y1="79" x2="703" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="671" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="702" y="102" width="3" height="8" fill="#141A16"/>
+                        <!-- Doca de Recebimento 01 -->
+                        <rect x="621" y="65" width="30" height="37" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="621" y1="72" x2="651" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="621" y1="79" x2="651" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="619" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="650" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca de Recebimento 02 -->
-                        <rect x="710" y="65" width="30" height="37" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="710" y1="72" x2="740" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="710" y1="79" x2="740" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="708" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="739" y="102" width="3" height="8" fill="#141A16"/>
-
-                        <!-- Guarita / Controle de Acesso Lateral -->
-                        <rect x="750" y="72" width="24" height="38" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                        <rect x="755" y="78" width="14" height="8" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
-                        <rect x="757" y="92" width="10" height="18" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
+                        <!-- Doca de Recebimento 02 (Onde a traseira da carreta encosta de ré) -->
+                        <rect class="doca-dest-luz" x="658" y="65" width="30" height="37" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="658" y1="72" x2="688" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="658" y1="79" x2="688" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="656" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="687" y="102" width="3" height="8" fill="#141A16"/>
 
                         <!-- Selo Verde de Descarga Concluída -->
                         <g class="badge-entregue">
-                            <circle cx="706" cy="21" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M701.5 21 L705 24.5 L711.5 18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="654" cy="21" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M649.5 21 L653 24.5 L659.5 18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Manobra de ré longa nas 2 docas) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -946,7 +961,15 @@ if not st.session_state.usuario_autenticado:
                         <circle class="fumo-2" cx="141" cy="60" r="2.1" fill="#8A928C"/>
 
                         <g class="carreta-carroceria">
+                            <!-- Feixe do farol dianteiro -->
                             <polygon points="178,94 216,86 216,103" fill="url(#feixeFarol)"/>
+
+                            <!-- Sinalização de Marcha à Ré (Luz traseira + Giroflex piscando) -->
+                            <g class="sinal-re-wrap">
+                                <polygon points="50,94 16,86 16,102" fill="url(#feixeRe)"/>
+                                <circle cx="50" cy="94" r="2.5" fill="#FFFFFF" stroke="#141A16" stroke-width="0.9"/>
+                                <rect class="giroflex-luz" x="155" y="62.5" width="4" height="3.5" rx="1" stroke="#141A16" stroke-width="0.9"/>
+                            </g>
 
                             <rect x="50" y="59" width="92" height="39" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
                             <rect x="51" y="93" width="90" height="4" fill="#D5D0C5"/>
@@ -1022,7 +1045,7 @@ if not st.session_state.usuario_autenticado:
                         <path class="respingo-1" d="M120 110 Q123 106 126 110"/>
                         <path class="respingo-2" d="M350 110 Q353 106 356 110"/>
                         <path class="respingo-1" d="M510 110 Q513 106 516 110"/>
-                        <path class="respingo-2" d="M620 110 Q623 106 626 110"/>
+                        <path class="respingo-2" d="M760 110 Q763 106 766 110"/>
                     </g>
                 </svg>
             </div>
