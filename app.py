@@ -4434,47 +4434,53 @@ elif aba == "✅ Auditoria e Ajustes":
             if not df_bipes_carga.empty:
                 df_bipes_carga.to_excel(writer, index=False, sheet_name="Etiquetas_e_Lotes")
 
-        st.download_button(
-            label="📥 Baixar Relatório Completo em Excel (.xlsx)",
-            data=buffer_relatorio.getvalue(),
-            file_name=f"validacao_{carga_selecionada}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-        st.divider()
         ja_esta_validada = limpar_texto(carga_selecionada) in cargas_ja_validadas
         if ja_esta_validada:
             st.info(f"✅ Esta carga (**{carga_selecionada}**) já foi validada e liberada para expedição.")
-        else:
-            if erro_skus > 0:
-                st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
-            _, col_btn_val_aud = st.columns((3.2, 2.0))
-            if col_btn_val_aud.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):    
-                df_plan_salvar = carregar_dados("planejamento")
-                agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
-                carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
+        elif erro_skus > 0:
+            st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
 
-                if df_plan_salvar.empty or "id_carga" not in df_plan_salvar.columns:
-                    df_plan_salvar = pd.DataFrame(columns=["id_carga", "cliente", "transportadora", "placa", "data_carregamento", "status", "observacoes", "validado"])
+        col_btn_dl_aud, _, col_btn_val_aud = st.columns((1.8, 1.4, 2.0), vertical_alignment="center")
+        with col_btn_dl_aud:
+            st.download_button(
+                label="📥 Baixar Relatório Completo em Excel (.xlsx)",
+                data=buffer_relatorio.getvalue(),
+                file_name=f"validacao_{carga_selecionada}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
-                if "validado" not in df_plan_salvar.columns:
-                    df_plan_salvar["validado"] = ""
+        btn_validar_clicado = False
+        if not ja_esta_validada:
+            with col_btn_val_aud:
+                btn_validar_clicado = st.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True)
 
-                df_plan_salvar["validado"] = df_plan_salvar["validado"].astype(object)
-                mask_p = df_plan_salvar["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada)
+        if btn_validar_clicado:
+            df_plan_salvar = carregar_dados("planejamento")
+            agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
+            carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
 
-                if mask_p.any():
-                    df_plan_salvar.loc[mask_p, "validado"] = carimbo_val
-                else:
-                    nova_linha_p = {col: "" for col in df_plan_salvar.columns}
-                    nova_linha_p["id_carga"] = carga_selecionada
-                    nova_linha_p["status"] = "🟢 Carregado / Liberado"
-                    nova_linha_p["validado"] = carimbo_val
-                    df_plan_salvar = pd.concat([df_plan_salvar, pd.DataFrame([nova_linha_p])], ignore_index=True)
+            if df_plan_salvar.empty or "id_carga" not in df_plan_salvar.columns:
+                df_plan_salvar = pd.DataFrame(columns=["id_carga", "cliente", "transportadora", "placa", "data_carregamento", "status", "observacoes", "validado"])
 
-                salvar_dados(df_plan_salvar, "planejamento")
-                st.cache_data.clear()
-                st.success(f"🎉 Pedido **{carga_selecionada}** validado com sucesso e liberado para expedição!")
-                st.rerun()
+            if "validado" not in df_plan_salvar.columns:
+                df_plan_salvar["validado"] = ""
+
+            df_plan_salvar["validado"] = df_plan_salvar["validado"].astype(object)
+            mask_p = df_plan_salvar["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada)
+
+            if mask_p.any():
+                df_plan_salvar.loc[mask_p, "validado"] = carimbo_val
+            else:
+                nova_linha_p = {col: "" for col in df_plan_salvar.columns}
+                nova_linha_p["id_carga"] = carga_selecionada
+                nova_linha_p["status"] = "🟢 Carregado / Liberado"
+                nova_linha_p["validado"] = carimbo_val
+                df_plan_salvar = pd.concat([df_plan_salvar, pd.DataFrame([nova_linha_p])], ignore_index=True)
+
+            salvar_dados(df_plan_salvar, "planejamento")
+            st.cache_data.clear()
+            st.success(f"🎉 Pedido **{carga_selecionada}** validado com sucesso e liberado para expedição!")
+            st.rerun()
                 
     st.divider()
     if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
