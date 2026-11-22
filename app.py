@@ -4447,8 +4447,7 @@ elif aba == "✅ Auditoria e Ajustes":
         else:
             if erro_skus > 0:
                 st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
-            _, col_btn_val_aud = st.columns((3.9, 1.4))
-            if col_btn_val_aud.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):    
+            if st.button("✅ Validar Pedido e Liberar para Expedição", type="primary"):    
                 df_plan_salvar = carregar_dados("planejamento")
                 agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
                 carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
