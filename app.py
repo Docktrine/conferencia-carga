@@ -746,7 +746,7 @@ if not st.session_state.usuario_autenticado:
                 40% { transform: translateX(75px); }
                 74% { transform: translateX(485px); }
                 86% { transform: translateX(485px); }
-                100% { transform: translateX(900px); }
+                100% { transform: translateX(920px); }
             }
             @keyframes suspensaoCarreta {
                 0%, 100% { transform: translateY(0px); }
@@ -780,17 +780,40 @@ if not st.session_state.usuario_autenticado:
                 0%, 100% { transform: rotate(0deg); }
                 50% { transform: rotate(-38deg); }
             }
+            @keyframes nuvemFlutua {
+                0% { transform: translateX(-25px); }
+                50% { transform: translateX(25px); }
+                100% { transform: translateX(-25px); }
+            }
             .rota-wrap {
                 width: 100%;
-                max-width: 880px;
-                margin: 14px auto 0 auto;
-                height: 132px;
+                margin: 10px 0 0 0;
+                height: 145px;
                 position: relative;
                 overflow: hidden;
+            }
+            /* Linha do asfalto contínua ocupando 100% das bordas do iframe */
+            .asfalto-full {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 22px;
+                height: 2px;
+                background-color: #141A16;
+            }
+            .faixa-full {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 14px;
+                height: 2px;
+                background-image: repeating-linear-gradient(to right, rgba(20, 26, 22, 0.45) 0 10px, transparent 10px 22px);
             }
             .carreta-grupo { animation: viagemCarretaGrano 13s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
+            .nuvem-1 { animation: nuvemFlutua 18s ease-in-out infinite; }
+            .nuvem-2 { animation: nuvemFlutua 24s ease-in-out 4s infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
             .doca-cd-luz { animation: brilhoDocaCD 13s ease-in-out infinite; }
@@ -804,7 +827,10 @@ if not st.session_state.usuario_autenticado:
             </style>
 
             <div class="rota-wrap">
-                <svg width="100%" height="132" viewBox="0 0 880 132" fill="none" xmlns="http://w3.org">
+                <div class="asfalto-full"></div>
+                <div class="faixa-full"></div>
+
+                <svg width="100%" height="145" viewBox="0 0 880 132" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://w3.org" style="position:relative; z-index:2; overflow:visible;">
                     <defs>
                         <linearGradient id="feixeFarol" x1="0%" y1="50%" x2="100%" y2="50%">
                             <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.82"/>
@@ -812,9 +838,16 @@ if not st.session_state.usuario_autenticado:
                         </linearGradient>
                     </defs>
 
-                    <!-- Estrada / Asfalto de ponta a ponta -->
-                    <line x1="0" y1="110" x2="880" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <line x1="0" y1="117" x2="880" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
+                    <!-- Nuvens de Chuva Minimalistas -->
+                    <g class="nuvem-1" opacity="0.82">
+                        <path d="M95 18 H131 C135 18 138 15 138 11.5 C138 8.2 135.5 5.6 132.2 5.3 C130.8 2 127.5 0 123.6 0 C120.2 0 117.2 1.6 115.6 4.1 C114.4 3.4 113 3 111.5 3 C107.2 3 103.6 6.2 103.1 10.3 C99 10.6 95.8 14 95.8 18 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                    </g>
+                    <g class="nuvem-2" opacity="0.78">
+                        <path d="M430 15 H474 C479 15 482.5 11.5 482.5 7.2 C482.5 3.3 479.5 0.2 475.6 0 C473.8 -3.8 469.8 -6 465.2 -6 C461.1 -6 457.5 -4.1 455.5 -1.1 C454 -1.9 452.3 -2.4 450.5 -2.4 C445.3 -2.4 441 1.4 440.4 6.4 C435.5 6.8 431.8 10.8 431.8 15 Z" transform="translate(0, 7)" fill="#D5D0C5" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                    </g>
+                    <g class="nuvem-1" opacity="0.82">
+                        <path d="M765 17 H803 C807.2 17 810.5 13.8 810.5 9.8 C810.5 6.1 807.8 3.2 804.2 2.9 C802.7 -0.6 799.2 -2.8 795 -2.8 C791.3 -2.8 788.1 -1.1 786.3 1.6 C785 0.8 783.5 0.4 781.8 0.4 C777.2 0.4 773.3 3.9 772.8 8.3 C768.4 8.6 765 12.2 765 17 Z" transform="translate(0, 4)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                    </g>
 
                     <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Esquerda) -->
                     <g>
@@ -829,34 +862,30 @@ if not st.session_state.usuario_autenticado:
                         <path d="M131 57 L191 30 L251 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
                         <rect x="178" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Placa CD GRANO ampliada -->
+                        <!-- Placa CD GRANO -->
                         <rect x="158" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
                         <text x="191" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
 
                         <rect x="141" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <!-- Doca 01 (Ativa no carregamento) -->
                         <rect class="doca-cd-luz" x="147" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="147" y1="71" x2="173" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="147" y1="78" x2="173" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 02 -->
                         <rect x="179" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 03 -->
                         <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="236" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Paletes + Árvore -->
                         <rect x="249" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
                         <line x1="248" y1="103" x2="260" y2="103" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="266" y1="110" x2="266" y2="92" stroke="#141A16" stroke-width="1.6"/>
@@ -874,7 +903,7 @@ if not st.session_state.usuario_autenticado:
                         <rect x="669" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
                         <rect x="691" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Placa MERCADO ampliada -->
+                        <!-- Placa MERCADO -->
                         <rect x="691" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
                         <text x="721" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
 
@@ -897,7 +926,7 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Esquerda -> CD Grano -> Mercado -> Sai pela Direita) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -986,7 +1015,7 @@ if not st.session_state.usuario_autenticado:
                 </svg>
             </div>
             """,
-            height=136
+            height=148
         )
             
     st.stop()
