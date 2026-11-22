@@ -4462,7 +4462,9 @@ elif aba == "✅ Auditoria e Ajustes":
             if dt_ini_arq > dt_fim_arq:
                 st.warning("⚠️ A Data Inicial não pode ser maior que a Data Final.")
             else:
-                df_cargas_aud_only = df_cargas[df_cargas["id_carga"].apply(limpar_texto).isin(cargas_ja_validadas)].copy()
+                df_cargas_base_arq = carregar_dados("cargas")
+                df_cargas_aud_only = df_cargas_base_arq[df_cargas_base_arq["id_carga"].apply(limpar_texto).isin(cargas_ja_validadas)].copy()
+                
                 col_data_arq = next((c for c in ["data_carregamento", "data_criacao", "data", "data_entrega"] if c in df_cargas_aud_only.columns), None)
 
                 if col_data_arq:
