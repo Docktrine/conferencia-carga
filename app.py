@@ -4074,7 +4074,8 @@ elif aba == "📈 Painel de Acompanhamento":
 
 elif aba == "✅ Auditoria e Ajustes":
     st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
-        st.caption("Conferência cruzada entre pedido planejado, etiquetas bipadas, lotes e retorno do cliente.")
+    st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
+    st.caption("Conferência cruzada entre pedido planejado, etiquetas bipadas, lotes e retorno do cliente.")
     st.markdown(
         """
         <style>
