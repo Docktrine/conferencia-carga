@@ -742,12 +742,10 @@ if not st.session_state.usuario_autenticado:
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
                 0% { transform: translateX(-230px); }
-                14% { transform: translateX(42px); }
-                22% { transform: translateX(42px); }
-                46% { transform: translateX(285px); }
-                54% { transform: translateX(285px); }
-                78% { transform: translateX(555px); }
-                86% { transform: translateX(555px); }
+                26% { transform: translateX(75px); }
+                40% { transform: translateX(75px); }
+                74% { transform: translateX(485px); }
+                86% { transform: translateX(485px); }
                 100% { transform: translateX(900px); }
             }
             @keyframes suspensaoCarreta {
@@ -760,17 +758,13 @@ if not st.session_state.usuario_autenticado:
                 0% { transform: translate(0, 0) scale(0.5); opacity: 0.75; }
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
-            @keyframes brilhoDocaProdutor {
-                0%, 12%, 24%, 100% { fill: #D5D0C5; }
-                15%, 21% { fill: #C8E6C9; }
-            }
             @keyframes brilhoDocaCD {
-                0%, 44%, 56%, 100% { fill: #D5D0C5; }
-                47%, 53% { fill: #C8E6C9; }
+                0%, 24%, 42%, 100% { fill: #D5D0C5; }
+                28%, 38% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 76%, 88%, 100% { transform: scale(0); opacity: 0; }
-                79%, 85% { transform: scale(1.1); opacity: 1; }
+                0%, 72%, 88%, 100% { transform: scale(0); opacity: 0; }
+                76%, 84% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -794,14 +788,13 @@ if not st.session_state.usuario_autenticado:
                 position: relative;
                 overflow: hidden;
             }
-            .carreta-grupo { animation: viagemCarretaGrano 14s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 13s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 14s ease-in-out infinite; }
-            .doca-prod-luz { animation: brilhoDocaProdutor 14s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 14s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 13s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 13s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -823,105 +816,88 @@ if not st.session_state.usuario_autenticado:
                     <line x1="0" y1="110" x2="880" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <line x1="0" y1="117" x2="880" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
 
-                    <!-- 1. ESTUFA / UNIDADE PRODUTORA GRANO (Esquerda) -->
+                    <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Esquerda) -->
                     <g>
-                        <ellipse cx="82" cy="110" rx="64" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="185" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
+                        <rect x="109" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                        <rect x="114" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="125" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                        <rect x="118" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
-                        <path d="M22 110 V74 C22 52 72 52 72 74 V110 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M47 57 V110 M22 76 H72 M22 92 H72" stroke="#1B5E20" stroke-width="1.1" opacity="0.55"/>
-                        <path d="M27 104 Q32 97 37 104 Q42 97 45 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                        <path d="M50 104 Q55 97 60 104 Q64 97 68 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-
-                        <path d="M72 110 V64 L106 48 L140 64 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M68 66 L106 47 L144 66" stroke="#1B5E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Placa HORTA GRANO ampliada -->
-                        <rect x="74" y="34" width="64" height="13" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="106" y="43" text-anchor="middle" font-family="sans-serif" font-size="7.8" font-weight="800" fill="#FFFFFF" letter-spacing="0.4">HORTA GRANO</text>
-
-                        <rect class="doca-prod-luz" x="92" y="74" width="28" height="36" rx="1" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="92" y1="81" x2="120" y2="81" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="90" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="119" y="102" width="3" height="8" fill="#141A16"/>
-                    </g>
-
-                    <!-- 2. CENTRO DE DISTRIBUIÇÃO GRANO (Centro) -->
-                    <g>
-                        <ellipse cx="425" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
-                        <rect x="349" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
-                        <rect x="354" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="365" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                        <rect x="358" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
-
-                        <path d="M377 110 V54 L431 32 L485 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <polygon points="378,56 431,35 484,56 484,61 431,40 378,61" fill="#D5D0C5"/>
-                        <path d="M371 57 L431 30 L491 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="418" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <path d="M137 110 V54 L191 32 L245 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <polygon points="138,56 191,35 244,56 244,61 191,40 138,61" fill="#D5D0C5"/>
+                        <path d="M131 57 L191 30 L251 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="178" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
                         <!-- Placa CD GRANO ampliada -->
-                        <rect x="398" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="431" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
+                        <rect x="158" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="191" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
 
-                        <rect x="381" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="141" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <rect class="doca-cd-luz" x="387" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="387" y1="71" x2="413" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="387" y1="78" x2="413" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="385" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="412" y="102" width="3" height="8" fill="#141A16"/>
+                        <!-- Doca 01 (Ativa no carregamento) -->
+                        <rect class="doca-cd-luz" x="147" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="147" y1="71" x2="173" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="147" y1="78" x2="173" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <rect x="419" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="419" y1="71" x2="445" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="419" y1="78" x2="445" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="417" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="444" y="102" width="3" height="8" fill="#141A16"/>
+                        <!-- Doca 02 -->
+                        <rect x="179" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <rect x="451" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="451" y1="71" x2="477" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <line x1="451" y1="78" x2="477" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
-                        <rect x="449" y="102" width="3" height="8" fill="#141A16"/>
-                        <rect x="476" y="102" width="3" height="8" fill="#141A16"/>
+                        <!-- Doca 03 -->
+                        <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="236" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <rect x="489" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
-                        <line x1="488" y1="103" x2="500" y2="103" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="506" y1="110" x2="506" y2="92" stroke="#141A16" stroke-width="1.6"/>
-                        <circle cx="506" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
+                        <!-- Paletes + Árvore -->
+                        <rect x="249" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
+                        <line x1="248" y1="103" x2="260" y2="103" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="266" y1="110" x2="266" y2="92" stroke="#141A16" stroke-width="1.6"/>
+                        <circle cx="266" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
-                    <!-- 3. SUPERMERCADO / CLIENTE (Direita) -->
+                    <!-- 2. SUPERMERCADO / CLIENTE (Direita) -->
                     <g>
-                        <ellipse cx="775" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="705" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
 
-                        <rect x="733" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="736" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
-                        <rect x="738" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="747" y1="80" x2="747" y2="110" stroke="#141A16" stroke-width="1.4"/>
-                        <rect x="739" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <rect x="663" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="666" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
+                        <rect x="668" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="677" y1="80" x2="677" y2="110" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="669" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <rect x="761" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="691" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <!-- Placa MERCADO ampliada -->
-                        <rect x="761" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="791" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
+                        <rect x="691" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="721" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
 
-                        <path d="M760 59 H824 L820 67 H760 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
-                        <line x1="774" y1="59" x2="774" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="789" y1="59" x2="789" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="804" y1="59" x2="804" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <path d="M690 59 H754 L750 67 H690 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+                        <line x1="704" y1="59" x2="704" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="719" y1="59" x2="719" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="734" y1="59" x2="734" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
 
-                        <rect x="769" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="773" y1="84" x2="809" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="773" y1="91" x2="809" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="774" y1="79" x2="781" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+                        <rect x="699" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="703" y1="84" x2="739" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="703" y1="91" x2="739" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="704" y1="79" x2="711" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
 
-                        <rect x="825" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
-                        <circle cx="828.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
+                        <rect x="755" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
+                        <circle cx="758.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
 
                         <g class="badge-entregue">
-                            <circle cx="777" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M772.5 24 L776 27.5 L782.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="707" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M702.5 24 L706 27.5 L712.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- 4. CARRETA BAÚ REFRIGERADA GRANO (Entra pela esquerda -> Horta -> CD -> Mercado -> Sai pela direita) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Esquerda -> CD Grano -> Mercado -> Sai pela Direita) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -974,7 +950,7 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- 5. CAMADA DE CHUVA SUAVE E RESPINGOS -->
+                    <!-- 4. CAMADA DE CHUVA SUAVE E RESPINGOS -->
                     <g stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
                         <g class="gota-chuva-1">
                             <line x1="85" y1="0" x2="81" y2="11"/><line x1="185" y1="8" x2="181" y2="19"/>
@@ -1003,9 +979,9 @@ if not st.session_state.usuario_autenticado:
 
                     <g stroke="#1B5E20" stroke-width="1" stroke-linecap="round" fill="none">
                         <path class="respingo-1" d="M120 110 Q123 106 126 110"/>
-                        <path class="respingo-2" d="M290 110 Q293 106 296 110"/>
-                        <path class="respingo-1" d="M560 110 Q563 106 566 110"/>
-                        <path class="respingo-2" d="M660 110 Q663 106 666 110"/>
+                        <path class="respingo-2" d="M350 110 Q353 106 356 110"/>
+                        <path class="respingo-1" d="M510 110 Q513 106 516 110"/>
+                        <path class="respingo-2" d="M620 110 Q623 106 626 110"/>
                     </g>
                 </svg>
             </div>
