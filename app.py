@@ -1487,24 +1487,25 @@ if len(abas_nav) > 1:
             font-size: 0.75rem !important;
             white-space: nowrap !important;
         }
-        /* Bolinha estilo Chrome no canto do ✕ ao passar o mouse (exceto na 1ª guia Início) */
+        /* Bolinha estilo Chrome no canto do ✕ (aparece somente ao passar o mouse) */
         [data-testid="stButtonGroup"] button:not(:first-child)::after,
         [data-testid="stPills"] button:not(:first-child)::after {
             content: "" !important;
             position: absolute !important;
-            right: 6px !important;
+            right: 6.5px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            width: 18px !important;
-            height: 18px !important;
+            width: 17px !important;
+            height: 17px !important;
             border-radius: 50% !important;
-            background-color: transparent !important;
-            transition: background-color 0.18s ease !important;
+            background-color: rgba(183, 28, 28, 0.16) !important;
+            opacity: 0 !important;
+            transition: opacity 0.18s ease !important;
             pointer-events: none !important;
         }
         [data-testid="stButtonGroup"] button:not(:first-child):hover::after,
         [data-testid="stPills"] button:not(:first-child):hover::after {
-            background-color: rgba(183, 28, 28, 0.16) !important;
+            opacity: 1 !important;
         }
         </style>
         """,
