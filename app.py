@@ -1487,7 +1487,7 @@ if len(abas_nav) > 1:
             font-size: 0.75rem !important;
             white-space: nowrap !important;
         }
-        /* Bolinha estilo Chrome no canto do ✕ (aparece somente ao passar o mouse) */
+        /* Bolinha estilo Chrome no canto do ✕ (aparece somente ao passar o mouse) */    
         [data-testid="stButtonGroup"] button:not(:first-child)::after,
         [data-testid="stPills"] button:not(:first-child)::after {
             content: "" !important;
@@ -1498,13 +1498,14 @@ if len(abas_nav) > 1:
             width: 17px !important;
             height: 17px !important;
             border-radius: 50% !important;
-            background-color: rgba(183, 28, 28, 0.16) !important;
+            background-color: rgba(183, 28, 28, 0.18) !important;
             opacity: 0 !important;
             transition: opacity 0.18s ease !important;
-            pointer-events: none !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
         }
-        [data-testid="stButtonGroup"] button:not(:first-child):hover::after,
-        [data-testid="stPills"] button:not(:first-child):hover::after {
+        [data-testid="stButtonGroup"] button:not(:first-child)::after:hover,
+        [data-testid="stPills"] button:not(:first-child)::after:hover {
             opacity: 1 !important;
         }
         </style>
