@@ -659,12 +659,18 @@ for chave_sessao, valor_padrao in [
         st.session_state[chave_sessao] = valor_padrao
 
         
-if not st.session_state.usuario_autenticado:
     st.markdown(
         """
         <style>
         .stApp {
             background-color: #C9C5BA !important;
+        }
+        header[data-testid="stHeader"] {
+            display: none !important;
+        }
+        .block-container, [data-testid="stMainBlockContainer"] {
+            padding-top: 1.2rem !important;
+            padding-bottom: 0.5rem !important;
         }
         [data-testid="stVerticalBlockBorderWrapper"] {
             background-color: #DCD9D0 !important;
