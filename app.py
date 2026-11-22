@@ -1781,9 +1781,9 @@ if aba == "🏠 Início":
                 if d_i == 0:
                     linhas_cal_html += "<td></td>"
                 elif d_i == dia_i:
-                    linhas_cal_html += f"<td><span style='background:#1B5E20; color:#FFFFFF; border-radius:50%; padding:0px 4px; font-weight:700;'>{d_i}</span></td>"
+                    linhas_cal_html += f"<td style='padding:1px 0;'><span style='display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px; background:#1B5E20; color:#FFFFFF; border-radius:50%; font-weight:700; white-space:nowrap;'>{d_i}</span></td>"
                 elif d_i in feriados_i:
-                    linhas_cal_html += f"<td><span style='background:#FFCDD2; color:#B71C1C; border-radius:50%; padding:0px 4px; font-weight:700;' title='Feriado'>{d_i}</span></td>"
+                    linhas_cal_html += f"<td style='padding:1px 0;'><span style='display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px; background:#FFCDD2; color:#B71C1C; border-radius:50%; font-weight:700; white-space:nowrap;' title='Feriado'>{d_i}</span></td>"
                 elif idx_s in (0, 6):
                     linhas_cal_html += f"<td style='color:#8A928C;'>{d_i}</td>"
                 else:
