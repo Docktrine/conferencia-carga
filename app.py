@@ -1353,7 +1353,6 @@ if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds
             df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
             conn.update(worksheet="usuarios", data=padronizar_df_maiusculo(df_u_ping))
             _ler_planilha_com_cache.clear("usuarios")
-            montar_html_usuarios_online.clear()
     st.session_state.ultimo_ping_ts = agora_ping
     
 @st.cache_data(ttl=60, show_spinner=False)
