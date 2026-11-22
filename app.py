@@ -2188,48 +2188,51 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 4. MILHO BAIXISTA (Harmonizado Black Line + Verde Grano) -->
+            <!-- 4. MILHO BAIXISTA (Palhas Abertas para o Alto + Contrabaixo) -->
             <div class="musico-box m-vagem">
-                <svg width="82" height="88" viewBox="0 0 82 88" fill="none">
-                    <ellipse cx="26" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
+                <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
+                    <ellipse cx="32" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
                     <!-- Pernas e Sapatinhos -->
-                    <path d="M21 69 V83 M31 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <path d="M16 84 H23 C23 81.5 18 81.5 16 84 Z M30 84 H37 C37 81.5 32 81.5 30 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
-                    
-                    <!-- Cabelo de Seda do Milho no Topo -->
-                    <path d="M24 16 C20 9 15 11 17 16 M26 15 C25 7 29 7 28 15 M29 16 C33 9 37 12 34 17" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
-                    
-                    <!-- Espiga de Milho (Paleta Bege Oficial) -->
-                    <path d="M26 15 C16 15 15 58 26 68 C37 58 36 15 26 15 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M27 69 V83 M37 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <path d="M22 84 H29 C29 81.5 24 81.5 22 84 Z M36 84 H43 C43 81.5 38 81.5 36 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+
+                    <!-- Palhas Internas Altas (Camada de trás abrindo para cima) -->
+                    <path d="M32 69 C21 62 18 40 7 29 C17 31 24 44 28 57 Z" fill="#81C784" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+                    <path d="M32 69 C43 62 46 40 57 29 C47 31 40 44 36 57 Z" fill="#81C784" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+
+                    <!-- Espiga de Milho Pontuda -->
+                    <path d="M32 13 C23 20 21 48 32 67 C43 48 41 20 32 13 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <!-- Sombra Lateral da Espiga -->
-                    <path d="M31 17 C35 23 35 55 26 67 C31 56 32 24 31 17 Z" fill="#D5D0C5"/>
-                    
-                    <!-- Textura Sutil dos Grãos -->
-                    <path d="M21 23 V50 M26 20 V52 M31 23 V50" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round" opacity="0.35"/>
-                    <path d="M19 42 H33 M19 47 H33" stroke="#141A16" stroke-width="1" opacity="0.25"/>
+                    <path d="M35 17 C40 24 40 48 32 65 C36 50 37 26 35 17 Z" fill="#D5D0C5"/>
+
+                    <!-- Grãos Arredondados nas Bordas -->
+                    <path d="M25 22 Q27.5 24 25 26 Q27.5 28 24.5 30 Q27 32 24.5 34 Q27 36 25 38" stroke="#141A16" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
+                    <path d="M39 22 Q36.5 24 39 26 Q36.5 28 39.5 30 Q37 32 39.5 34 Q37 36 39 38" stroke="#141A16" stroke-width="1.1" stroke-linecap="round" opacity="0.45"/>
 
                     <!-- Rostinho Concentrado no Groove -->
-                    <circle cx="22.8" cy="29" r="1.8" fill="#141A16"/>
-                    <circle cx="22.2" cy="28.4" r="0.6" fill="#FFFFFF"/>
-                    <circle cx="29.5" cy="29" r="1.8" fill="#141A16"/>
-                    <circle cx="28.9" cy="28.4" r="0.6" fill="#FFFFFF"/>
-                    <path d="M23.5 34.5 Q26.5 36.8 29.5 34" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="28.8" cy="28" r="1.8" fill="#141A16"/>
+                    <circle cx="28.2" cy="27.4" r="0.6" fill="#FFFFFF"/>
+                    <circle cx="35.5" cy="28" r="1.8" fill="#141A16"/>
+                    <circle cx="34.9" cy="27.4" r="0.6" fill="#FFFFFF"/>
+                    <path d="M29.5 33.5 Q32.5 35.8 35.5 33" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
 
-                    <!-- Palha Verde Abraçando a Base como Jaqueta -->
-                    <path d="M16 42 C10 50 13 64 26 70 C20 62 18 52 20 44 Z" fill="#81C784" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M36 42 C42 50 39 64 26 70 C32 62 34 52 32 44 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M19 52 C17 60 20 66 26 70 C32 66 35 60 33 52 C30 58 22 58 19 52 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                    <!-- Palhas Externas Principais (Camada da frente com nervura central) -->
+                    <path d="M32 70 C18 66 13 51 4 42 C14 42 22 49 32 62 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M28 65 Q19 54 9 45" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
+
+                    <path d="M32 70 C46 66 51 51 60 42 C50 42 42 49 32 62 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M36 65 Q45 54 55 45" stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round"/>
 
                     <!-- Contrabaixo + Bracinhos -->
-                    <ellipse cx="25" cy="52" rx="10" ry="5.8" transform="rotate(-15 25 52)" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7"/>
-                    <circle cx="23" cy="52.5" r="2" fill="#141A16"/>
-                    <line x1="34" y1="49" x2="60" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
-                    <rect x="59" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 59 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                    <path d="M16 46 Q14 50 19 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                    <path d="M36 45 Q42 46 46 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                    
+                    <ellipse cx="31" cy="52" rx="10" ry="5.8" transform="rotate(-15 31 52)" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7"/>
+                    <circle cx="29" cy="52.5" r="2" fill="#141A16"/>
+                    <line x1="40" y1="49" x2="66" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
+                    <rect x="65" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 65 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                    <path d="M22 47 Q20 51 25 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M42 45 Q48 46 52 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+
                     <!-- Onda Sonora -->
-                    <path class="onda-1" d="M67 34 C71 38 71 44 67 48" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+                    <path class="onda-1" d="M73 34 C77 38 77 44 73 48" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </div>
         </div>
