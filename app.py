@@ -657,6 +657,8 @@ for chave_sessao, valor_padrao in [
 ]:
     if chave_sessao not in st.session_state:
         st.session_state[chave_sessao] = valor_padrao
+
+        
 if not st.session_state.usuario_autenticado:
     st.markdown(
         """
@@ -1498,6 +1500,7 @@ aba = st.session_state.aba_ativa
 
 if aba == "🏠 Início":
 
+st.markdown("<style>[data-stale='true'] { display: none !important; }</style>", unsafe_allow_html=True)    
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
     primeiro_nome_ini = st.session_state.nome_usuario.split().pop(0).title() if st.session_state.nome_usuario else "Equipe"
 
