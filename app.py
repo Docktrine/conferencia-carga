@@ -4330,7 +4330,7 @@ elif aba == "✅ Auditoria e Ajustes":
             c_lote = st.selectbox("Coluna do LOTE (Cliente):", ["(Não informar lote)"] + cols_cli)
 
         _, col_btn_gerar_aud = st.columns((3.5, 1.5))
-        if col_btn_gerar_aud.button("⚖️ Gerar Validação Tripla + Lotes", type="primary", use_container_width=True):
+        if col_btn_gerar_aud.button("🔍 Realizar Validação", type="primary", use_container_width=True):
                 
             df_cli_prep = pd.DataFrame({
                 "codigo": df_cli[c_cod].apply(limpar_texto),
