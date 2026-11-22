@@ -4544,7 +4544,7 @@ elif aba == "👥 Central de Usuários":
         "CONFERENTE": (["📦 Conferência dos Pedidos"], []),
         "AUXILIAR ADMINISTRATIVO": (["🚚 Planejamento Logística", "📥 Importação de Pedidos", "📋 Gestão de Pedidos"], ["🔔 Lançar Notificações"]),
         "ANALISTA": (["📊 Análise de Pedidos", "🚚 Planejamento Logística", "📥 Importação de Pedidos", "📈 Painel de Acompanhamento", "📋 Gestão de Pedidos", "✅ Auditoria e Ajustes"], ["✂️ Gerar e Editar Cortes", "🔔 Lançar Notificações"]),
-        "SUPERVISOR": (TODOS_MODULOS_SISTEMA[:-1], ["✂️ Gerar e Editar Cortes", "↩️ Estornar Etiquetas e Corrigir Lotes", "🔔 Lançar Notificações", "👁️ Ver Conferência Completa (Supervisão)"]),
+        "SUPERVISOR": (TODOS_MODULOS_SISTEMA[:-1], TODAS_PERMISSOES_CRITICAS),
         "GERENTE": (TODOS_MODULOS_SISTEMA[:-1], TODAS_PERMISSOES_CRITICAS),
         "ADMIN": (TODOS_MODULOS_SISTEMA, TODAS_PERMISSOES_CRITICAS),
     }
@@ -4553,7 +4553,7 @@ elif aba == "👥 Central de Usuários":
         c_nu_top1, c_nu_top2 = st.columns((1.5, 2.5), vertical_alignment="center")
         nu_perfil = c_nu_top1.selectbox(
             "1️⃣ Escolha o Perfil Base (preenche acessos automaticamente):",
-            ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE", "ADMIN"],
+            ["CONFERENTE", "AUXILIAR ADMINISTRATIVO", "ANALISTA", "SUPERVISOR", "GERENTE"] + (["ADMIN"] if st.session_state.perfil_usuario == "ADMIN" else []),
             key="nu_perfil_preset"
         )
         nu_foto = c_nu_top2.file_uploader("📷 Foto de Perfil (Opcional — PNG ou JPG):", type=["png", "jpg", "jpeg"], key="nu_foto_upload")
@@ -4611,10 +4611,11 @@ elif aba == "👥 Central de Usuários":
                     st.rerun()
 
     with st.expander("✏️ Editar Acessos, Foto, Senha ou Bloquear Colaborador", expanded=True):
+        df_edit_u = df_usuarios if st.session_state.perfil_usuario == "ADMIN" else df_usuarios[df_usuarios["perfil"].apply(limpar_texto) != "ADMIN"]
         opcoes_u = {
             f"{limpar_texto(r['nome'])} ({limpar_texto(r['login'])}) — {limpar_texto(r['perfil'])} [{'🟢 Ativo' if limpar_texto(r['ativo']) == 'SIM' else '🔴 Inativo'}]": idx
-            for idx, r in df_usuarios.iterrows()
-        }
+            for idx, r in df_edit_u.iterrows()
+        }        
         sel_u_label = st.selectbox("Selecione o colaborador:", list(opcoes_u.keys()), key="sel_edit_usuario")
         idx_u_edit = opcoes_u[sel_u_label]
         reg_u = df_usuarios.loc[idx_u_edit]
