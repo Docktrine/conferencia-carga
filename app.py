@@ -1758,18 +1758,16 @@ if aba == "🏠 Início":
         <style>
         body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
         @keyframes soloGuitarra3D {
-            0%, 100% { transform: perspective(360px) rotateY(-20deg) rotateX(6deg) rotateZ(-4deg) translateY(0px); }
-            25% { transform: perspective(360px) rotateY(10deg) rotateX(-5deg) rotateZ(2deg) translateY(-6px); }
-            50% { transform: perspective(360px) rotateY(22deg) rotateX(6deg) rotateZ(4deg) translateY(0px); }
-            75% { transform: perspective(360px) rotateY(-10deg) rotateX(-6deg) rotateZ(-2deg) translateY(-5px); }
+            0%, 100% { transform: rotateZ(-2.5deg) translateY(0px); }
+            50% { transform: rotateZ(2.5deg) translateY(-3px); }
         }
         @keyframes vocalistaShow3D {
-            0%, 100% { transform: perspective(360px) rotateY(16deg) rotateX(8deg) rotateZ(-3deg) translateY(0px); }
-            50% { transform: perspective(360px) rotateY(-18deg) rotateX(-6deg) rotateZ(4deg) translateY(-5px); }
+            0%, 100% { transform: rotateZ(-2deg) translateY(0px); }
+            50% { transform: rotateZ(3deg) translateY(-3px); }
         }
         @keyframes bateristaShow3D {
-            0%, 100% { transform: perspective(360px) rotateX(0deg) scale(1); }
-            50% { transform: perspective(360px) rotateX(15deg) translateY(-4px) scale(1.04); }
+            0%, 100% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-2px) scaleY(0.98); }
         }
         @keyframes pratoVibra {
             0%, 100% { transform: rotateZ(0deg); }
@@ -1785,9 +1783,10 @@ if aba == "🏠 Início":
             50% { transform: rotateZ(-22deg); }
         }
         @keyframes baixistaGroove3D {
-            0%, 100% { transform: perspective(360px) rotateY(-22deg) rotateX(-5deg) rotateZ(3deg) translateY(0px); }
-            50% { transform: perspective(360px) rotateY(22deg) rotateX(7deg) rotateZ(-3deg) translateY(-5px); }
+            0%, 100% { transform: rotateZ(2deg) translateY(0px); }
+            50% { transform: rotateZ(-2deg) translateY(-2.5px); }
         }
+
         @keyframes ondaSom {
             0% { transform: scale(0.6); opacity: 0; }
             40% { opacity: 0.9; }
