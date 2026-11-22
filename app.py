@@ -1419,7 +1419,7 @@ else:
 
 st.session_state.abas_abertas = abas_nav
 
-mapa_rotulos_guia = {m: ("🏠 Início" if m == "🏠 Início" else f"{m}  ✕") for m in abas_nav}
+mapa_rotulos_guia = {m: ("🏠 Início" if m == "🏠 Início" else f"{m}\u00A0\u00A0✕") for m in abas_nav}
 mapa_reverso_guia = {v: k for k, v in mapa_rotulos_guia.items()}
 
 def _ao_mudar_guia():
@@ -1475,7 +1475,7 @@ if len(abas_nav) > 1:
         }
         [data-testid="stButtonGroup"] button,
         [data-testid="stPills"] button {
-            padding: 2px 11px !important;
+            padding: 2px 13px !important;
             min-height: 29px !important;
             height: 29px !important;
             white-space: nowrap !important;
@@ -1492,7 +1492,7 @@ if len(abas_nav) > 1:
         [data-testid="stPills"] button:not(:first-child)::after {
             content: "" !important;
             position: absolute !important;
-            right: 6.5px !important;
+            right: 8.5px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
             width: 17px !important;
