@@ -741,14 +741,14 @@ if not st.session_state.usuario_autenticado:
             <style>
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
-                0% { transform: translateX(48px); opacity: 0; }
-                5% { transform: translateX(48px); opacity: 1; }
-                14% { transform: translateX(48px); }
-                44% { transform: translateX(285px); }
+                0% { transform: translateX(-230px); }
+                14% { transform: translateX(42px); }
+                22% { transform: translateX(42px); }
+                46% { transform: translateX(285px); }
                 54% { transform: translateX(285px); }
-                84% { transform: translateX(555px); opacity: 1; }
-                94% { transform: translateX(555px); opacity: 1; }
-                100% { transform: translateX(555px); opacity: 0; }
+                78% { transform: translateX(555px); }
+                86% { transform: translateX(555px); }
+                100% { transform: translateX(900px); }
             }
             @keyframes suspensaoCarreta {
                 0%, 100% { transform: translateY(0px); }
@@ -760,17 +760,17 @@ if not st.session_state.usuario_autenticado:
                 0% { transform: translate(0, 0) scale(0.5); opacity: 0.75; }
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
-            @keyframes brilhoDocaCD {
-                0%, 40%, 58%, 100% { fill: #D5D0C5; }
-                45%, 53% { fill: #C8E6C9; }
-            }
             @keyframes brilhoDocaProdutor {
-                0%, 16%, 100% { fill: #D5D0C5; }
-                4%, 12% { fill: #C8E6C9; }
+                0%, 12%, 24%, 100% { fill: #D5D0C5; }
+                15%, 21% { fill: #C8E6C9; }
+            }
+            @keyframes brilhoDocaCD {
+                0%, 44%, 56%, 100% { fill: #D5D0C5; }
+                47%, 53% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 82%, 100% { transform: scale(0); opacity: 0; }
-                86%, 94% { transform: scale(1.1); opacity: 1; }
+                0%, 76%, 88%, 100% { transform: scale(0); opacity: 0; }
+                79%, 85% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -794,14 +794,14 @@ if not st.session_state.usuario_autenticado:
                 position: relative;
                 overflow: hidden;
             }
-            .carreta-grupo { animation: viagemCarretaGrano 12.5s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 14s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 12.5s ease-in-out infinite; }
-            .doca-prod-luz { animation: brilhoDocaProdutor 12.5s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 12.5s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 14s ease-in-out infinite; }
+            .doca-prod-luz { animation: brilhoDocaProdutor 14s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 14s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -819,30 +819,25 @@ if not st.session_state.usuario_autenticado:
                         </linearGradient>
                     </defs>
 
-                    <!-- Estrada / Asfalto conectando as 3 unidades -->
-                    <line x1="18" y1="110" x2="852" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <line x1="28" y1="117" x2="842" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
+                    <!-- Estrada / Asfalto de ponta a ponta -->
+                    <line x1="0" y1="110" x2="880" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <line x1="0" y1="117" x2="880" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
 
                     <!-- 1. ESTUFA / UNIDADE PRODUTORA GRANO (Esquerda) -->
                     <g>
                         <ellipse cx="82" cy="110" rx="64" ry="3.2" fill="#141A16" opacity="0.16"/>
 
-                        <!-- Estufa Agrícola em Arco (Esquerda) -->
                         <path d="M22 110 V74 C22 52 72 52 72 74 V110 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Nervuras da estufa -->
                         <path d="M47 57 V110 M22 76 H72 M22 92 H72" stroke="#1B5E20" stroke-width="1.1" opacity="0.55"/>
-                        <!-- Canteiros verdes visíveis dentro da estufa -->
                         <path d="M27 104 Q32 97 37 104 Q42 97 45 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
                         <path d="M50 104 Q55 97 60 104 Q64 97 68 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
 
-                        <!-- Galpão de Beneficiamento & Expedição Rural -->
                         <path d="M72 110 V64 L106 48 L140 64 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <path d="M68 66 L106 47 L144 66" stroke="#1B5E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Placa HORTA GRANO -->
-                        <rect x="85" y="59" width="42" height="9" rx="1.5" fill="#1B5E20"/>
-                        <text x="106" y="65.6" text-anchor="middle" font-family="sans-serif" font-size="5.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.4">HORTA GRANO</text>
+                        <!-- Placa HORTA GRANO ampliada -->
+                        <rect x="74" y="34" width="64" height="13" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="106" y="43" text-anchor="middle" font-family="sans-serif" font-size="7.8" font-weight="800" fill="#FFFFFF" letter-spacing="0.4">HORTA GRANO</text>
 
-                        <!-- Doca de Embarque da Unidade Produtora -->
                         <rect class="doca-prod-luz" x="92" y="74" width="28" height="36" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="92" y1="81" x2="120" y2="81" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="90" y="102" width="3" height="8" fill="#141A16"/>
@@ -860,10 +855,11 @@ if not st.session_state.usuario_autenticado:
                         <path d="M377 110 V54 L431 32 L485 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <polygon points="378,56 431,35 484,56 484,61 431,40 378,61" fill="#D5D0C5"/>
                         <path d="M371 57 L431 30 L491 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="418" y="26" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <rect x="418" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <rect x="405" y="45" width="52" height="11" rx="2" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                        <text x="431" y="52.6" text-anchor="middle" font-family="sans-serif" font-size="6.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD GRANO</text>
+                        <!-- Placa CD GRANO ampliada -->
+                        <rect x="398" y="42" width="66" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="431" y="51.8" text-anchor="middle" font-family="sans-serif" font-size="8.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.6">CD GRANO</text>
 
                         <rect x="381" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
@@ -902,8 +898,9 @@ if not st.session_state.usuario_autenticado:
                         <rect x="739" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
                         <rect x="761" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="766" y="49" width="50" height="10" rx="2" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5"/>
-                        <text x="791" y="56.2" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#1B5E20" letter-spacing="0.4">MERCADO</text>
+                        <!-- Placa MERCADO ampliada -->
+                        <rect x="761" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="791" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
 
                         <path d="M760 59 H824 L820 67 H760 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
                         <line x1="774" y1="59" x2="774" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
@@ -919,12 +916,12 @@ if not st.session_state.usuario_autenticado:
                         <circle cx="828.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
 
                         <g class="badge-entregue">
-                            <circle cx="777" cy="28" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M772.5 28 L776 31.5 L782.5 25" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="777" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M772.5 24 L776 27.5 L782.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- 4. CARRETA BAÚ REFRIGERADA GRANO (Horta -> CD -> Mercado) -->
+                    <!-- 4. CARRETA BAÚ REFRIGERADA GRANO (Entra pela esquerda -> Horta -> CD -> Mercado -> Sai pela direita) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
