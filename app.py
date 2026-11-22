@@ -1493,7 +1493,7 @@ if len(abas_nav) > 1:
             content: "" !important;
             position: absolute !important;
             right: 9.5px !important;
-            top: calc(50% + 1px) !important;
+            top: calc(50% - 1px) !important;
             transform: translateY(-50%) !important;
             width: 17px !important;
             height: 17px !important;
