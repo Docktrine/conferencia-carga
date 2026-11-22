@@ -2188,7 +2188,7 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 4. MILHO BAIXISTA (Espiga Dourada + Palha Verde + Contrabaixo) -->
+            <!-- 4. MILHO BAIXISTA (Harmonizado Black Line + Verde Grano) -->
             <div class="musico-box m-vagem">
                 <svg width="82" height="88" viewBox="0 0 82 88" fill="none">
                     <ellipse cx="26" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
@@ -2197,23 +2197,22 @@ if aba == "🏠 Início":
                     <path d="M16 84 H23 C23 81.5 18 81.5 16 84 Z M30 84 H37 C37 81.5 32 81.5 30 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
                     
                     <!-- Cabelo de Seda do Milho no Topo -->
-                    <path d="M24 16 C20 9 15 11 17 16 M26 15 C25 7 29 7 28 15 M29 16 C33 9 37 12 34 17" stroke="#8D6E63" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M24 16 C20 9 15 11 17 16 M26 15 C25 7 29 7 28 15 M29 16 C33 9 37 12 34 17" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
                     
-                    <!-- Espiga de Milho -->
-                    <path d="M26 15 C16 15 15 58 26 68 C37 58 36 15 26 15 Z" fill="#F5E6B3" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- Espiga de Milho (Paleta Bege Oficial) -->
+                    <path d="M26 15 C16 15 15 58 26 68 C37 58 36 15 26 15 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <!-- Sombra Lateral da Espiga -->
-                    <path d="M31 17 C35 23 35 55 26 67 C31 56 32 24 31 17 Z" fill="#E6D28B"/>
+                    <path d="M31 17 C35 23 35 55 26 67 C31 56 32 24 31 17 Z" fill="#D5D0C5"/>
                     
                     <!-- Textura Sutil dos Grãos -->
-                    <path d="M21 23 V50 M26 20 V52 M31 23 V50" stroke="#D4BC6A" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round"/>
-                    <path d="M19 42 H33 M19 47 H33" stroke="#D4BC6A" stroke-width="1" opacity="0.7"/>
+                    <path d="M21 23 V50 M26 20 V52 M31 23 V50" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round" opacity="0.35"/>
+                    <path d="M19 42 H33 M19 47 H33" stroke="#141A16" stroke-width="1" opacity="0.25"/>
 
                     <!-- Rostinho Concentrado no Groove -->
                     <circle cx="22.8" cy="29" r="1.8" fill="#141A16"/>
                     <circle cx="22.2" cy="28.4" r="0.6" fill="#FFFFFF"/>
                     <circle cx="29.5" cy="29" r="1.8" fill="#141A16"/>
                     <circle cx="28.9" cy="28.4" r="0.6" fill="#FFFFFF"/>
-                    <!-- Sorriso de canto -->
                     <path d="M23.5 34.5 Q26.5 36.8 29.5 34" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
 
                     <!-- Palha Verde Abraçando a Base como Jaqueta -->
