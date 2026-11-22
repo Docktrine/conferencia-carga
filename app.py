@@ -4479,7 +4479,7 @@ elif aba == "✅ Auditoria e Ajustes":
     st.divider()
     if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
         with st.expander("🗄️ Arquivar Cargas Já Auditadas (Por Período)"):
-            st.caption("Filtra cargas já auditadas por período e move das abas ativas ('cargas', 'bipes' e 'planejamento') para suas respectivas abas '_historico'.")
+            st.caption("Selecione um período para arquivar cargas já auditadas. Os registros encerrados são movidos para o histórico para manter o sistema leve, sem afetar as cargas em andamento")
 
             c_arq_dt1, c_arq_dt2 = st.columns(2)
             hoje_arq = datetime.now(FUSO_BR).date()
