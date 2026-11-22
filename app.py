@@ -1487,27 +1487,6 @@ if len(abas_nav) > 1:
             font-size: 0.75rem !important;
             white-space: nowrap !important;
         }
-        /* Bolinha estilo Chrome no canto do ✕ (aparece somente ao passar o mouse) */    
-        [data-testid="stButtonGroup"] button:not(:first-child)::after,
-        [data-testid="stPills"] button:not(:first-child)::after {
-            content: "" !important;
-            position: absolute !important;
-            right: 9.5px !important;
-            top: calc(50% - 1px) !important;
-            transform: translateY(-50%) !important;
-            width: 17px !important;
-            height: 17px !important;
-            border-radius: 50% !important;
-            background-color: rgba(183, 28, 28, 0.18) !important;
-            opacity: 0 !important;
-            transition: opacity 0.18s ease !important;
-            pointer-events: auto !important;
-            cursor: pointer !important;
-        }
-        [data-testid="stButtonGroup"] button:not(:first-child)::after:hover,
-        [data-testid="stPills"] button:not(:first-child)::after:hover {
-            opacity: 1 !important;
-        }
         </style>
         """,
         unsafe_allow_html=True
@@ -1521,6 +1500,33 @@ if len(abas_nav) > 1:
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
     )
+    import streamlit.components.v1 as components
+    components.html(
+        """
+        <script>
+        const doc = window.parent.document;
+        function estilarXGuias() {
+            doc.querySelectorAll('[data-testid="stButtonGroup"] button:not(:first-child) p, [data-testid="stPills"] button:not(:first-child) p').forEach(p => {
+                if (p.dataset.xEstilado) return;
+                const txt = p.innerHTML;
+                if (txt.includes('✕')) {
+                    p.innerHTML = txt.replace('✕', '<span class="wms-x-close" style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;margin-left:2px;transition:background-color 0.15s;">✕</span>');
+                    const sp = p.querySelector('.wms-x-close');
+                    if (sp) {
+                        sp.addEventListener('mouseenter', () => sp.style.backgroundColor = 'rgba(183, 28, 28, 0.20)');
+                        sp.addEventListener('mouseleave', () => sp.style.backgroundColor = 'transparent');
+                    }
+                    p.dataset.xEstilado = '1';
+                }
+            });
+        }
+        estilarXGuias();
+        setTimeout(estilarXGuias, 200);
+        </script>
+        """,
+        height=0,
+        width=0
+    )    
 
 aba = st.session_state.aba_ativa
 
