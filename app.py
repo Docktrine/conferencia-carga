@@ -2055,17 +2055,34 @@ if aba == "🏠 Início":
         </style>
 
         <div class="palco-3d-container">
-            <!-- Chão do palco + Luz verde suave -->
+            <!-- Tablado de Palco Minimalista + Luz Verde Suave -->
             <svg width="100%" height="134" viewBox="0 0 920 134" fill="none" style="position:absolute; left:0; top:0;">
                 <defs>
                     <radialGradient id="holofoteGrano" cx="50%" cy="88%" r="52%">
-                        <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.18"/>
+                        <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.22"/>
                         <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
                     </radialGradient>
                 </defs>
-                <ellipse cx="460" cy="116" rx="370" ry="22" fill="url(#holofoteGrano)"/>
-                <line x1="30" y1="118" x2="890" y2="118" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                <line x1="80" y1="124" x2="840" y2="124" stroke="#141A16" stroke-width="1.1" stroke-dasharray="6 8" opacity="0.42"/>
+                <!-- Luz suave de palco -->
+                <ellipse cx="460" cy="114" rx="380" ry="22" fill="url(#holofoteGrano)"/>
+                <!-- Plataforma do Palco em Perspectiva (Os pés ficam em y=118) -->
+                <polygon points="62,110 858,110 882,122 38,122" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+                <!-- Espelho / Frente do Tablado -->
+                <rect x="38" y="122" width="844" height="6" rx="1" fill="#D5D0C5" stroke="#141A16" stroke-width="1.6"/>
+                <!-- Tábuas sutis do piso -->
+                <line x1="190" y1="110" x2="178" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="345" y1="110" x2="339" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="460" y1="110" x2="460" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="575" y1="110" x2="581" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="730" y1="110" x2="742" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <!-- Caixas de Retorno (Monitores de Palco nas pontas) -->
+                <polygon points="78,117 102,117 106,122 74,122" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <polygon points="818,117 842,117 846,122 814,122" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <!-- Luzes de Ribalta na borda frontal -->
+                <rect x="225" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="385" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="522" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="682" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
             </svg>
 
             <!-- Notas musicais girando em 3D -->
