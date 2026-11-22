@@ -1577,7 +1577,7 @@ if aba == "🏠 Início":
         """,
         unsafe_allow_html=True
     )
-    c_topo_esq, c_topo_clima, c_topo_cal, _ = st.columns([1.05, 1.85, 1.05, 0.45], vertical_alignment="center")
+    c_topo_esq, c_topo_clima, c_topo_cal = st.columns([1.25, 1.65, 1.15], vertical_alignment="center")
 
     with c_topo_esq:
         st.markdown(
@@ -1704,9 +1704,9 @@ if aba == "🏠 Início":
                         <path d="M35 56 L24 44 M39 52 L50 41 M37 46 L37 33" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
                     <div style="padding-top: 10px;">
-                        <div style="display:flex; align-items:flex-end; margin-bottom:2px;">
-                            <span style="font-size:2.45rem; font-weight:800; color:#141A16; letter-spacing:-0.6px; line-height:1.05; white-space:nowrap;">Olá, {primeiro_nome_ini}</span>
-                            <span class="ponto-vivo-grano" style="margin-left: 8px; margin-bottom: 10px;"></span>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px; flex-wrap:nowrap;">
+                            <span style="font-size:clamp(1.65rem, 2.1vw, 2.35rem); font-weight:800; color:#141A16; letter-spacing:-0.5px; line-height:1.08; white-space:nowrap;">Olá, {primeiro_nome_ini}</span>
+                            <span class="ponto-vivo-grano" style="margin:0; flex-shrink:0;"></span>
                         </div>
                         <div style="font-size:0.84rem; color:#5A635C; margin-top:6px;">Torre de Controle Logística • {hoje_str_ini}</div>
                     </div>
@@ -1791,12 +1791,12 @@ if aba == "🏠 Início":
             linhas_cal_html += "</tr>"
 
         st.markdown(
-            f'<div style="background:rgba(255,255,255,0.52); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.8); border-radius:18px; padding:10px 12px; box-shadow:0 6px 18px rgba(20,26,22,0.06);">'
-            f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; padding-bottom:2px; border-bottom:1px solid rgba(27,94,32,0.15);">'
-            f'<span style="font-size:0.72rem; font-weight:700; color:#141A16;">📅 {meses_nomes_i[mes_i]} {ano_i}</span>'
-            f'<span style="font-size:0.58rem; color:#B71C1C; font-weight:600;">● Feriado</span>'
+            f'<div style="background:rgba(255,255,255,0.52); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.8); border-radius:16px; padding:9px 10px; box-shadow:0 6px 18px rgba(20,26,22,0.06); overflow:hidden;">'
+            f'<div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid rgba(27,94,32,0.15);">'
+            f'<span style="font-size:0.70rem; font-weight:700; color:#141A16; white-space:nowrap;">📅 {meses_nomes_i[mes_i][:3]}/{ano_i}</span>'
+            f'<span style="font-size:0.58rem; color:#B71C1C; font-weight:600; white-space:nowrap;">● Feriado</span>'
             f'</div>'
-            f'<table class="mini-cal-grano" style="width:100%; border-collapse:collapse; text-align:center; font-size:0.62rem; line-height:1.22;">'
+            f'<table class="mini-cal-grano" style="width:100%; table-layout:fixed; border-collapse:collapse; text-align:center; font-size:0.62rem; line-height:1.3;">'
             f'<tr style="color:#5A635C; font-weight:700;"><th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th></tr>'
             f'{linhas_cal_html}'
             f'</table></div>',
