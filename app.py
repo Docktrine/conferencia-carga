@@ -4329,8 +4329,8 @@ elif aba == "✅ Auditoria e Ajustes":
         with c3:
             c_lote = st.selectbox("Coluna do LOTE (Cliente):", ["(Não informar lote)"] + cols_cli)
 
-        _, col_btn_gerar_aud = st.columns((3.5, 1.5))
-        if col_btn_gerar_aud.button("🔍 Iniciar Validação", type="primary", use_container_width=True):
+        _, col_btn_gerar_aud = st.columns((4.4, 1.0))
+        if col_btn_gerar_aud.button("🔍 Iniciar Validação", type="primary", use_container_width=True):    
                 
             df_cli_prep = pd.DataFrame({
                 "codigo": df_cli[c_cod].apply(limpar_texto),
@@ -4447,7 +4447,7 @@ elif aba == "✅ Auditoria e Ajustes":
         else:
             if erro_skus > 0:
                 st.error(f"🚫 Validação bloqueada: existem **{erro_skus} produto(s) com divergência** no cruzamento acima. Corrija antes de liberar o pedido.")
-            _, col_btn_val_aud = st.columns((3.2, 1.8))
+            _, col_btn_val_aud = st.columns((3.9, 1.4))
             if col_btn_val_aud.button("✅ Validar Pedido e Liberar para Expedição", type="primary", use_container_width=True):    
                 df_plan_salvar = carregar_dados("planejamento")
                 agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
