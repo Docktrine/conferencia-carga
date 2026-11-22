@@ -766,6 +766,20 @@ if not st.session_state.usuario_autenticado:
                 0%, 84%, 100% { transform: scale(0); opacity: 0; }
                 88%, 94% { transform: scale(1.1); opacity: 1; }
             }
+            @keyframes chuvaCaindo {
+                0% { transform: translate(16px, -25px); opacity: 0; }
+                15% { opacity: 0.45; }
+                85% { opacity: 0.45; }
+                100% { transform: translate(-24px, 118px); opacity: 0; }
+            }
+            @keyframes respingoAsfalto {
+                0%, 70%, 100% { transform: scale(0.2); opacity: 0; }
+                82% { transform: scale(1.1); opacity: 0.45; }
+            }
+            @keyframes limpadorParabrisa {
+                0%, 100% { transform: rotate(0deg); }
+                50% { transform: rotate(-38deg); }
+            }
             .rota-wrap {
                 width: 100%;
                 max-width: 880px;
@@ -780,17 +794,28 @@ if not st.session_state.usuario_autenticado:
             .carreta-carroceria {
                 animation: suspensaoCarreta 0.45s ease-in-out infinite;
             }
+            .limpador-anim {
+                transform-box: fill-box;
+                transform-origin: bottom right;
+                animation: limpadorParabrisa 0.7s ease-in-out infinite;
+            }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
             .doca-cd-luz { animation: brilhoDocaCD 11.5s ease-in-out infinite; }
             .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 11.5s ease-out infinite; }
+            .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
+            .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
+            .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
+            .gota-chuva-4 { animation: chuvaCaindo 0.90s linear 0.70s infinite; }
+            .respingo-1 { transform-box: fill-box; transform-origin: center; animation: respingoAsfalto 0.85s ease-out infinite; }
+            .respingo-2 { transform-box: fill-box; transform-origin: center; animation: respingoAsfalto 0.95s ease-out 0.35s infinite; }
             </style>
 
             <div class="rota-wrap">
                 <svg width="100%" height="132" viewBox="0 0 880 132" fill="none" xmlns="http://w3.org">
                     <defs>
                         <linearGradient id="feixeFarol" x1="0%" y1="50%" x2="100%" y2="50%">
-                            <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.72"/>
+                            <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.82"/>
                             <stop offset="100%" stop-color="#C8E6C9" stop-opacity="0"/>
                         </linearGradient>
                     </defs>
@@ -803,70 +828,63 @@ if not st.session_state.usuario_autenticado:
                     <g>
                         <ellipse cx="440" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
 
-                        <!-- Bloco Administrativo Lateral (Esquerda do CD) -->
+                        <!-- Bloco Administrativo Lateral -->
                         <rect x="364" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
                         <rect x="369" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
                         <rect x="380" y="74" width="8" height="7" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
                         <rect x="373" y="90" width="10" height="20" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Galpão Principal com Cobertura Trapezoidal -->
+                        <!-- Galpão Principal -->
                         <path d="M392 110 V54 L446 32 L500 54 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <polygon points="393,56 446,35 499,56 499,61 446,40 393,61" fill="#D5D0C5"/>
                         <path d="M386 57 L446 30 L506 57" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Claraboia de ventilação no topo -->
                         <rect x="433" y="26" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Letreiro Institucional CD GRANO -->
+                        <!-- Letreiro CD GRANO -->
                         <rect x="420" y="45" width="52" height="11" rx="2" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
                         <text x="446" y="52.6" text-anchor="middle" font-family="sans-serif" font-size="6.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD GRANO</text>
 
-                        <!-- Plataforma Elevada de Carga -->
+                        <!-- Plataforma e 3 Docas -->
                         <rect x="396" y="102" width="100" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <!-- Doca 01 (Ativa com luz verde no carregamento) -->
                         <rect class="doca-cd-luz" x="402" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="402" y1="71" x2="428" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="402" y1="78" x2="428" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="400" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="427" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 02 -->
                         <rect x="434" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="434" y1="71" x2="460" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="434" y1="78" x2="460" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="432" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="459" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 03 -->
                         <rect x="466" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="466" y1="71" x2="492" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="466" y1="78" x2="492" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="464" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="491" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Paletes + Árvore no Pátio -->
+                        <!-- Paletes + Árvore -->
                         <rect x="504" y="96" width="10" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.2"/>
                         <line x1="503" y1="103" x2="515" y2="103" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="521" y1="110" x2="521" y2="92" stroke="#141A16" stroke-width="1.6"/>
                         <circle cx="521" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
-                    <!-- 2. SUPERMERCADO / CLIENTE (Fachada Moderna Completa) -->
+                    <!-- 2. SUPERMERCADO / CLIENTE -->
                     <g>
                         <ellipse cx="782" cy="110" rx="60" ry="3.2" fill="#141A16" opacity="0.16"/>
 
-                        <!-- Torre Arquitetônica de Entrada (Esquerda da Loja) -->
+                        <!-- Torre de Entrada -->
                         <rect x="738" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <rect x="741" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
-                        <!-- Portas automáticas de vidro -->
                         <rect x="743" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="752" y1="80" x2="752" y2="110" stroke="#141A16" stroke-width="1.4"/>
-                        <!-- Vidro superior da torre -->
                         <rect x="744" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Ala Principal da Loja -->
+                        <!-- Ala Principal -->
                         <rect x="766" y="58" width="62" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Letreiro MERCADO -->
                         <rect x="772" y="49" width="50" height="10" rx="2" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5"/>
                         <text x="797" y="56.2" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#1B5E20" letter-spacing="0.4">MERCADO</text>
 
@@ -876,13 +894,13 @@ if not st.session_state.usuario_autenticado:
                         <line x1="794" y1="59" x2="794" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
                         <line x1="809" y1="59" x2="809" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
 
-                        <!-- Vitrine com Gôndolas Internas -->
+                        <!-- Vitrine -->
                         <rect x="774" y="76" width="46" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="778" y1="84" x2="816" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
                         <line x1="778" y1="91" x2="816" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
                         <line x1="779" y1="79" x2="786" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
 
-                        <!-- Vaso com Arbusto na Calçada -->
+                        <!-- Vaso com Arbusto -->
                         <rect x="832" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
                         <circle cx="835.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
 
@@ -893,58 +911,52 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Com Monograma "G" Verde no Baú) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Com Monograma "G" + Limpador de Para-brisa) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
-                        <!-- Fumaça saindo do escapamento vertical -->
                         <circle class="fumo-1" cx="144" cy="63" r="2.6" fill="#8A928C"/>
                         <circle class="fumo-2" cx="141" cy="60" r="2.1" fill="#8A928C"/>
 
-                        <!-- Carroceria + Cavalo Mecânico -->
                         <g class="carreta-carroceria">
-                            <!-- Feixe de luz do farol -->
-                            <polygon points="178,94 210,87 210,102" fill="url(#feixeFarol)"/>
+                            <!-- Feixe de luz do farol mais forte na chuva -->
+                            <polygon points="178,94 216,86 216,103" fill="url(#feixeFarol)"/>
 
                             <!-- SEMIRREBOQUE BAÚ LONGO -->
                             <rect x="50" y="59" width="92" height="39" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
-                            <!-- Sombra inferior do baú -->
                             <rect x="51" y="93" width="90" height="4" fill="#D5D0C5"/>
-                            <!-- Aparelho de Refrigeração Frontal (Thermo King) -->
                             <rect x="136" y="61" width="6" height="13" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                            <!-- Faixas laterais verdes decorativas -->
+                            <!-- Faixas laterais verdes -->
                             <line x1="56" y1="75" x2="80" y2="75" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round"/>
                             <line x1="112" y1="75" x2="132" y2="75" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round"/>
                             <line x1="56" y1="80" x2="77" y2="80" stroke="#4CAF50" stroke-width="1.3" stroke-linecap="round"/>
                             <line x1="115" y1="80" x2="132" y2="80" stroke="#4CAF50" stroke-width="1.3" stroke-linecap="round"/>
 
-                            <!-- Monograma "G" Verde Grano limpo no Baú -->
+                            <!-- Monograma "G" Verde Grano limpo -->
                             <circle cx="96" cy="76" r="11.5" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.5"/>
                             <path d="M101.5 72.5 C100.2 70.6 98.2 69.8 95.8 69.8 C91.8 69.8 89 72.6 89 76.2 C89 79.8 91.8 82.5 96 82.5 C99.6 82.5 102 80.3 102 77.2 H96.5" stroke="#1B5E20" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 
-                            <!-- Engate / Quinta-Roda -->
+                            <!-- Engate e Chassi -->
                             <rect x="134" y="98" width="16" height="4" rx="1" fill="#141A16"/>
-
-                            <!-- Chassi do Cavalo Mecânico -->
                             <rect x="122" y="99" width="53" height="4" rx="1" fill="#141A16"/>
 
-                            <!-- Escapamento Vertical -->
+                            <!-- Escapamento e Defletor -->
                             <path d="M147 99 V65 L144 63" stroke="#141A16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-
-                            <!-- Defletor Aerodinâmico no Teto -->
                             <path d="M150 72 L161 66 V72 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
 
-                            <!-- Cabine do Cavalo Mecânico -->
+                            <!-- Cabine -->
                             <path d="M150 72 H165 L177 85 V99 H150 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                             <path d="M161 74.5 H164.5 L173.5 84.5 H161 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                            <!-- Limpador de para-brisa ativo -->
+                            <line class="limpador-anim" x1="173" y1="84" x2="167" y2="77" stroke="#141A16" stroke-width="1.2" stroke-linecap="round"/>
                             <rect x="153" y="75" width="5.5" height="9" rx="0.8" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
                             <line x1="160" y1="76" x2="158" y2="82" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
                             <line x1="177" y1="89" x2="177" y2="96" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
                             <circle cx="177" cy="94" r="1.9" fill="#1B5E20"/>
                         </g>
 
-                        <!-- 5 EIXOS DE RODAS COM CALOTAS -->
+                        <!-- 5 EIXOS DE RODAS -->
                         <g>
                             <circle cx="66" cy="104.5" r="5.2" fill="#141A16"/>
                             <circle cx="66" cy="104.5" r="2.1" fill="#EAE7E0"/>
@@ -959,6 +971,42 @@ if not st.session_state.usuario_autenticado:
                             <circle cx="166" cy="104.5" r="5.2" fill="#141A16"/>
                             <circle cx="166" cy="104.5" r="2.1" fill="#EAE7E0"/>
                         </g>
+                    </g>
+
+                    <!-- 4. CAMADA DE CHUVA SUAVE E RESPINGOS NO ASFALTO -->
+                    <g stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
+                        <g class="gota-chuva-1">
+                            <line x1="45" y1="0" x2="41" y2="11"/><line x1="155" y1="8" x2="151" y2="19"/>
+                            <line x1="275" y1="2" x2="271" y2="13"/><line x1="395" y1="10" x2="391" y2="21"/>
+                            <line x1="515" y1="4" x2="511" y2="15"/><line x1="635" y1="12" x2="631" y2="23"/>
+                            <line x1="755" y1="3" x2="751" y2="14"/><line x1="860" y1="9" x2="856" y2="20"/>
+                        </g>
+                        <g class="gota-chuva-2">
+                            <line x1="85" y1="5" x2="81" y2="16"/><line x1="195" y1="0" x2="191" y2="11"/>
+                            <line x1="315" y1="9" x2="311" y2="20"/><line x1="435" y1="3" x2="431" y2="14"/>
+                            <line x1="555" y1="11" x2="551" y2="22"/><line x1="675" y1="4" x2="671" y2="15"/>
+                            <line x1="795" y1="8" x2="791" y2="19"/>
+                        </g>
+                        <g class="gota-chuva-3">
+                            <line x1="120" y1="10" x2="116" y2="21"/><line x1="235" y1="4" x2="231" y2="15"/>
+                            <line x1="355" y1="12" x2="351" y2="23"/><line x1="475" y1="2" x2="471" y2="13"/>
+                            <line x1="595" y1="8" x2="591" y2="19"/><line x1="715" y1="5" x2="711" y2="16"/>
+                            <line x1="830" y1="11" x2="826" y2="22"/>
+                        </g>
+                        <g class="gota-chuva-4">
+                            <line x1="25" y1="6" x2="21" y2="17"/><line x1="140" y1="12" x2="136" y2="23"/>
+                            <line x1="255" y1="3" x2="251" y2="14"/><line x1="375" y1="9" x2="371" y2="20"/>
+                            <line x1="495" y1="5" x2="491" y2="16"/><line x1="615" y1="11" x2="611" y2="22"/>
+                            <line x1="735" y1="2" x2="731" y2="13"/><line x1="845" y1="7" x2="841" y2="18"/>
+                        </g>
+                    </g>
+
+                    <!-- Pequenos respingos no asfalto -->
+                    <g stroke="#1B5E20" stroke-width="1" stroke-linecap="round" fill="none">
+                        <path class="respingo-1" d="M110 110 Q113 106 116 110"/>
+                        <path class="respingo-2" d="M290 110 Q293 106 296 110"/>
+                        <path class="respingo-1" d="M560 110 Q563 106 566 110"/>
+                        <path class="respingo-2" d="M690 110 Q693 106 696 110"/>
                     </g>
                 </svg>
             </div>
