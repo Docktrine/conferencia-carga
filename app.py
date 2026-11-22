@@ -1479,11 +1479,32 @@ if len(abas_nav) > 1:
             min-height: 29px !important;
             height: 29px !important;
             white-space: nowrap !important;
+            position: relative !important;
+            transition: all 0.18s ease !important;
         }
         [data-testid="stButtonGroup"] button p,
         [data-testid="stPills"] button p {
             font-size: 0.75rem !important;
             white-space: nowrap !important;
+        }
+        /* Bolinha estilo Chrome no canto do ✕ ao passar o mouse (exceto na 1ª guia Início) */
+        [data-testid="stButtonGroup"] button:not(:first-child)::after,
+        [data-testid="stPills"] button:not(:first-child)::after {
+            content: "" !important;
+            position: absolute !important;
+            right: 6px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 18px !important;
+            height: 18px !important;
+            border-radius: 50% !important;
+            background-color: transparent !important;
+            transition: background-color 0.18s ease !important;
+            pointer-events: none !important;
+        }
+        [data-testid="stButtonGroup"] button:not(:first-child):hover::after,
+        [data-testid="stPills"] button:not(:first-child):hover::after {
+            background-color: rgba(183, 28, 28, 0.16) !important;
         }
         </style>
         """,
