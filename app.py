@@ -4448,7 +4448,87 @@ elif aba == "✅ Auditoria e Ajustes":
                 st.cache_data.clear()
                 st.success(f"🎉 Pedido **{carga_selecionada}** validado com sucesso e liberado para expedição!")
                 st.rerun()
-        
+                
+    st.divider()
+    if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
+        with st.expander("🗄️ Arquivar Cargas Já Auditadas (Por Período)"):
+            st.caption("Filtra cargas já auditadas por período e move das abas ativas ('cargas' e 'bipes') para 'cargas_historico' e 'bipes_historico', mantendo 'planejamento' intacta.")
+
+            c_arq_dt1, c_arq_dt2 = st.columns(2)
+            hoje_arq = datetime.now(FUSO_BR).date()
+            dt_ini_arq = c_arq_dt1.date_input("📅 Data Inicial:", value=hoje_arq.replace(day=1), format="DD/MM/YYYY", key="dt_ini_arq")
+            dt_fim_arq = c_arq_dt2.date_input("📅 Data Final:", value=hoje_arq, format="DD/MM/YYYY", key="dt_fim_arq")
+
+            if dt_ini_arq > dt_fim_arq:
+                st.warning("⚠️ A Data Inicial não pode ser maior que a Data Final.")
+            else:
+                df_cargas_aud_only = df_cargas[df_cargas["id_carga"].apply(limpar_texto).isin(cargas_ja_validadas)].copy()
+                col_data_arq = next((c for c in ["data_carregamento", "data_criacao", "data", "data_entrega"] if c in df_cargas_aud_only.columns), None)
+
+                if col_data_arq:
+                    datas_parsed_arq = pd.to_datetime(df_cargas_aud_only[col_data_arq].astype(str).str.strip(), dayfirst=True, errors="coerce").dt.date
+                    mask_periodo_arq = (datas_parsed_arq >= dt_ini_arq) & (datas_parsed_arq <= dt_fim_arq)
+                    cargas_no_periodo = sorted(df_cargas_aud_only.loc[mask_periodo_arq, "id_carga"].apply(limpar_texto).unique().tolist())
+                else:
+                    cargas_no_periodo = sorted(list(cargas_ja_validadas))
+
+                if cargas_no_periodo:
+                    st.info(f"📋 **{len(cargas_no_periodo)} carga(s) auditada(s)** encontrada(s) entre **{dt_ini_arq.strftime('%d/%m/%Y')}** e **{dt_fim_arq.strftime('%d/%m/%Y')}**.")
+                    sel_arq_todas = st.checkbox("Selecionar todas as cargas deste período", value=True, key="chk_arq_todas")
+                    escolhidas_arq = st.multiselect(
+                        "Confirme ou ajuste as cargas que serão arquivadas:",
+                        options=cargas_no_periodo,
+                        default=cargas_no_periodo if sel_arq_todas else list(),
+                        key="ms_cargas_arquivar"
+                    )
+                    if st.button("🗄️ Mover Selecionadas para o Histórico", type="primary", disabled=len(escolhidas_arq) == 0, key="btn_exec_arquivar"):
+                        with st.spinner("Arquivando cargas e etiquetas com segurança..."):
+                            st.cache_data.clear()
+                            df_c_at = carregar_dados("cargas")
+                            df_b_at = carregar_dados("bipes")
+
+                            if df_c_at is None or df_c_at.empty:
+                                st.error("⚠️ Falha ao ler a aba 'cargas'. Operação cancelada por segurança.")
+                                st.stop()
+
+                            ids_arq_set = {limpar_texto(x) for x in escolhidas_arq}
+                            mask_c_arq = df_c_at["id_carga"].apply(limpar_texto).isin(ids_arq_set)
+                            df_c_mover = df_c_at[mask_c_arq].copy()
+                            df_c_ficar = df_c_at[~mask_c_arq].copy()
+
+                            if not df_c_mover.empty:
+                                df_c_hist = carregar_dados("cargas_historico")
+                                df_c_hist_final = pd.concat([df_c_hist, df_c_mover], ignore_index=True) if not df_c_hist.empty else df_c_mover
+                                salvar_dados(df_c_hist_final, "cargas_historico")
+
+                                if df_c_ficar.empty:
+                                    linha_vazia_c = pd.DataFrame([{col: "" for col in df_c_at.columns}])
+                                    conn.update(worksheet="cargas", data=linha_vazia_c)
+                                else:
+                                    salvar_dados(df_c_ficar, "cargas")
+
+                            if df_b_at is not None and not df_b_at.empty and "id_carga" in df_b_at.columns:
+                                mask_b_arq = df_b_at["id_carga"].apply(limpar_texto).isin(ids_arq_set)
+                                df_b_mover = df_b_at[mask_b_arq].copy()
+                                df_b_ficar = df_b_at[~mask_b_arq].copy()
+
+                                if not df_b_mover.empty:
+                                    df_b_hist = carregar_dados("bipes_historico")
+                                    df_b_hist_final = pd.concat([df_b_hist, df_b_mover], ignore_index=True) if not df_b_hist.empty else df_b_mover
+                                    salvar_dados(df_b_hist_final, "bipes_historico")
+
+                                    if df_b_ficar.empty:
+                                        linha_vazia_b = pd.DataFrame([{col: "" for col in df_b_at.columns}])
+                                        conn.update(worksheet="bipes", data=linha_vazia_b)
+                                    else:
+                                        salvar_dados(df_b_ficar, "bipes")
+
+                            st.cache_data.clear()
+                            st.success(f"🗄️ {len(escolhidas_arq)} carga(s) arquivada(s) com segurança! A aba 'planejamento' não foi alterada.")
+                            st.rerun()
+                else:
+                    st.caption("Nenhuma carga auditada encontrada neste intervalo de datas.")
+
 elif aba == "👥 Central de Usuários":
     st.title("👥 Central de Usuários e Permissões")
     st.caption("Administração de acessos, perfis operacionais, módulos liberados e travas de segurança da equipe.")
