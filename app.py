@@ -4074,6 +4074,31 @@ elif aba == "📈 Painel de Acompanhamento":
 
 elif aba == "✅ Auditoria e Ajustes":
     st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
+        st.caption("Conferência cruzada entre pedido planejado, etiquetas bipadas, lotes e retorno do cliente.")
+    st.markdown(
+        """
+        <style>
+        /* Cards modernos para Expanders e Uploader na Auditoria */
+        div[data-testid="stExpander"] {
+            background-color: rgba(255, 255, 255, 0.45) !important;
+            border: 1px solid rgba(20, 26, 22, 0.14) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 14px rgba(20, 26, 22, 0.04) !important;
+            margin-bottom: 8px !important;
+        }
+        div[data-testid="stExpander"]:hover {
+            border-color: rgba(27, 94, 32, 0.45) !important;
+        }
+        section[data-testid="stFileUploaderDropzone"] {
+            background-color: rgba(255, 255, 255, 0.45) !important;
+            border: 1.5px dashed rgba(27, 94, 32, 0.45) !important;
+            border-radius: 14px !important;
+            padding: 14px !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.markdown(
         """
         <style>
