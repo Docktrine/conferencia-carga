@@ -1500,7 +1500,6 @@ if len(abas_nav) > 1:
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
     )
-    import streamlit.components.v1 as components
     components.html(
         """
         <script>
