@@ -1752,66 +1752,66 @@ if aba == "🏠 Início":
                     st.session_state.aba_ativa = mod_at
                     st.rerun()
 
-    # 4. Banda de Vegetais Animada 3D Real (Black Line + Verde Grano)
+    # 4. Banda de Vegetais Ilustrada 3D (Black Line + Verde Grano)
     components.html(
         """
         <style>
         body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
         @keyframes soloGuitarra3D {
-            0%, 100% { transform: perspective(360px) rotateY(-22deg) rotateX(8deg) rotateZ(-4deg) translateY(0px); }
-            25% { transform: perspective(360px) rotateY(12deg) rotateX(-6deg) rotateZ(2deg) translateY(-6px); }
-            50% { transform: perspective(360px) rotateY(24deg) rotateX(6deg) rotateZ(5deg) translateY(0px); }
-            75% { transform: perspective(360px) rotateY(-10deg) rotateX(-8deg) rotateZ(-2deg) translateY(-5px); }
+            0%, 100% { transform: perspective(360px) rotateY(-20deg) rotateX(6deg) rotateZ(-4deg) translateY(0px); }
+            25% { transform: perspective(360px) rotateY(10deg) rotateX(-5deg) rotateZ(2deg) translateY(-6px); }
+            50% { transform: perspective(360px) rotateY(22deg) rotateX(6deg) rotateZ(4deg) translateY(0px); }
+            75% { transform: perspective(360px) rotateY(-10deg) rotateX(-6deg) rotateZ(-2deg) translateY(-5px); }
         }
         @keyframes vocalistaShow3D {
-            0%, 100% { transform: perspective(360px) rotateY(18deg) rotateX(10deg) rotateZ(-3deg) translateY(0px); }
-            50% { transform: perspective(360px) rotateY(-20deg) rotateX(-8deg) rotateZ(5deg) translateY(-5px); }
+            0%, 100% { transform: perspective(360px) rotateY(16deg) rotateX(8deg) rotateZ(-3deg) translateY(0px); }
+            50% { transform: perspective(360px) rotateY(-18deg) rotateX(-6deg) rotateZ(4deg) translateY(-5px); }
         }
         @keyframes bateristaShow3D {
             0%, 100% { transform: perspective(360px) rotateX(0deg) scale(1); }
-            50% { transform: perspective(360px) rotateX(18deg) translateY(-4px) scale(1.05); }
+            50% { transform: perspective(360px) rotateX(15deg) translateY(-4px) scale(1.04); }
         }
         @keyframes pratoVibra {
             0%, 100% { transform: rotateZ(0deg); }
-            25% { transform: rotateZ(-8deg); }
-            75% { transform: rotateZ(8deg); }
+            25% { transform: rotateZ(-9deg); }
+            75% { transform: rotateZ(9deg); }
         }
         @keyframes baqE {
-            0%, 100% { transform: rotateZ(-24deg); }
+            0%, 100% { transform: rotateZ(-22deg); }
             50% { transform: rotateZ(18deg); }
         }
         @keyframes baqD {
             0%, 100% { transform: rotateZ(18deg); }
-            50% { transform: rotateZ(-24deg); }
+            50% { transform: rotateZ(-22deg); }
         }
         @keyframes baixistaGroove3D {
-            0%, 100% { transform: perspective(360px) rotateY(-24deg) rotateX(-6deg) rotateZ(3deg) translateY(0px); }
-            50% { transform: perspective(360px) rotateY(24deg) rotateX(8deg) rotateZ(-3deg) translateY(-5px); }
+            0%, 100% { transform: perspective(360px) rotateY(-22deg) rotateX(-5deg) rotateZ(3deg) translateY(0px); }
+            50% { transform: perspective(360px) rotateY(22deg) rotateX(7deg) rotateZ(-3deg) translateY(-5px); }
         }
         @keyframes ondaSom {
             0% { transform: scale(0.6); opacity: 0; }
-            40% { opacity: 0.85; }
+            40% { opacity: 0.9; }
             100% { transform: scale(1.45); opacity: 0; }
         }
         @keyframes notaSobe3D {
-            0% { transform: perspective(260px) translateY(6px) rotateY(0deg) scale(0.7); opacity: 0; }
+            0% { transform: perspective(260px) translateY(6px) rotateY(0deg) scale(0.75); opacity: 0; }
             25% { opacity: 1; }
-            100% { transform: perspective(260px) translateY(-28px) rotateY(360deg) scale(1.15); opacity: 0; }
+            100% { transform: perspective(260px) translateY(-30px) rotateY(360deg) scale(1.15); opacity: 0; }
         }
         .palco-3d-container {
             width: 100%;
             max-width: 920px;
-            margin: 8px auto 0 auto;
-            height: 124px;
+            margin: 6px auto 0 auto;
+            height: 134px;
             position: relative;
         }
         .musico-box {
             position: absolute;
             bottom: 14px;
             transform-origin: bottom center;
-            filter: drop-shadow(0 4px 4px rgba(20, 26, 22, 0.16));
+            filter: drop-shadow(0 4px 5px rgba(20, 26, 22, 0.18));
         }
-        .m-brocolis { left: 17%; animation: soloGuitarra3D 1.6s ease-in-out infinite; }
+        .m-brocolis { left: 16%; animation: soloGuitarra3D 1.6s ease-in-out infinite; }
         .m-cenoura  { left: 36%; animation: vocalistaShow3D 1.35s ease-in-out infinite; }
         .m-tomate   { left: 55%; animation: bateristaShow3D 0.55s ease-in-out infinite; }
         .m-vagem    { left: 74%; animation: baixistaGroove3D 1.5s ease-in-out infinite; }
@@ -1823,24 +1823,24 @@ if aba == "🏠 Início":
         .onda-2 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.4s ease-out 0.7s infinite; }
 
         .nota-flut { position: absolute; pointer-events: none; }
-        .nf-1 { left: 22%; top: 18px; animation: notaSobe3D 2.3s ease-out infinite; }
-        .nf-2 { left: 41%; top: 12px; animation: notaSobe3D 2.6s ease-out 0.6s infinite; }
-        .nf-3 { left: 59%; top: 16px; animation: notaSobe3D 2.1s ease-out 1.1s infinite; }
-        .nf-4 { left: 78%; top: 14px; animation: notaSobe3D 2.5s ease-out 1.6s infinite; }
+        .nf-1 { left: 22%; top: 14px; animation: notaSobe3D 2.3s ease-out infinite; }
+        .nf-2 { left: 41%; top: 10px; animation: notaSobe3D 2.6s ease-out 0.6s infinite; }
+        .nf-3 { left: 59%; top: 14px; animation: notaSobe3D 2.1s ease-out 1.1s infinite; }
+        .nf-4 { left: 78%; top: 12px; animation: notaSobe3D 2.5s ease-out 1.6s infinite; }
         </style>
 
         <div class="palco-3d-container">
             <!-- Chão do palco + Luz verde suave -->
-            <svg width="100%" height="124" viewBox="0 0 920 124" fill="none" style="position:absolute; left:0; top:0;">
+            <svg width="100%" height="134" viewBox="0 0 920 134" fill="none" style="position:absolute; left:0; top:0;">
                 <defs>
                     <radialGradient id="holofoteGrano" cx="50%" cy="88%" r="52%">
                         <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.18"/>
                         <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
                     </radialGradient>
                 </defs>
-                <ellipse cx="460" cy="106" rx="360" ry="22" fill="url(#holofoteGrano)"/>
-                <line x1="30" y1="108" x2="890" y2="108" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                <line x1="80" y1="114" x2="840" y2="114" stroke="#141A16" stroke-width="1.1" stroke-dasharray="6 8" opacity="0.42"/>
+                <ellipse cx="460" cy="116" rx="370" ry="22" fill="url(#holofoteGrano)"/>
+                <line x1="30" y1="118" x2="890" y2="118" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                <line x1="80" y1="124" x2="840" y2="124" stroke="#141A16" stroke-width="1.1" stroke-dasharray="6 8" opacity="0.42"/>
             </svg>
 
             <!-- Notas musicais girando em 3D -->
@@ -1857,85 +1857,150 @@ if aba == "🏠 Início":
                 <circle cx="5" cy="15" r="3.2" fill="#1B5E20"/><path d="M8.2 15 V3 L14 5" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
             </svg>
 
-            <!-- 1. BRÓCOLIS GUITARRISTA -->
+            <!-- 1. BRÓCOLIS GUITARRISTA (Óculos de Rockstar + Guitarra Elétrica) -->
             <div class="musico-box m-brocolis">
-                <svg width="68" height="72" viewBox="0 0 68 72" fill="none">
-                    <ellipse cx="26" cy="70" rx="16" ry="2.5" fill="#141A16" opacity="0.18"/>
-                    <path d="M20 54 V70 M32 54 V70" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M18 34 L20 54 H32 L34 34" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                    <path d="M9 34 C3 28 8 17 16 18 C19 11 33 11 36 18 C44 17 49 28 43 34 Z" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
-                    <circle cx="23" cy="40" r="1.5" fill="#141A16"/>
-                    <circle cx="29" cy="40" r="1.5" fill="#141A16"/>
-                    <path d="M24 44 Q26 47 28 44" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
-                    <ellipse cx="22" cy="48" rx="8.5" ry="5.5" transform="rotate(-18 22 48)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
-                    <line x1="29" y1="45" x2="50" y2="37" stroke="#141A16" stroke-width="2.1" stroke-linecap="round"/>
-                    <line x1="49" y1="35" x2="52" y2="39" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round"/>
-                    <path class="onda-1" d="M54 31 C58 34 58 40 54 43" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
-                    <path class="onda-2" d="M58 28 C63 33 63 41 58 46" stroke="#4CAF50" stroke-width="1.4" stroke-linecap="round"/>
+                <svg width="82" height="84" viewBox="0 0 82 84" fill="none">
+                    <ellipse cx="32" cy="81" rx="18" ry="2.8" fill="#141A16" opacity="0.18"/>
+                    <!-- Pernas e Sapatinhos -->
+                    <path d="M25 65 V79 M38 65 V79" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <path d="M20 80 H27 C27 77.5 22 77.5 20 80 Z M36 80 H43 C43 77.5 38 77.5 36 80 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Caule/Tronco com sombra -->
+                    <path d="M22 41 L24 65 H39 L41 41 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M35 41 L34 65 H39 L41 41 Z" fill="#D5D0C5"/>
+                    <!-- Copa do Brócolis em 2 camadas (volume) -->
+                    <circle cx="16" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                    <circle cx="47" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                    <circle cx="31.5" cy="21" r="12" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.7"/>
+                    <path d="M12 40 C6 36 8 25 16 25 C18 16 28 13 33 18 C39 13 49 17 49 26 C56 28 56 38 49 41 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
+                    <path d="M20 27 C23 23 28 23 30 26 M36 28 C39 25 43 26 44 29" stroke="#2E7D32" stroke-width="1.3" stroke-linecap="round"/>
+                    <!-- Óculos Escuros Rockstar + Sorriso -->
+                    <path d="M22 46 H41" stroke="#141A16" stroke-width="1.5"/>
+                    <rect x="23" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/>
+                    <rect x="32.5" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/>
+                    <line x1="25" y1="46.5" x2="27" y2="48.5" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round"/>
+                    <line x1="34.5" y1="46.5" x2="36.5" y2="48.5" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round"/>
+                    <path d="M29 53 Q32 56 35 53" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+                    <!-- Guitarra Elétrica + Bracinhos -->
+                    <path d="M18 59 C14 55 17 49 23 51 L33 54 C36 55 36 61 31 62 L22 62 C19 62 18 60 18 59 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.7"/>
+                    <circle cx="25" cy="56.5" r="2.2" fill="#1B5E20"/>
+                    <line x1="34" y1="54" x2="60" y2="43" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
+                    <path d="M59 41 L64 39 L65 43 L60 45 Z" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                    <!-- Bracinho direito palhetando e esquerdo no braço -->
+                    <path d="M23 48 Q20 53 24 56" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M40 48 Q45 50 48 48" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <!-- Ondas sonoras -->
+                    <path class="onda-1" d="M67 35 C71 39 71 45 67 49" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+                    <path class="onda-2" d="M72 31 C77 37 77 47 72 53" stroke="#4CAF50" stroke-width="1.4" stroke-linecap="round"/>
                 </svg>
             </div>
 
-            <!-- 2. CENOURA VOCALISTA -->
+            <!-- 2. CENOURA VOCALISTA (Topete Folhudo + Olhos Expressivos + Pedestal) -->
             <div class="musico-box m-cenoura">
-                <svg width="64" height="76" viewBox="0 0 64 76" fill="none">
-                    <ellipse cx="26" cy="74" rx="15" ry="2.5" fill="#141A16" opacity="0.18"/>
-                    <path d="M20 58 V74 M30 58 V74" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M13 20 C13 14 37 14 37 20 L28 58 C27 61 23 61 22 58 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                    <path d="M25 15 C20 6 15 7 18 15 M25 15 C25 4 29 4 27 15 M26 15 C31 6 36 8 31 15" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
-                    <circle cx="21" cy="28" r="1.5" fill="#141A16"/>
-                    <circle cx="29" cy="28" r="1.5" fill="#141A16"/>
-                    <circle cx="25" cy="34" r="2.5" stroke="#141A16" stroke-width="1.5"/>
-                    <line x1="46" y1="32" x2="46" y2="74" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <line x1="40" y1="74" x2="52" y2="74" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <circle cx="43" cy="30" r="3.8" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
-                    <path d="M35 38 L42 32" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                    <path class="onda-1" d="M49 25 C53 28 53 33 49 36" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
+                <svg width="74" height="88" viewBox="0 0 74 88" fill="none">
+                    <ellipse cx="30" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
+                    <!-- Pernas e Sapatinhos -->
+                    <path d="M24 68 V83 M35 68 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <path d="M19 84 H26 C26 81.5 21 81.5 19 84 Z M34 84 H41 C41 81.5 36 81.5 34 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Topete de Folhas Verdes em Camadas -->
+                    <path d="M29 22 C22 10 14 12 19 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M30 22 C28 8 34 8 32 22 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M31 22 C38 10 45 13 39 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    <!-- Corpo da Cenoura com Sombra Lateral e Ranhuras -->
+                    <path d="M16 26 C16 19 43 19 43 26 L33 68 C32 71 27 71 26 68 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M37 22 C41 22 43 24 43 26 L33 68 C32 70 31 70 30 70 L37 22 Z" fill="#D5D0C5"/>
+                    <path d="M19 34 H24 M35 44 H40 M21 53 H25" stroke="#141A16" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+                    <!-- Olhos com Brilho e Boca Cantando -->
+                    <circle cx="25" cy="34" r="2.2" fill="#141A16"/>
+                    <circle cx="24.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
+                    <circle cx="34" cy="34" r="2.2" fill="#141A16"/>
+                    <circle cx="33.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
+                    <ellipse cx="29.5" cy="41.5" rx="2.6" ry="3.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Bracinho esquerdo na cintura e direito no microfone -->
+                    <path d="M17 42 Q11 46 18 50" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <path d="M40 43 L49 38" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <!-- Pedestal e Microfone Profissional -->
+                    <line x1="54" y1="38" x2="54" y2="84" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M47 84 H61" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="51" cy="36" r="4.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                    <line x1="48" y1="35" x2="54" y2="37" stroke="#E8F5E9" stroke-width="1"/>
+                    <path class="onda-1" d="M58 29 C62 33 62 39 58 43" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </div>
 
-            <!-- 3. TOMATE BATERISTA -->
+            <!-- 3. TOMATE BATERISTA (Fone de Retorno + Bateria Completa) -->
             <div class="musico-box m-tomate">
-                <svg width="82" height="66" viewBox="0 0 82 66" fill="none">
-                    <ellipse cx="41" cy="64" rx="26" ry="3" fill="#141A16" opacity="0.20"/>
-                    <ellipse cx="41" cy="32" rx="17" ry="13.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
-                    <path d="M41 18.5 L35 14.5 M41 18.5 L41 12.5 M41 18.5 L47 14.5" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
-                    <circle cx="36" cy="30" r="1.5" fill="#141A16"/>
-                    <circle cx="46" cy="30" r="1.5" fill="#141A16"/>
-                    <path d="M38 35 Q41 38 44 35" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
-                    <line class="be-anim" x1="27" y1="34" x2="17" y2="23" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <line class="bd-anim" x1="55" y1="34" x2="65" y2="23" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <circle cx="41" cy="51" r="13.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.9"/>
-                    <circle cx="41" cy="51" r="6" stroke="#1B5E20" stroke-width="1.5"/>
-                    <rect x="15" y="41" width="13" height="8" rx="1" fill="#EAE7E0" stroke="#141A16" stroke-width="1.5"/>
-                    <line x1="21.5" y1="49" x2="21.5" y2="64" stroke="#141A16" stroke-width="1.6"/>
-                    <line x1="65" y1="29" x2="65" y2="64" stroke="#141A16" stroke-width="1.6"/>
-                    <ellipse class="prato-anim" cx="65" cy="29" rx="11" ry="2.4" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.7"/>
+                <svg width="94" height="76" viewBox="0 0 94 76" fill="none">
+                    <ellipse cx="47" cy="73" rx="30" ry="3.2" fill="#141A16" opacity="0.20"/>
+                    <!-- Corpo do Tomate com Brilho -->
+                    <ellipse cx="47" cy="36" rx="19" ry="15" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
+                    <path d="M35 28 C37 25 41 24 44 25" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- Coroa de Sépalas Verdes -->
+                    <path d="M47 21 L39 16 L44 21 L47 13 L50 21 L55 16 L47 21 Z" fill="#81C784" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
+                    <!-- Fone de Retorno -->
+                    <path d="M28 35 C28 22 66 22 66 35" stroke="#141A16" stroke-width="1.6"/>
+                    <rect x="25.5" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                    <rect x="65" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                    <!-- Olhos com Brilho e Sorriso -->
+                    <circle cx="41.5" cy="35" r="2" fill="#141A16"/>
+                    <circle cx="40.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
+                    <circle cx="52.5" cy="35" r="2" fill="#141A16"/>
+                    <circle cx="51.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
+                    <path d="M43.5 40.5 Q47 44 50.5 40.5" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Baquetas Animadas -->
+                    <line class="be-anim" x1="31" y1="39" x2="20" y2="26" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                    <line class="bd-anim" x1="63" y1="39" x2="74" y2="26" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- Bumbo Central Duplo -->
+                    <circle cx="47" cy="58" r="15" fill="#DDD8CE" stroke="#141A16" stroke-width="2"/>
+                    <circle cx="47" cy="58" r="11.5" stroke="#141A16" stroke-width="1" stroke-dasharray="3 3"/>
+                    <circle cx="47" cy="58" r="6" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.6"/>
+                    <!-- Caixa à Esquerda -->
+                    <rect x="17" y="47" width="15" height="9" rx="1.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6"/>
+                    <line x1="17" y1="50" x2="32" y2="50" stroke="#1B5E20" stroke-width="1.3"/>
+                    <line x1="24.5" y1="56" x2="24.5" y2="73" stroke="#141A16" stroke-width="1.7"/>
+                    <!-- Prato de Ataque à Direita -->
+                    <line x1="74" y1="33" x2="74" y2="73" stroke="#141A16" stroke-width="1.7"/>
+                    <ellipse class="prato-anim" cx="74" cy="33" rx="13" ry="2.8" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/>
                 </svg>
             </div>
 
-            <!-- 4. VAGEM BAIXISTA -->
+            <!-- 4. VAGEM BAIXISTA (4 Ervilhas Expressivas + Contrabaixo) -->
             <div class="musico-box m-vagem">
-                <svg width="68" height="78" viewBox="0 0 68 78" fill="none">
-                    <ellipse cx="22" cy="76" rx="15" ry="2.5" fill="#141A16" opacity="0.18"/>
-                    <path d="M17 60 V76 M27 60 V76" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M23 12 C23 7 27 6 29 8" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M23 12 C11 19 10 49 22 61 C34 49 33 19 23 12 Z" fill="#EAE7E0" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
-                    <circle cx="22" cy="22" r="3.9" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
-                    <circle cx="22" cy="32" r="4.3" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
-                    <circle cx="22" cy="43" r="4.3" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
-                    <circle cx="22" cy="53" r="3.5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.3"/>
-                    <circle cx="20.5" cy="21.5" r="1.1" fill="#141A16"/>
-                    <circle cx="23.5" cy="21.5" r="1.1" fill="#141A16"/>
-                    <path d="M20.8 23.8 Q22 25.2 23.2 23.8" stroke="#141A16" stroke-width="1.1" stroke-linecap="round"/>
-                    <ellipse cx="21" cy="44" rx="8.8" ry="5.2" transform="rotate(-15 21 44)" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7"/>
-                    <line x1="28" y1="42" x2="51" y2="35" stroke="#141A16" stroke-width="2.1" stroke-linecap="round"/>
-                    <circle cx="52" cy="34.5" r="2.3" fill="#1B5E20"/>
-                    <path class="onda-1" d="M56 29 C60 32 60 38 56 41" stroke="#1B5E20" stroke-width="1.5" stroke-linecap="round"/>
+                <svg width="80" height="88" viewBox="0 0 80 88" fill="none">
+                    <ellipse cx="26" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
+                    <!-- Pernas e Sapatinhos -->
+                    <path d="M21 69 V83 M31 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <path d="M16 84 H23 C23 81.5 18 81.5 16 84 Z M30 84 H37 C37 81.5 32 81.5 30 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Cabinho Curvo no Topo -->
+                    <path d="M27 15 C27 9 32 8 34 11" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
+                    <!-- Casca da Vagem em 2 Tons -->
+                    <path d="M27 15 C13 23 12 56 26 70 C40 56 39 23 27 15 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
+                    <path d="M27 18 C17 25 16 54 26 66 C36 54 35 25 27 18 Z" fill="#E8F5E9"/>
+                    <!-- 4 Ervilhas / Grãos Internos -->
+                    <circle cx="26" cy="27" r="4.6" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
+                    <circle cx="26" cy="38" r="5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
+                    <circle cx="26" cy="50" r="5" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
+                    <circle cx="26" cy="61" r="4" fill="#DDD8CE" stroke="#141A16" stroke-width="1.4"/>
+                    <!-- Rostinho da Ervilha Líder (Topo) -->
+                    <circle cx="24.3" cy="26.2" r="1.2" fill="#141A16"/>
+                    <circle cx="27.7" cy="26.2" r="1.2" fill="#141A16"/>
+                    <path d="M24.5 28.8 Q26 30.5 27.5 28.8" stroke="#141A16" stroke-width="1.2" stroke-linecap="round"/>
+                    <!-- Rostinho Sorrindo na 2ª Ervilha -->
+                    <circle cx="24.5" cy="37.3" r="1" fill="#141A16"/>
+                    <circle cx="27.5" cy="37.3" r="1" fill="#141A16"/>
+                    <path d="M24.8 39.5 Q26 40.8 27.2 39.5" stroke="#141A16" stroke-width="1.1" stroke-linecap="round"/>
+                    <!-- Contrabaixo + Bracinhos -->
+                    <ellipse cx="25" cy="52" rx="10" ry="5.8" transform="rotate(-15 25 52)" fill="#A5D6A7" stroke="#141A16" stroke-width="1.7"/>
+                    <circle cx="23" cy="52.5" r="2" fill="#141A16"/>
+                    <line x1="34" y1="49" x2="60" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
+                    <rect x="59" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 59 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                    <path d="M16 45 Q14 50 19 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M36 44 Q42 46 46 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                    <path class="onda-1" d="M67 34 C71 38 71 44 67 48" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </div>
         </div>
         """,
-        height=128
+        height=138
     )
     
 elif aba == "📊 Análise de Pedidos":
