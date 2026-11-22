@@ -1492,7 +1492,7 @@ if len(abas_nav) > 1:
         [data-testid="stPills"] button:not(:first-child)::after {
             content: "" !important;
             position: absolute !important;
-            right: 8.5px !important;
+            right: 9.5px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
             width: 17px !important;
