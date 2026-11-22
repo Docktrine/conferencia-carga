@@ -742,19 +742,19 @@ if not st.session_state.usuario_autenticado:
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
                 0%   { transform: translateX(-230px); }
-                18%  { transform: translateX(280px); }
-                21%  { transform: translateX(280px); }
-                29%  { transform: translateX(187px); }
-                41%  { transform: translateX(187px); }
-                62%  { transform: translateX(730px); }
-                65%  { transform: translateX(730px); }
-                73%  { transform: translateX(638px); }
-                85%  { transform: translateX(638px); }
+                19%  { transform: translateX(188px); }
+                22%  { transform: translateX(188px); }
+                28%  { transform: translateX(142px); }
+                40%  { transform: translateX(142px); }
+                63%  { transform: translateX(632px); }
+                66%  { transform: translateX(632px); }
+                72%  { transform: translateX(586px); }
+                84%  { transform: translateX(586px); }
                 100% { transform: translateX(1180px); }
             }
             @keyframes sinalManobraRe {
-                0%, 20%, 30%, 64%, 74%, 100% { opacity: 0; }
-                21.5%, 28.5%, 65.5%, 72.5% { opacity: 1; }
+                0%, 21%, 29%, 65%, 73%, 100% { opacity: 0; }
+                22.5%, 27.5%, 66.5%, 71.5% { opacity: 1; }
             }
             @keyframes piscaGiroflex {
                 0%, 100% { fill: #F59E0B; opacity: 1; }
@@ -771,16 +771,16 @@ if not st.session_state.usuario_autenticado:
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
             @keyframes brilhoDocaCD {
-                0%, 28.5%, 41.5%, 100% { fill: #D5D0C5; }
-                30%, 40% { fill: #C8E6C9; }
+                0%, 27.5%, 40.5%, 100% { fill: #D5D0C5; }
+                29%, 39% { fill: #C8E6C9; }
             }
             @keyframes brilhoDocaDestino {
-                0%, 72.5%, 85.5%, 100% { fill: #D5D0C5; }
-                74%, 84% { fill: #C8E6C9; }
+                0%, 71.5%, 84.5%, 100% { fill: #D5D0C5; }
+                73%, 83% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 73%, 86.5%, 100% { transform: scale(0); opacity: 0; }
-                76%, 83.5% { transform: scale(1.1); opacity: 1; }
+                0%, 72%, 85.5%, 100% { transform: scale(0); opacity: 0; }
+                75%, 82.5% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -824,18 +824,18 @@ if not st.session_state.usuario_autenticado:
                 height: 2px;
                 background-image: repeating-linear-gradient(to right, rgba(20, 26, 22, 0.45) 0 10px, transparent 10px 22px);
             }
-            .carreta-grupo { animation: viagemCarretaGrano 17s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 16s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
-            .sinal-re-wrap { animation: sinalManobraRe 17s ease-in-out infinite; }
+            .sinal-re-wrap { animation: sinalManobraRe 16s ease-in-out infinite; }
             .giroflex-luz { animation: piscaGiroflex 0.35s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .nuvem-1 { animation: nuvemFlutua 18s ease-in-out infinite; }
             .nuvem-2 { animation: nuvemFlutua 24s ease-in-out 4s infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 17s ease-in-out infinite; }
-            .doca-dest-luz { animation: brilhoDocaDestino 17s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 17s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 16s ease-in-out infinite; }
+            .doca-dest-luz { animation: brilhoDocaDestino 16s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 16s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -897,15 +897,15 @@ if not st.session_state.usuario_autenticado:
                         <rect x="145" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="172" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 02 -->
-                        <rect x="179" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca 02 (Onde a traseira da carreta encosta de ré) -->
+                        <rect class="doca-cd-luz" x="179" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="179" y1="71" x2="205" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="179" y1="78" x2="205" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="177" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="204" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca 03 (Onde a traseira da carreta encosta de ré) -->
-                        <rect class="doca-cd-luz" x="211" y="64" width="26" height="38" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca 03 -->
+                        <rect x="211" y="64" width="26" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="211" y1="71" x2="237" y2="71" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="211" y1="78" x2="237" y2="78" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="209" y="102" width="3" height="8" fill="#141A16"/>
@@ -921,7 +921,7 @@ if not st.session_state.usuario_autenticado:
                         <rect x="591" y="78" width="14" height="8" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
                         <rect x="593" y="92" width="10" height="18" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
 
-                        <!-- Galpão Logístico Principal (Platibanda Moderna) -->
+                        <!-- Galpão Logístico Principal -->
                         <rect x="610" y="52" width="88" height="58" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                         <rect x="610" y="52" width="88" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4"/>
 
@@ -932,15 +932,15 @@ if not st.session_state.usuario_autenticado:
                         <!-- Plataforma Elevada de Recebimento -->
                         <rect x="614" y="102" width="80" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <!-- Doca de Recebimento 01 -->
-                        <rect x="621" y="65" width="30" height="37" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca de Recebimento 01 (Onde a traseira da carreta encosta de ré) -->
+                        <rect class="doca-dest-luz" x="621" y="65" width="30" height="37" rx="1" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="621" y1="72" x2="651" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="621" y1="79" x2="651" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="619" y="102" width="3" height="8" fill="#141A16"/>
                         <rect x="650" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <!-- Doca de Recebimento 02 (Onde a traseira da carreta encosta de ré) -->
-                        <rect class="doca-dest-luz" x="658" y="65" width="30" height="37" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Doca de Recebimento 02 -->
+                        <rect x="658" y="65" width="30" height="37" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
                         <line x1="658" y1="72" x2="688" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <line x1="658" y1="79" x2="688" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
                         <rect x="656" y="102" width="3" height="8" fill="#141A16"/>
@@ -953,7 +953,7 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Manobra de ré longa nas 2 docas) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Recuo curto na Doca 2 do CD e Doca 1 do Mercado) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
