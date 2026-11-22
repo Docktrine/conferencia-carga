@@ -731,164 +731,217 @@ if not st.session_state.usuario_autenticado:
                                raw_foto = raw_foto[4:]
                             st.session_state.foto_usuario = "" if raw_foto.lower() in ["", "nan", "none", "null"] else raw_foto
                             st.rerun()
+        logo_bau_svg = (
+            f'<image href="data:{LOGO_MIME};base64,{LOGO_B64}" x="81" y="54" width="24" height="24" preserveAspectRatio="xMidYMid slice" clip-path="url(#clipLogoBau)"/>'
+            if LOGO_B64 else
+            '<text x="93" y="69" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="800" fill="#1B5E20">GRANO</text>'
+        )
         components.html(
-            """
+            f"""
             <style>
-            body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
-            @keyframes viagemCarretaGrano {
-                0% { transform: translateX(-215px); }
-                42% { transform: translateX(300px); }
-                52% { transform: translateX(300px); }
-                86% { transform: translateX(615px); }
-                93% { transform: translateX(615px); }
-                100% { transform: translateX(850px); }
-            }
-            @keyframes suspensaoCarreta {
-                0%, 100% { transform: translateY(0px); }
-                25% { transform: translateY(-1.1px); }
-                50% { transform: translateY(0.5px); }
-                75% { transform: translateY(-0.9px); }
-            }
-            @keyframes fumoEscapamento {
-                0% { transform: translate(0, 0) scale(0.5); opacity: 0.75; }
-                100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
-            }
-            @keyframes brilhoDocaCD {
-                0%, 38%, 56%, 100% { fill: #D5D0C5; }
-                43%, 51% { fill: #C8E6C9; }
-            }
-            @keyframes checkEntregaLoja {
-                0%, 84%, 100% { transform: scale(0); opacity: 0; }
-                88%, 94% { transform: scale(1.1); opacity: 1; }
-            }
-            .rota-wrap {
+            body {{ margin: 0; padding: 0; background: transparent; overflow: hidden; }}
+            @keyframes viagemCarretaGrano {{
+                0% {{ transform: translateX(-225px); }}
+                42% {{ transform: translateX(300px); }}
+                52% {{ transform: translateX(300px); }}
+                86% {{ transform: translateX(605px); }}
+                93% {{ transform: translateX(605px); }}
+                100% {{ transform: translateX(855px); }}
+            }}
+            @keyframes suspensaoCarreta {{
+                0%, 100% {{ transform: translateY(0px); }}
+                25% {{ transform: translateY(-1.1px); }}
+                50% {{ transform: translateY(0.5px); }}
+                75% {{ transform: translateY(-0.9px); }}
+            }}
+            @keyframes fumoEscapamento {{
+                0% {{ transform: translate(0, 0) scale(0.5); opacity: 0.75; }}
+                100% {{ transform: translate(-20px, -12px) scale(1.6); opacity: 0; }}
+            }}
+            @keyframes brilhoDocaCD {{
+                0%, 38%, 56%, 100% {{ fill: #D5D0C5; }}
+                43%, 51% {{ fill: #C8E6C9; }}
+            }}
+            @keyframes checkEntregaLoja {{
+                0%, 84%, 100% {{ transform: scale(0); opacity: 0; }}
+                88%, 94% {{ transform: scale(1.1); opacity: 1; }}
+            }}
+            .rota-wrap {{
                 width: 100%;
                 max-width: 880px;
                 margin: 14px auto 0 auto;
-                height: 116px;
+                height: 124px;
                 position: relative;
                 overflow: hidden;
-            }
-            .carreta-grupo {
+            }}
+            .carreta-grupo {{
                 animation: viagemCarretaGrano 11.5s ease-in-out infinite;
-            }
-            .carreta-carroceria {
+            }}
+            .carreta-carroceria {{
                 animation: suspensaoCarreta 0.45s ease-in-out infinite;
-            }
-            .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
-            .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 11.5s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 11.5s ease-out infinite; }
+            }}
+            .fumo-1 {{ transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }}
+            .fumo-2 {{ transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }}
+            .doca-cd-luz {{ animation: brilhoDocaCD 11.5s ease-in-out infinite; }}
+            .badge-entregue {{ transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 11.5s ease-out infinite; }}
             </style>
 
             <div class="rota-wrap">
-                <svg width="100%" height="116" viewBox="0 0 880 116" fill="none" xmlns="http://w3.org">
+                <svg width="100%" height="124" viewBox="0 0 880 124" fill="none" xmlns="http://w3.org">
                     <defs>
                         <linearGradient id="feixeFarol" x1="0%" y1="50%" x2="100%" y2="50%">
-                            <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.70"/>
+                            <stop offset="0%" stop-color="#C8E6C9" stop-opacity="0.72"/>
                             <stop offset="100%" stop-color="#C8E6C9" stop-opacity="0"/>
                         </linearGradient>
+                        <clipPath id="clipLogoBau">
+                            <rect x="81" y="54" width="24" height="24" rx="5"/>
+                        </clipPath>
                     </defs>
 
                     <!-- Estrada / Asfalto de ponta a ponta -->
-                    <line x1="0" y1="94" x2="880" y2="94" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <line x1="0" y1="101" x2="880" y2="101" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
+                    <line x1="0" y1="102" x2="880" y2="102" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <line x1="0" y1="109" x2="880" y2="109" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
 
-                    <!-- 1. ARMAZÉM / CD GRANO (Centro) -->
+                    <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Galpão Industrial Completo) -->
                     <g>
-                        <ellipse cx="440" cy="94" rx="48" ry="3" fill="#141A16" opacity="0.16"/>
-                        <path d="M398 94 V54 L440 32 L482 54 V94 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M392 57 L440 31 L488 57" stroke="#1B5E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="422" y="48" width="36" height="6" rx="1.5" fill="#1B5E20"/>
-                        <rect class="doca-cd-luz" x="421" y="62" width="38" height="32" rx="1" stroke="#141A16" stroke-width="1.5" stroke-dasharray="3 2"/>
-                        <line x1="421" y1="68" x2="459" y2="68" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <!-- Sombra base -->
+                        <ellipse cx="440" cy="102" rx="68" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <!-- Parede lateral e fachada principal -->
+                        <path d="M380 102 V56 L440 30 L500 56 V102 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Sombra arquitetônica sob o beiral -->
+                        <polygon points="381,58 440,33 499,58 499,63 440,38 381,63" fill="#D5D0C5"/>
+                        <!-- Telhado metálico duplo com claraboia -->
+                        <path d="M373 59 L440 29 L507 59" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="427" y="25" width="26" height="5" rx="1.5" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <!-- Letreiro Institucional CD GRANO -->
+                        <rect x="415" y="45" width="50" height="10" rx="2" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                        <text x="440" y="52.3" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD GRANO</text>
+                        <!-- Luminárias externas de pátio -->
+                        <circle cx="395" cy="58" r="2" fill="#4CAF50"/>
+                        <circle cx="485" cy="58" r="2" fill="#4CAF50"/>
+                        <!-- Porta social e janela administrativa -->
+                        <rect x="389" y="78" width="11" height="24" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="389" y="64" width="11" height="8" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
+                        <!-- Doca 01 (Principal com luz de carregamento) -->
+                        <rect class="doca-cd-luz" x="408" y="64" width="32" height="38" rx="1" stroke="#141A16" stroke-width="1.6"/>
+                        <line x1="408" y1="71" x2="440" y2="71" stroke="#141A16" stroke-width="1.1" opacity="0.55"/>
+                        <line x1="408" y1="77" x2="440" y2="77" stroke="#141A16" stroke-width="1.1" opacity="0.45"/>
+                        <!-- Bumpers de borracha da Doca 01 -->
+                        <rect x="406" y="95" width="3" height="7" fill="#141A16"/>
+                        <rect x="439" y="95" width="3" height="7" fill="#141A16"/>
+                        <!-- Doca 02 -->
+                        <rect x="448" y="64" width="32" height="38" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.6"/>
+                        <line x1="448" y1="71" x2="480" y2="71" stroke="#141A16" stroke-width="1.1" opacity="0.55"/>
+                        <line x1="448" y1="77" x2="480" y2="77" stroke="#141A16" stroke-width="1.1" opacity="0.45"/>
+                        <rect x="446" y="95" width="3" height="7" fill="#141A16"/>
+                        <rect x="479" y="95" width="3" height="7" fill="#141A16"/>
+                        <!-- Arvorezinha lateral no pátio do CD -->
+                        <line x1="491" y1="102" x2="491" y2="87" stroke="#141A16" stroke-width="1.5"/>
+                        <circle cx="491" cy="83" r="6" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.4"/>
                     </g>
 
-                    <!-- 2. LOJA / MERCADO CLIENTE (Direita) -->
+                    <!-- 2. SUPERMERCADO / CLIENTE (Estrutura Moderna de Varejo) -->
                     <g>
-                        <ellipse cx="785" cy="94" rx="38" ry="2.8" fill="#141A16" opacity="0.16"/>
-                        <rect x="754" y="56" width="62" height="38" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="762" y="48" width="46" height="8" rx="1.5" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6"/>
-                        <line x1="770" y1="52" x2="800" y2="52" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
-                        <path d="M751 56 H819 L815 63 H755 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
-                        <rect x="763" y="72" width="13" height="22" fill="#D5D0C5" stroke="#141A16" stroke-width="1.5"/>
-                        <rect x="782" y="72" width="24" height="15" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="785" y1="75" x2="790" y2="83" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+                        <ellipse cx="782" cy="102" rx="52" ry="3" fill="#141A16" opacity="0.16"/>
+                        <!-- Rampa lateral de recebimento -->
+                        <polygon points="732,102 744,94 744,102" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+                        <!-- Corpo principal da loja -->
+                        <rect x="744" y="56" width="78" height="46" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Platibanda escalonada superior -->
+                        <rect x="752" y="45" width="62" height="11" rx="2" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6"/>
+                        <text x="783" y="52.5" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#1B5E20" letter-spacing="0.4">MERCADO</text>
+                        <!-- Toldo listrado em verde e claro -->
+                        <path d="M740 56 H826 L821 64 H745 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+                        <line x1="756" y1="56" x2="755" y2="64" stroke="#1B5E20" stroke-width="1.4"/>
+                        <line x1="772" y1="56" x2="772" y2="64" stroke="#1B5E20" stroke-width="1.4"/>
+                        <line x1="788" y1="56" x2="788" y2="64" stroke="#1B5E20" stroke-width="1.4"/>
+                        <line x1="804" y1="56" x2="805" y2="64" stroke="#1B5E20" stroke-width="1.4"/>
+                        <!-- Portas automáticas de vidro duplo -->
+                        <rect x="753" y="74" width="22" height="28" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="764" y1="74" x2="764" y2="102" stroke="#141A16" stroke-width="1.4"/>
+                        <!-- Vitrine ampla com gôndolas -->
+                        <rect x="782" y="74" width="32" height="19" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="785" y1="81" x2="811" y2="81" stroke="#4CAF50" stroke-width="1.2" opacity="0.6"/>
+                        <line x1="785" y1="87" x2="811" y2="87" stroke="#4CAF50" stroke-width="1.2" opacity="0.6"/>
+                        <line x1="786" y1="77" x2="792" y2="85" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round"/>
 
                         <!-- Selo Verde de Entrega Concluída -->
                         <g class="badge-entregue">
-                            <circle cx="785" cy="34" r="9.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
-                            <path d="M781 34 L784 37.5 L790 31" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="783" cy="31" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M778.5 31 L782 34.5 L788.5 28" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Cavalo + Semirreboque) -->
+                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Com Logotipo Oficial no Baú) -->
                     <g class="carreta-grupo">
-                        <!-- Sombra longa no asfalto -->
-                        <ellipse cx="115" cy="94" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
+                        <ellipse cx="115" cy="102" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
-                        <!-- Fumaça saindo do escapamento vertical atrás da cabine -->
-                        <circle class="fumo-1" cx="144" cy="49" r="2.6" fill="#8A928C"/>
-                        <circle class="fumo-2" cx="141" cy="46" r="2.1" fill="#8A928C"/>
+                        <!-- Fumaça saindo do escapamento vertical -->
+                        <circle class="fumo-1" cx="144" cy="55" r="2.6" fill="#8A928C"/>
+                        <circle class="fumo-2" cx="141" cy="52" r="2.1" fill="#8A928C"/>
 
-                        <!-- Carroceria + Cavalo Mecânico (com vibração suave de suspensão) -->
+                        <!-- Carroceria + Cavalo Mecânico -->
                         <g class="carreta-carroceria">
                             <!-- Feixe de luz do farol -->
-                            <polygon points="178,78 208,71 208,86" fill="url(#feixeFarol)"/>
+                            <polygon points="178,86 210,79 210,94" fill="url(#feixeFarol)"/>
 
                             <!-- SEMIRREBOQUE BAÚ LONGO -->
-                            <rect x="52" y="51" width="90" height="32" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
+                            <rect x="50" y="51" width="92" height="39" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
                             <!-- Sombra inferior do baú -->
-                            <rect x="53" y="78" width="88" height="4" fill="#D5D0C5"/>
+                            <rect x="51" y="85" width="90" height="4" fill="#D5D0C5"/>
                             <!-- Aparelho de Refrigeração Frontal (Thermo King) -->
-                            <rect x="136" y="53" width="6" height="12" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
-                            <!-- Faixas Verdes Grano no Baú -->
-                            <line x1="60" y1="62" x2="128" y2="62" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round"/>
-                            <line x1="60" y1="68" x2="112" y2="68" stroke="#4CAF50" stroke-width="1.5" stroke-linecap="round"/>
+                            <rect x="136" y="53" width="6" height="13" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                            <!-- Faixas laterais verdes decorativas -->
+                            <line x1="56" y1="66" x2="77" y2="66" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round"/>
+                            <line x1="109" y1="66" x2="132" y2="66" stroke="#1B5E20" stroke-width="2.2" stroke-linecap="round"/>
+                            <line x1="56" y1="71" x2="74" y2="71" stroke="#4CAF50" stroke-width="1.3" stroke-linecap="round"/>
+                            <line x1="112" y1="71" x2="132" y2="71" stroke="#4CAF50" stroke-width="1.3" stroke-linecap="round"/>
 
-                            <!-- Engate / Quinta-Roda entre Reboque e Cavalo -->
-                            <rect x="134" y="83" width="16" height="4" rx="1" fill="#141A16"/>
+                            <!-- Moldura + Logotipo Oficial da Grano no Baú -->
+                            <rect x="80" y="53" width="26" height="26" rx="5.5" fill="#FFFFFF" stroke="#1B5E20" stroke-width="1.4"/>
+                            {logo_bau_svg}
+
+                            <!-- Engate / Quinta-Roda -->
+                            <rect x="134" y="90" width="16" height="4" rx="1" fill="#141A16"/>
 
                             <!-- Chassi do Cavalo Mecânico -->
-                            <rect x="122" y="84" width="53" height="4" rx="1" fill="#141A16"/>
+                            <rect x="122" y="91" width="53" height="4" rx="1" fill="#141A16"/>
 
-                            <!-- Escapamento Vertical atrás da Cabine -->
-                            <path d="M147 84 V51 L144 49" stroke="#141A16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- Escapamento Vertical -->
+                            <path d="M147 91 V57 L144 55" stroke="#141A16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 
-                            <!-- Defletor Aerodinâmico no Teto da Cabine -->
-                            <path d="M150 58 L161 52 V58 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
+                            <!-- Defletor Aerodinâmico no Teto -->
+                            <path d="M150 64 L161 58 V64 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4" stroke-linejoin="round"/>
 
                             <!-- Cabine do Cavalo Mecânico -->
-                            <path d="M150 58 H165 L177 71 V84 H150 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                            <!-- Para-brisa e Janela Lateral -->
-                            <path d="M161 60.5 H164.5 L173.5 70.5 H161 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
-                            <rect x="153" y="61" width="5.5" height="9" rx="0.8" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
-                            <!-- Retrovisor, Grade Frontal e Farol -->
-                            <line x1="160" y1="62" x2="158" y2="68" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
-                            <line x1="177" y1="74" x2="177" y2="81" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="177" cy="79" r="1.9" fill="#1B5E20"/>
+                            <path d="M150 64 H165 L177 77 V91 H150 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                            <path d="M161 66.5 H164.5 L173.5 76.5 H161 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                            <rect x="153" y="67" width="5.5" height="9" rx="0.8" fill="#E8F5E9" stroke="#141A16" stroke-width="1.1"/>
+                            <line x1="160" y1="68" x2="158" y2="74" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+                            <line x1="177" y1="81" x2="177" y2="88" stroke="#1B5E20" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="177" cy="86" r="1.9" fill="#1B5E20"/>
                         </g>
 
                         <!-- 5 EIXOS DE RODAS COM CALOTAS -->
                         <g>
-                            <circle cx="66" cy="89" r="5.2" fill="#141A16"/>
-                            <circle cx="66" cy="89" r="2.1" fill="#EAE7E0"/>
-                            <circle cx="79" cy="89" r="5.2" fill="#141A16"/>
-                            <circle cx="79" cy="89" r="2.1" fill="#EAE7E0"/>
+                            <circle cx="66" cy="96.5" r="5.2" fill="#141A16"/>
+                            <circle cx="66" cy="96.5" r="2.1" fill="#EAE7E0"/>
+                            <circle cx="79" cy="96.5" r="5.2" fill="#141A16"/>
+                            <circle cx="79" cy="96.5" r="2.1" fill="#EAE7E0"/>
 
-                            <circle cx="129" cy="89" r="5.2" fill="#141A16"/>
-                            <circle cx="129" cy="89" r="2.1" fill="#EAE7E0"/>
-                            <circle cx="142" cy="89" r="5.2" fill="#141A16"/>
-                            <circle cx="142" cy="89" r="2.1" fill="#EAE7E0"/>
+                            <circle cx="129" cy="96.5" r="5.2" fill="#141A16"/>
+                            <circle cx="129" cy="96.5" r="2.1" fill="#EAE7E0"/>
+                            <circle cx="142" cy="96.5" r="5.2" fill="#141A16"/>
+                            <circle cx="142" cy="96.5" r="2.1" fill="#EAE7E0"/>
 
-                            <circle cx="166" cy="89" r="5.2" fill="#141A16"/>
-                            <circle cx="166" cy="89" r="2.1" fill="#EAE7E0"/>
+                            <circle cx="166" cy="96.5" r="5.2" fill="#141A16"/>
+                            <circle cx="166" cy="96.5" r="2.1" fill="#EAE7E0"/>
                         </g>
                     </g>
                 </svg>
             </div>
             """,
-            height=120
+            height=128
         )
     
     st.stop()
