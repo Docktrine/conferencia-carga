@@ -1500,7 +1500,7 @@ aba = st.session_state.aba_ativa
 
 if aba == "🏠 Início":
 
-st.markdown("<style>[data-stale='true'] { display: none !important; }</style>", unsafe_allow_html=True)    
+    st.markdown("<style>[data-stale='true'] { display: none !important; }</style>", unsafe_allow_html=True)    
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
     primeiro_nome_ini = st.session_state.nome_usuario.split().pop(0).title() if st.session_state.nome_usuario else "Equipe"
 
