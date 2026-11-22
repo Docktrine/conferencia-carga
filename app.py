@@ -1403,7 +1403,7 @@ if qtd_online > 0:
         """,
         unsafe_allow_html=True
     )
-# === BARRA DE GUIAS FIXA COM "🏠 INÍCIO" SEMPRE EM 1º LUGAR ===
+# === BARRA DE GUIAS FIXA COM "🏠 INÍCIO" SEMPRE EM 1º LUGAR E "✕" EM CADA ABA ===
 if "abas_abertas" not in st.session_state or not st.session_state.abas_abertas:
     st.session_state.abas_abertas = ["🏠 Início"] if usar_inicio else [aba]
 
@@ -1419,34 +1419,39 @@ else:
 
 st.session_state.abas_abertas = abas_nav
 
+mapa_rotulos_guia = {m: ("🏠 Início" if m == "🏠 Início" else f"{m}  ✕") for m in abas_nav}
+mapa_reverso_guia = {v: k for k, v in mapa_rotulos_guia.items()}
+
 def _ao_mudar_guia():
-    sel = st.session_state.get("barra_guias_topo")
-    if sel == "✕ Fechar guia atual":
+    sel_rotulo = st.session_state.get("barra_guias_topo")
+    if not sel_rotulo:
+        # Clicou novamente na aba ativa (no ✕): fecha se não for Início
         atual = st.session_state.aba_ativa
         if atual != "🏠 Início" and atual in st.session_state.abas_abertas:
             st.session_state.abas_abertas.remove(atual)
-        st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
-        st.session_state["barra_guias_topo"] = st.session_state.aba_ativa
-    elif sel and sel in st.session_state.abas_abertas:
-        st.session_state.aba_ativa = sel
+            st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+        return
+    mod_escolhido = mapa_reverso_guia.get(sel_rotulo)
+    if mod_escolhido and mod_escolhido in st.session_state.abas_abertas:
+        if mod_escolhido == st.session_state.aba_ativa and mod_escolhido != "🏠 Início":
+            st.session_state.abas_abertas.remove(mod_escolhido)
+            st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+        else:
+            st.session_state.aba_ativa = mod_escolhido
 
 if len(abas_nav) > 1:
     st.markdown(
         """
         <style>
-        /* Faz o header nativo do Streamlit deixar cliques passarem na faixa central */
         header[data-testid="stHeader"] {
             background-color: #C9C5BA !important;
             border-bottom: 1px solid rgba(27, 94, 32, 0.16) !important;
             height: 3.35rem !important;
             pointer-events: none !important;
         }
-            
         header[data-testid="stHeader"] * {
             pointer-events: auto !important;
         }
-
-        /* Sobe e congela a barra de guias no topo da janela (mesma linha dos avatares) */
         [data-testid="stButtonGroup"],
         [data-testid="stPills"],
         div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
@@ -1455,49 +1460,40 @@ if len(abas_nav) > 1:
             top: 10px !important;
             left: 21.5rem !important;
             width: auto !important;
-            max-width: calc(100vw - 38rem) !important;
+            max-width: calc(100vw - 34rem) !important;
             z-index: 999998 !important;
             pointer-events: auto !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
         }
-
-        /* Ajusta a posição à esquerda quando a barra lateral estiver recolhida */
         section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stButtonGroup"],
         section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stPills"],
         section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
         section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
             left: 4.5rem !important;
-            max-width: calc(100vw - 21rem) !important;
+            max-width: calc(100vw - 18rem) !important;
         }
-        /* Destaca o último botão ("✕ Fechar guia atual") em vermelho suave */
-        [data-testid="stButtonGroup"] button:last-of-type,
-        [data-testid="stPills"] button:last-of-type {
-            background-color: #FDECEA !important;
-            border: 1px solid #E57373 !important;
-            margin-left: 6px !important;
-            transition: all 0.18s ease !important;
+        [data-testid="stButtonGroup"] button,
+        [data-testid="stPills"] button {
+            padding: 2px 11px !important;
+            min-height: 29px !important;
+            height: 29px !important;
+            white-space: nowrap !important;
         }
-        [data-testid="stButtonGroup"] button:last-of-type p,
-        [data-testid="stPills"] button:last-of-type p {
-            color: #B71C1C !important;
-            font-weight: 700 !important;
+        [data-testid="stButtonGroup"] button p,
+        [data-testid="stPills"] button p {
+            font-size: 0.75rem !important;
+            white-space: nowrap !important;
         }
-        [data-testid="stButtonGroup"] button:last-of-type:hover,
-        [data-testid="stPills"] button:last-of-type:hover {
-            background-color: #B71C1C !important;
-            border-color: #B71C1C !important;
-        }
-        [data-testid="stButtonGroup"] button:last-of-type:hover p,
-        [data-testid="stPills"] button:last-of-type:hover p {
-            color: #FFFFFF !important;
-        }        
         </style>
         """,
         unsafe_allow_html=True
     )
-    st.session_state["barra_guias_topo"] = st.session_state.aba_ativa
+    rotulos_opcoes = [mapa_rotulos_guia[m] for m in abas_nav]
+    st.session_state["barra_guias_topo"] = mapa_rotulos_guia.get(st.session_state.aba_ativa, "🏠 Início")
     st.pills(
         "Guias abertas:",
-        options=abas_nav + ["✕ Fechar guia atual"],
+        options=rotulos_opcoes,
         label_visibility="collapsed",
         key="barra_guias_topo",
         on_change=_ao_mudar_guia
