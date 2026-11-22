@@ -762,6 +762,10 @@ if not st.session_state.usuario_autenticado:
                 0%, 24%, 42%, 100% { fill: #D5D0C5; }
                 28%, 38% { fill: #C8E6C9; }
             }
+            @keyframes brilhoDocaDestino {
+                0%, 72%, 88%, 100% { fill: #D5D0C5; }
+                75%, 85% { fill: #C8E6C9; }
+            }
             @keyframes checkEntregaLoja {
                 0%, 72%, 88%, 100% { transform: scale(0); opacity: 0; }
                 76%, 84% { transform: scale(1.1); opacity: 1; }
@@ -792,7 +796,6 @@ if not st.session_state.usuario_autenticado:
                 position: relative;
                 overflow: hidden;
             }
-            /* Linha do asfalto contínua ocupando 100% das bordas do iframe */
             .asfalto-full {
                 position: absolute;
                 left: 0;
@@ -817,6 +820,7 @@ if not st.session_state.usuario_autenticado:
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
             .doca-cd-luz { animation: brilhoDocaCD 13s ease-in-out infinite; }
+            .doca-dest-luz { animation: brilhoDocaDestino 13s ease-in-out infinite; }
             .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 13s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
@@ -839,13 +843,13 @@ if not st.session_state.usuario_autenticado:
                     </defs>
 
                     <!-- Nuvens de Chuva Minimalistas -->
-                    <g class="nuvem-1" opacity="0.82">
+                    <g class="nuvem-1" opacity="0.84">
                         <path d="M95 18 H131 C135 18 138 15 138 11.5 C138 8.2 135.5 5.6 132.2 5.3 C130.8 2 127.5 0 123.6 0 C120.2 0 117.2 1.6 115.6 4.1 C114.4 3.4 113 3 111.5 3 C107.2 3 103.6 6.2 103.1 10.3 C99 10.6 95.8 14 95.8 18 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
-                    <g class="nuvem-2" opacity="0.78">
-                        <path d="M430 15 H474 C479 15 482.5 11.5 482.5 7.2 C482.5 3.3 479.5 0.2 475.6 0 C473.8 -3.8 469.8 -6 465.2 -6 C461.1 -6 457.5 -4.1 455.5 -1.1 C454 -1.9 452.3 -2.4 450.5 -2.4 C445.3 -2.4 441 1.4 440.4 6.4 C435.5 6.8 431.8 10.8 431.8 15 Z" transform="translate(0, 7)" fill="#D5D0C5" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                    <g class="nuvem-2" opacity="0.84">
+                        <path d="M430 15 H474 C479 15 482.5 11.5 482.5 7.2 C482.5 3.3 479.5 0.2 475.6 0 C473.8 -3.8 469.8 -6 465.2 -6 C461.1 -6 457.5 -4.1 455.5 -1.1 C454 -1.9 452.3 -2.4 450.5 -2.4 C445.3 -2.4 441 1.4 440.4 6.4 C435.5 6.8 431.8 10.8 431.8 15 Z" transform="translate(0, 7)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
-                    <g class="nuvem-1" opacity="0.82">
+                    <g class="nuvem-1" opacity="0.84">
                         <path d="M765 17 H803 C807.2 17 810.5 13.8 810.5 9.8 C810.5 6.1 807.8 3.2 804.2 2.9 C802.7 -0.6 799.2 -2.8 795 -2.8 C791.3 -2.8 788.1 -1.1 786.3 1.6 C785 0.8 783.5 0.4 781.8 0.4 C777.2 0.4 773.3 3.9 772.8 8.3 C768.4 8.6 765 12.2 765 17 Z" transform="translate(0, 4)" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
                     </g>
 
@@ -892,37 +896,45 @@ if not st.session_state.usuario_autenticado:
                         <circle cx="266" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
-                    <!-- 2. SUPERMERCADO / CLIENTE (Direita) -->
+                    <!-- 2. CD MERCADO / CENTRO DE DISTRIBUIÇÃO DO CLIENTE (Direita) -->
                     <g>
-                        <ellipse cx="705" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="715" cy="110" rx="76" ry="3.4" fill="#141A16" opacity="0.16"/>
 
-                        <rect x="663" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="666" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
-                        <rect x="668" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="677" y1="80" x2="677" y2="110" stroke="#141A16" stroke-width="1.4"/>
-                        <rect x="669" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <!-- Galpão Logístico Principal (Platibanda Moderna) -->
+                        <rect x="662" y="52" width="88" height="58" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Friso superior verde -->
+                        <rect x="662" y="52" width="88" height="6" fill="#C8E6C9" stroke="#141A16" stroke-width="1.4"/>
 
-                        <rect x="691" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Placa MERCADO -->
-                        <rect x="691" y="43" width="60" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                        <text x="721" y="52.8" text-anchor="middle" font-family="sans-serif" font-size="8.4" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">MERCADO</text>
+                        <!-- Placa CD MERCADO -->
+                        <rect x="671" y="38" width="70" height="14" rx="2.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
+                        <text x="706" y="47.8" text-anchor="middle" font-family="sans-serif" font-size="8.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">CD MERCADO</text>
 
-                        <path d="M690 59 H754 L750 67 H690 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
-                        <line x1="704" y1="59" x2="704" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="719" y1="59" x2="719" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="734" y1="59" x2="734" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <!-- Plataforma Elevada de Recebimento -->
+                        <rect x="666" y="102" width="80" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.4"/>
 
-                        <rect x="699" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="703" y1="84" x2="739" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="703" y1="91" x2="739" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="704" y1="79" x2="711" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+                        <!-- Doca de Recebimento 01 (Acende verde na descarga) -->
+                        <rect class="doca-dest-luz" x="673" y="65" width="30" height="37" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="673" y1="72" x2="703" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="673" y1="79" x2="703" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="671" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="702" y="102" width="3" height="8" fill="#141A16"/>
 
-                        <rect x="755" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
-                        <circle cx="758.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
+                        <!-- Doca de Recebimento 02 -->
+                        <rect x="710" y="65" width="30" height="37" rx="1" fill="#DDD8CE" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="710" y1="72" x2="740" y2="72" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <line x1="710" y1="79" x2="740" y2="79" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="708" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="739" y="102" width="3" height="8" fill="#141A16"/>
 
+                        <!-- Guarita / Controle de Acesso Lateral -->
+                        <rect x="750" y="72" width="24" height="38" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                        <rect x="755" y="78" width="14" height="8" rx="1" fill="#E8F5E9" stroke="#141A16" stroke-width="1.2"/>
+                        <rect x="757" y="92" width="10" height="18" fill="#EAE7E0" stroke="#141A16" stroke-width="1.3"/>
+
+                        <!-- Selo Verde de Descarga Concluída -->
                         <g class="badge-entregue">
-                            <circle cx="707" cy="24" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M702.5 24 L706 27.5 L712.5 21" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="706" cy="21" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M701.5 21 L705 24.5 L711.5 18" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
