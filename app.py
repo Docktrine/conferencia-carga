@@ -741,12 +741,14 @@ if not st.session_state.usuario_autenticado:
             <style>
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes viagemCarretaGrano {
-                0% { transform: translateX(-185px); }
-                40% { transform: translateX(285px); }
-                50% { transform: translateX(285px); }
-                82% { transform: translateX(565px); }
-                90% { transform: translateX(565px); }
-                100% { transform: translateX(835px); }
+                0% { transform: translateX(48px); opacity: 0; }
+                5% { transform: translateX(48px); opacity: 1; }
+                14% { transform: translateX(48px); }
+                44% { transform: translateX(285px); }
+                54% { transform: translateX(285px); }
+                84% { transform: translateX(555px); opacity: 1; }
+                94% { transform: translateX(555px); opacity: 1; }
+                100% { transform: translateX(555px); opacity: 0; }
             }
             @keyframes suspensaoCarreta {
                 0%, 100% { transform: translateY(0px); }
@@ -759,12 +761,16 @@ if not st.session_state.usuario_autenticado:
                 100% { transform: translate(-20px, -12px) scale(1.6); opacity: 0; }
             }
             @keyframes brilhoDocaCD {
-                0%, 36%, 54%, 100% { fill: #D5D0C5; }
-                41%, 49% { fill: #C8E6C9; }
+                0%, 40%, 58%, 100% { fill: #D5D0C5; }
+                45%, 53% { fill: #C8E6C9; }
+            }
+            @keyframes brilhoDocaProdutor {
+                0%, 16%, 100% { fill: #D5D0C5; }
+                4%, 12% { fill: #C8E6C9; }
             }
             @keyframes checkEntregaLoja {
-                0%, 80%, 100% { transform: scale(0); opacity: 0; }
-                84%, 91% { transform: scale(1.1); opacity: 1; }
+                0%, 82%, 100% { transform: scale(0); opacity: 0; }
+                86%, 94% { transform: scale(1.1); opacity: 1; }
             }
             @keyframes chuvaCaindo {
                 0% { transform: translate(16px, -25px); opacity: 0; }
@@ -788,13 +794,14 @@ if not st.session_state.usuario_autenticado:
                 position: relative;
                 overflow: hidden;
             }
-            .carreta-grupo { animation: viagemCarretaGrano 11.5s ease-in-out infinite; }
+            .carreta-grupo { animation: viagemCarretaGrano 12.5s ease-in-out infinite; }
             .carreta-carroceria { animation: suspensaoCarreta 0.45s ease-in-out infinite; }
             .limpador-anim { transform-box: fill-box; transform-origin: bottom right; animation: limpadorParabrisa 0.7s ease-in-out infinite; }
             .fumo-1 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out infinite; }
             .fumo-2 { transform-box: fill-box; transform-origin: center; animation: fumoEscapamento 0.9s ease-out 0.45s infinite; }
-            .doca-cd-luz { animation: brilhoDocaCD 11.5s ease-in-out infinite; }
-            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 11.5s ease-out infinite; }
+            .doca-cd-luz { animation: brilhoDocaCD 12.5s ease-in-out infinite; }
+            .doca-prod-luz { animation: brilhoDocaProdutor 12.5s ease-in-out infinite; }
+            .badge-entregue { transform-box: fill-box; transform-origin: center; animation: checkEntregaLoja 12.5s ease-out infinite; }
             .gota-chuva-1 { animation: chuvaCaindo 0.85s linear infinite; }
             .gota-chuva-2 { animation: chuvaCaindo 0.95s linear 0.25s infinite; }
             .gota-chuva-3 { animation: chuvaCaindo 0.80s linear 0.50s infinite; }
@@ -812,11 +819,37 @@ if not st.session_state.usuario_autenticado:
                         </linearGradient>
                     </defs>
 
-                    <!-- Estrada / Asfalto -->
-                    <line x1="0" y1="110" x2="880" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <line x1="0" y1="117" x2="880" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
+                    <!-- Estrada / Asfalto conectando as 3 unidades -->
+                    <line x1="18" y1="110" x2="852" y2="110" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <line x1="28" y1="117" x2="842" y2="117" stroke="#141A16" stroke-width="1.2" stroke-dasharray="7 9" opacity="0.45"/>
 
-                    <!-- 1. CENTRO DE DISTRIBUIÇÃO GRANO (Centro) -->
+                    <!-- 1. ESTUFA / UNIDADE PRODUTORA GRANO (Esquerda) -->
+                    <g>
+                        <ellipse cx="82" cy="110" rx="64" ry="3.2" fill="#141A16" opacity="0.16"/>
+
+                        <!-- Estufa Agrícola em Arco (Esquerda) -->
+                        <path d="M22 110 V74 C22 52 72 52 72 74 V110 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Nervuras da estufa -->
+                        <path d="M47 57 V110 M22 76 H72 M22 92 H72" stroke="#1B5E20" stroke-width="1.1" opacity="0.55"/>
+                        <!-- Canteiros verdes visíveis dentro da estufa -->
+                        <path d="M27 104 Q32 97 37 104 Q42 97 45 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                        <path d="M50 104 Q55 97 60 104 Q64 97 68 104" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+
+                        <!-- Galpão de Beneficiamento & Expedição Rural -->
+                        <path d="M72 110 V64 L106 48 L140 64 V110 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M68 66 L106 47 L144 66" stroke="#1B5E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Placa HORTA GRANO -->
+                        <rect x="85" y="59" width="42" height="9" rx="1.5" fill="#1B5E20"/>
+                        <text x="106" y="65.6" text-anchor="middle" font-family="sans-serif" font-size="5.6" font-weight="800" fill="#FFFFFF" letter-spacing="0.4">HORTA GRANO</text>
+
+                        <!-- Doca de Embarque da Unidade Produtora -->
+                        <rect class="doca-prod-luz" x="92" y="74" width="28" height="36" rx="1" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="92" y1="81" x2="120" y2="81" stroke="#141A16" stroke-width="1" opacity="0.5"/>
+                        <rect x="90" y="102" width="3" height="8" fill="#141A16"/>
+                        <rect x="119" y="102" width="3" height="8" fill="#141A16"/>
+                    </g>
+
+                    <!-- 2. CENTRO DE DISTRIBUIÇÃO GRANO (Centro) -->
                     <g>
                         <ellipse cx="425" cy="110" rx="84" ry="3.4" fill="#141A16" opacity="0.16"/>
                         <rect x="349" y="68" width="28" height="42" fill="#DDD8CE" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
@@ -858,41 +891,40 @@ if not st.session_state.usuario_autenticado:
                         <circle cx="506" cy="87" r="7" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5"/>
                     </g>
 
-                    <!-- 2. SUPERMERCADO / CLIENTE -->
+                    <!-- 3. SUPERMERCADO / CLIENTE (Direita) -->
                     <g>
-                        <ellipse cx="732" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
+                        <ellipse cx="775" cy="110" rx="58" ry="3.2" fill="#141A16" opacity="0.16"/>
 
-                        <rect x="690" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="693" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
-                        <rect x="695" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="704" y1="80" x2="704" y2="110" stroke="#141A16" stroke-width="1.4"/>
-                        <rect x="696" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
+                        <rect x="733" y="46" width="28" height="64" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="736" y="42" width="22" height="5" rx="1" fill="#1B5E20"/>
+                        <rect x="738" y="80" width="18" height="30" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="747" y1="80" x2="747" y2="110" stroke="#141A16" stroke-width="1.4"/>
+                        <rect x="739" y="53" width="16" height="18" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3"/>
 
-                        <rect x="718" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <rect x="723" y="49" width="50" height="10" rx="2" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5"/>
-                        <text x="748" y="56.2" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#1B5E20" letter-spacing="0.4">MERCADO</text>
+                        <rect x="761" y="58" width="60" height="52" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <rect x="766" y="49" width="50" height="10" rx="2" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5"/>
+                        <text x="791" y="56.2" text-anchor="middle" font-family="sans-serif" font-size="6.2" font-weight="800" fill="#1B5E20" letter-spacing="0.4">MERCADO</text>
 
-                        <path d="M717 59 H781 L777 67 H717 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
-                        <line x1="731" y1="59" x2="731" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="746" y1="59" x2="746" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
-                        <line x1="761" y1="59" x2="761" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <path d="M760 59 H824 L820 67 H760 Z" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5" stroke-linejoin="round"/>
+                        <line x1="774" y1="59" x2="774" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="789" y1="59" x2="789" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
+                        <line x1="804" y1="59" x2="804" y2="67" stroke="#1B5E20" stroke-width="1.5"/>
 
-                        <rect x="726" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
-                        <line x1="730" y1="84" x2="766" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="730" y1="91" x2="766" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
-                        <line x1="731" y1="79" x2="738" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+                        <rect x="769" y="76" width="44" height="22" rx="1.5" fill="#E8F5E9" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="773" y1="84" x2="809" y2="84" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="773" y1="91" x2="809" y2="91" stroke="#4CAF50" stroke-width="1.3" opacity="0.65"/>
+                        <line x1="774" y1="79" x2="781" y2="89" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+
+                        <rect x="825" y="102" width="7" height="8" fill="#D5D0C5" stroke="#141A16" stroke-width="1.2"/>
+                        <circle cx="828.5" cy="97" r="5" fill="#81C784" stroke="#1B5E20" stroke-width="1.3"/>
 
                         <g class="badge-entregue">
-                            <circle cx="734" cy="28" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
-                            <path d="M729.5 28 L733 31.5 L739.5 25" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="777" cy="28" r="10" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
+                            <path d="M772.5 28 L776 31.5 L782.5 25" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </g>
                     </g>
 
-                    <!-- FUNDO ESCURO DOS TÚNEIS (Camada traseira) -->
-                    <path d="M0 110 V56 H24 C36 56 44 65 44 77 V110 Z" fill="#1F2922"/>
-                    <path d="M880 110 V56 H856 C844 56 836 65 836 77 V110 Z" fill="#1F2922"/>
-
-                    <!-- 3. CARRETA BAÚ REFRIGERADA GRANO (Passa por dentro dos túneis) -->
+                    <!-- 4. CARRETA BAÚ REFRIGERADA GRANO (Horta -> CD -> Mercado) -->
                     <g class="carreta-grupo">
                         <ellipse cx="115" cy="110" rx="64" ry="3" fill="#141A16" opacity="0.20"/>
 
@@ -945,32 +977,7 @@ if not st.session_state.usuario_autenticado:
                         </g>
                     </g>
 
-                    <!-- MOLDURA FRONTAL DOS TÚNEIS COM MÁSCARA SÓLIDA -->
-                    <!-- Túnel Esquerdo (Origem) -->
-                    <g>
-                        <!-- Máscara sólida na cor do fundo da tela para esconder a carreta antes da boca -->
-                        <path d="M0 28 H64 V112 H44 V77 C44 65 36 56 24 56 H0 Z" fill="#C9C5BA"/>
-                        <!-- Encosta/Morro verde -->
-                        <path d="M0 32 C26 32 48 48 56 76 L62 110 H44 V77 C44 65 36 56 24 56 H0 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
-                        <!-- Portal de concreto do Túnel -->
-                        <path d="M0 48 H26 C41 48 51 59 51 75 V110 H43 V76 C43 64 35 56 24 56 H0 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Placa de sinalização verde -->
-                        <rect x="6" y="41" width="22" height="6" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.1"/>
-                    </g>
-
-                    <!-- Túnel Direito (Destino) -->
-                    <g>
-                        <!-- Máscara sólida na cor do fundo da tela para esconder a carreta após entrar -->
-                        <path d="M880 28 H816 V112 H836 V77 C836 65 844 56 856 56 H880 Z" fill="#C9C5BA"/>
-                        <!-- Encosta/Morro verde -->
-                        <path d="M880 32 C854 32 832 48 824 76 L818 110 H836 V77 C836 65 844 56 856 56 H880 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
-                        <!-- Portal de concreto do Túnel -->
-                        <path d="M880 48 H854 C839 48 829 59 829 75 V110 H837 V76 C837 64 845 56 856 56 H880 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                        <!-- Placa de sinalização verde -->
-                        <rect x="852" y="41" width="22" height="6" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.1"/>
-                    </g>
-
-                    <!-- 4. CAMADA DE CHUVA SUAVE E RESPINGOS -->
+                    <!-- 5. CAMADA DE CHUVA SUAVE E RESPINGOS -->
                     <g stroke="#1B5E20" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
                         <g class="gota-chuva-1">
                             <line x1="85" y1="0" x2="81" y2="11"/><line x1="185" y1="8" x2="181" y2="19"/>
