@@ -1980,15 +1980,17 @@ if aba == "🏠 Início":
 
     components.html("""<script>
     const d = window.parent.document;
-    const f = () => d.querySelectorAll('section[data-testid="stMain"] button').forEach(b => {
+    const f = () => d.querySelectorAll('button').forEach(b => {
         const p = b.querySelector('p');
         if (!p || !p.textContent.includes(' || ')) return;
         const [t, s] = p.textContent.split(' || ');
-        p.innerHTML = `<b style="display:block;font-size:.9rem;color:#141A16;margin-bottom:4px;white-space:normal">${t}</b><span style="display:block;font-size:.75rem;color:#4A524C;line-height:1.35;white-space:normal">${s}</span>`;
-        b.style.cssText = 'width:100%!important;height:105px!important;background:#E4E0D6!important;border:1px solid rgba(27,94,32,.32)!important;border-radius:12px!important;padding:14px 16px!important;align-items:flex-start!important;text-align:left!important';
-        p.style.cssText = 'white-space:normal!important;overflow:visible!important;text-align:left!important;margin:0!important';
+        p.innerHTML = `<b style="display:block;font-size:.9rem;color:#141A16;margin-bottom:5px;white-space:normal">${t}</b><span style="display:block;font-size:.75rem;color:#4A524C;line-height:1.35;white-space:normal">${s}</span>`;
+        b.style.cssText = 'width:100%!important;height:106px!important;min-height:106px!important;background:#E4E0D6!important;border:1px solid rgba(27,94,32,.32)!important;border-radius:12px!important;padding:14px 16px!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:flex-start!important;text-align:left!important;box-shadow:0 2px 6px rgba(0,0,0,.04)!important';
+        const dv = b.querySelector('div');
+        if (dv) dv.style.cssText = 'width:100%!important;display:block!important;text-align:left!important';
+        p.style.cssText = 'white-space:normal!important;overflow:visible!important;text-overflow:unset!important;text-align:left!important;margin:0!important;width:100%!important';
     });
-    f(); new MutationObserver(f).observe(d.body, {childList:true, subtree:true});
+    f(); setTimeout(f, 150); new MutationObserver(f).observe(d.body, {childList:true, subtree:true});
     </script>""", height=0, width=0)
 
     # 4. Banda de Vegetais Ilustrada 3D (Black Line + Verde Grano)
