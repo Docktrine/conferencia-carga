@@ -1520,7 +1520,7 @@ if len(abas_nav) > 1:
             });
         }
         estilarXGuias();
-        setTimeout(estilarXGuias, 200);
+        setInterval(estilarXGuias, 300);
         </script>
         """,
         height=0,
