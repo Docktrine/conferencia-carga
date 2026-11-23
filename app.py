@@ -1964,40 +1964,57 @@ if aba == "🏠 Início":
     st.markdown(
         """
         <style>
-        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button {
+        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button,
+        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button {
             width: 100% !important;
-            min-height: 92px !important;
-            text-align: left !important;
-            justify-content: flex-start !important;
-            align-items: flex-start !important;
+            height: 108px !important;
+            min-height: 108px !important;
             background-color: #E4E0D6 !important;
             border: 1px solid rgba(27, 94, 32, 0.30) !important;
-            border-radius: 10px !important;
-            padding: 12px 14px !important;
-            color: #141A16 !important;
+            border-radius: 12px !important;
+            padding: 14px 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+            white-space: normal !important;
             transition: all 0.18s ease !important;
-            box-shadow: none !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         }
-        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button:hover {
+        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button:hover,
+        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button:hover {
             background-color: #EAE7DE !important;
             border-color: #1B5E20 !important;
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.12) !important;
+            box-shadow: 0 5px 14px rgba(27, 94, 32, 0.12) !important;
         }
-        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button p {
-            white-space: pre-line !important;
+        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button > div,
+        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button > div {
+            width: 100% !important;
+            display: block !important;
             text-align: left !important;
-            line-height: 1.35 !important;
-            font-size: 0.74rem !important;
+        }
+        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button p,
+        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button p {
+            white-space: pre-line !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            text-align: left !important;
+            line-height: 1.38 !important;
+            font-size: 0.76rem !important;
             color: #4A524C !important;
             font-weight: 400 !important;
+            margin: 0 !important;
         }
-        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button p::first-line {
+        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button p::first-line,
+        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button p::first-line {
             font-weight: 700 !important;
-            font-size: 0.88rem !important;
+            font-size: 0.90rem !important;
             color: #141A16 !important;
         }
         </style>
+        <div class="wms-grid-cards"></div>
         """,
         unsafe_allow_html=True
     )
@@ -2014,7 +2031,6 @@ if aba == "🏠 Início":
     cols_atalho = st.columns(4)
     for idx_at, mod_at in enumerate(modulos_disponiveis):
         with cols_atalho[idx_at % 4]:
-            st.markdown('<div class="wms-card-marker"></div>', unsafe_allow_html=True)
             desc_at = desc_modulos.get(mod_at, "Acessar módulo operacional.")
             if st.button(f"{mod_at}\n{desc_at}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
                 st.session_state.aba_ativa = mod_at
