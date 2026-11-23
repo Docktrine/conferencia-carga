@@ -1504,23 +1504,35 @@ if len(abas_nav) > 1:
         """
         <script>
         const doc = window.parent.document;
+        if (!doc.getElementById('wms-x-style')) {
+            const st = doc.createElement('style');
+            st.id = 'wms-x-style';
+            st.innerHTML = `
+                .wms-x-close {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    margin-left: 3px;
+                    transition: background-color 0.15s;
+                }
+                .wms-x-close:hover {
+                    background-color: rgba(183, 28, 28, 0.22) !important;
+                }
+            `;
+            doc.head.appendChild(st);
+        }
         function estilarXGuias() {
             doc.querySelectorAll('[data-testid="stButtonGroup"] button:not(:first-child) p, [data-testid="stPills"] button:not(:first-child) p').forEach(p => {
-                if (p.dataset.xEstilado) return;
-                const txt = p.innerHTML;
-                if (txt.includes('✕')) {
-                    p.innerHTML = txt.replace('✕', '<span class="wms-x-close" style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;margin-left:2px;transition:background-color 0.15s;">✕</span>');
-                    const sp = p.querySelector('.wms-x-close');
-                    if (sp) {
-                        sp.addEventListener('mouseenter', () => sp.style.backgroundColor = 'rgba(183, 28, 28, 0.20)');
-                        sp.addEventListener('mouseleave', () => sp.style.backgroundColor = 'transparent');
-                    }
-                    p.dataset.xEstilado = '1';
+                if (!p.querySelector('.wms-x-close') && p.innerHTML.includes('✕')) {
+                    p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
                 }
             });
         }
         estilarXGuias();
-        setInterval(estilarXGuias, 300);
+        new MutationObserver(estilarXGuias).observe(doc.body, { childList: true, subtree: true });
         </script>
         """,
         height=0,
