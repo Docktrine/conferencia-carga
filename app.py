@@ -2877,13 +2877,15 @@ elif aba == "🚚 Planejamento Logística":
         qtd_st5 = int((st_norm == limpar_texto("⚠️ Atrasado / Ocorrência")).sum())
         qtd_contratar = int(tr_norm.str.contains("CONTRATAR", na=False).sum())
 
-        k1, k2, k3, k4, k5, k6 = st.columns(6, gap="small")
-        k1.metric("⏳ Aguardando", qtd_st1)
-        k2.metric("🚚 No Pátio", qtd_st2)
-        k3.metric("📦 Conferindo", qtd_st3)
-        k4.metric("✅ Liberado", qtd_st4)
-        k5.metric("⚠️ Ocorrência", qtd_st5)
-        k6.metric("📝 Contratar", qtd_contratar)        
+        k1, k2, k3 = st.columns(3)
+        k1.metric("⏳ Aguardando Veículo", qtd_st1)
+        k2.metric("🚚 Veículo no Pátio", qtd_st2)
+        k3.metric("📦 Em Conferência", qtd_st3)
+
+        k4, k5, k6 = st.columns(3)
+        k4.metric("✅ Carregado / Liberado", qtd_st4)
+        k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
+        k6.metric("📝 Contratar Transportadora", qtd_contratar)        
         
         feriados_plan = obter_feriados_sistema()
         mapa_lt_plan = obter_mapa_lead_time()
