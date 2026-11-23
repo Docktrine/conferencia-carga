@@ -733,7 +733,7 @@ if not st.session_state.usuario_autenticado:
                             st.session_state.perfil_usuario = limpar_texto(u_row["perfil"])
                             st.session_state.modulos_usuario = mods
                             st.session_state.permissoes_usuario = perms
-                            st.session_state.aba_ativa = "🏠 Início" if len(mods) > 1 else (mods.pop(0) if mods else "")
+                            st.session_state.aba_ativa = "🏠 Início" if len(mods) > 1 else (mods if mods else "")
                             st.session_state.abas_abertas = ["🏠 Início"] if len(mods) > 1 else [st.session_state.aba_ativa]
                             raw_foto = str(u_row.get("foto_b64", "")).strip()
                             if raw_foto.startswith("IMG_"):
