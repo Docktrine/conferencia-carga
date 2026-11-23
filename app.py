@@ -3599,7 +3599,46 @@ elif aba == "📋 Gestão de Pedidos":
                         st.rerun()
         else:
             st.info("Nenhum item encontrado neste pedido.")
+    if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR", "ANALISTA") and lista_pendentes:
+        with st.expander("✅ Administrativo: Concluir Carga 100% Manualmente (Sem Bipar)"):
+            st.caption("Use esta opção quando uma carga já foi expedida ou conferida fisicamente e precisa sair da fila de pendentes.")
+            opcoes_baixa = [item["Carga / Pedido"] for item in lista_pendentes]
+            c_bx1, c_bx2 = st.columns((2, 1))
+            carga_baixa = c_bx1.selectbox("Selecione a carga pendente para concluir:", opcoes_baixa, key="sel_baixa_manual_gp")
+            lacre_baixa = c_bx2.text_input("Lacre (Opcional):", placeholder="Ex: 123456", key="in_lacre_baixa_gp")
+            conf_baixa = st.checkbox(f"Confirmo que desejo marcar a carga '{carga_baixa}' como 100% conferida agora.", key="chk_baixa_manual_gp")
 
+            if st.button("✅ Marcar Carga como 100% Conferida", type="primary", disabled=not conf_baixa, key="btn_baixa_manual_gp"):
+                df_banco_bx = carregar_dados("cargas")
+                mask_bx = df_banco_bx["id_carga"] == carga_baixa
+                if mask_bx.any():
+                    df_banco_bx.loc[mask_bx, "bipado"] = pd.to_numeric(df_banco_bx.loc[mask_bx, "pedido_real"], errors="coerce").fillna(0).astype(int)
+                    if lacre_baixa.strip():
+                        if "lacre" not in df_banco_bx.columns:
+                            df_banco_bx["lacre"] = ""
+                        df_banco_bx["lacre"] = df_banco_bx["lacre"].astype(object)
+                        df_banco_bx.loc[mask_bx, "lacre"] = limpar_texto(lacre_baixa)
+                    salvar_dados(df_banco_bx, "cargas")
+
+                    df_bipes_bx = carregar_dados("bipes")
+                    agora_bx = datetime.now(FUSO_BR).strftime("%d/%m/%Y %H:%M:%S")
+                    reg_bx = pd.DataFrame([{
+                        "data_hora": agora_bx,
+                        "id_carga": carga_baixa,
+                        "etiqueta": "BAIXA-MANUAL",
+                        "codigo_bipado": "TODOS",
+                        "codigo_vinculado": "TODOS",
+                        "tipo": "CONCLUSAO MANUAL",
+                        "lote": "-",
+                        "quantidade": int(pd.to_numeric(df_banco_bx.loc[mask_bx, "pedido_real"], errors="coerce").fillna(0).sum()),
+                        "conferente": st.session_state.nome_usuario
+                    }])
+                    df_bipes_bx = pd.concat([reg_bx, df_bipes_bx], ignore_index=True) if not df_bipes_bx.empty else reg_bx
+                    salvar_dados(df_bipes_bx, "bipes")
+
+                    st.success(f"🎉 Carga '{carga_baixa}' concluída 100% com sucesso e movida para Conferidas!")
+                    st.rerun()
+            
 elif aba == "📦 Conferência dos Pedidos":
     st.title("📦 Conferência dos Pedidos")
 
