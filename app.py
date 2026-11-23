@@ -1959,43 +1959,43 @@ if aba == "🏠 Início":
 
     st.divider()
 
-    # 3. Atalhos Rápidos para os Módulos
+    # 3. Atalhos Rápidos para os Módulos (Card inteiro clicável)
     st.subheader("🚀 Acesso Rápido aos Módulos")
     st.markdown(
         """
         <style>
-        /* Cartões compactos e botões pílula modernos na Página Inicial */
-        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"]:has(button[data-testid="stBaseButton-primary"]) {
+        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button {
+            width: 100% !important;
+            min-height: 92px !important;
+            text-align: left !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
             background-color: #E4E0D6 !important;
             border: 1px solid rgba(27, 94, 32, 0.30) !important;
             border-radius: 10px !important;
-            padding: 2px 6px !important;
+            padding: 12px 14px !important;
+            color: #141A16 !important;
             transition: all 0.18s ease !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"]:has(button[data-testid="stBaseButton-primary"]):hover {
-            border-color: #1B5E20 !important;
-            background-color: #EAE7DE !important;
-            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.10) !important;
-        }
-        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"] {
-            background-color: #1F2922 !important;
-            border: 1px solid #4CAF50 !important;
-            border-radius: 20px !important;
-            padding: 2px 12px !important;
-            min-height: 28px !important;
-            height: 28px !important;
-            width: auto !important;
-            float: right !important;
             box-shadow: none !important;
         }
-        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"] p {
-            color: #FFFFFF !important;
-            font-weight: 600 !important;
-            font-size: 0.74rem !important;
-            white-space: nowrap !important;
+        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button:hover {
+            background-color: #EAE7DE !important;
+            border-color: #1B5E20 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.12) !important;
         }
-        section[data-testid="stMain"] div[data-testid="stVerticalBlockBorderWrapper"] button[data-testid="stBaseButton-primary"]:hover {
-            background-color: #1B5E20 !important;
+        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button p {
+            white-space: pre-line !important;
+            text-align: left !important;
+            line-height: 1.35 !important;
+            font-size: 0.74rem !important;
+            color: #4A524C !important;
+            font-weight: 400 !important;
+        }
+        div[data-testid="stVerticalBlock"]:has(> div.wms-card-marker) div[data-testid="stButton"] button p::first-line {
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            color: #141A16 !important;
         }
         </style>
         """,
@@ -2014,12 +2014,11 @@ if aba == "🏠 Início":
     cols_atalho = st.columns(4)
     for idx_at, mod_at in enumerate(modulos_disponiveis):
         with cols_atalho[idx_at % 4]:
-            with st.container(border=True):
-                st.markdown(f"<div style='font-weight:700; font-size:0.86rem; color:#141A16; margin-bottom:3px;'>{mod_at}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='font-size:0.72rem; color:#4A524C; line-height:1.25; min-height:34px; margin-bottom:6px;'>{desc_modulos.get(mod_at, 'Acessar módulo operacional.')}</div>", unsafe_allow_html=True)
-                if st.button("Abrir ➔", key=f"btn_atalho_ini_{idx_at}", type="primary", use_container_width=True):
-                    st.session_state.aba_ativa = mod_at
-                    st.rerun()
+            st.markdown('<div class="wms-card-marker"></div>', unsafe_allow_html=True)
+            desc_at = desc_modulos.get(mod_at, "Acessar módulo operacional.")
+            if st.button(f"{mod_at}\n{desc_at}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
+                st.session_state.aba_ativa = mod_at
+                st.rerun()
 
     # 4. Banda de Vegetais Ilustrada 3D (Black Line + Verde Grano)
     components.html(
