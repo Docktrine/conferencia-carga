@@ -2869,19 +2869,22 @@ elif aba == "🚚 Planejamento Logística":
             df_exibir_plan = df_exibir_plan[mask_busca]
 
         st_norm = df_exibir_plan["Status"].apply(limpar_texto)
+        tr_norm = df_exibir_plan["Transportadora"].apply(limpar_texto)
         qtd_st1 = int((st_norm == limpar_texto("⏳ Aguardando Veículo")).sum())
         qtd_st2 = int((st_norm == limpar_texto("🚚 Veículo no Pátio")).sum())
         qtd_st3 = int((st_norm == limpar_texto("📦 Em Conferência")).sum())
         qtd_st4 = int((st_norm == limpar_texto("✅ Carregado / Liberado")).sum())
         qtd_st5 = int((st_norm == limpar_texto("⚠️ Atrasado / Ocorrência")).sum())
+        qtd_contratar = int(tr_norm.str.contains("CONTRATAR", na=False).sum())
 
-        k1, k2, k3, k4, k5 = st.columns(5)
+        k1, k2, k3, k4, k5, k6 = st.columns(6)
         k1.metric("⏳ Aguardando Veículo", qtd_st1)
         k2.metric("🚚 Veículo no Pátio", qtd_st2)
         k3.metric("📦 Em Conferência", qtd_st3)
         k4.metric("✅ Carregado / Liberado", qtd_st4)
         k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
-
+        k6.metric("📝 Contratar Transp.", qtd_contratar)
+        
         feriados_plan = obter_feriados_sistema()
         mapa_lt_plan = obter_mapa_lead_time()
 
