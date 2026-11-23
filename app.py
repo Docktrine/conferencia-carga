@@ -1959,65 +1959,8 @@ if aba == "🏠 Início":
 
     st.divider()
 
-    # 3. Atalhos Rápidos para os Módulos (Card inteiro clicável)
+    # 3. Atalhos Rápidos para os Módulos
     st.subheader("🚀 Acesso Rápido aos Módulos")
-    st.markdown(
-        """
-        <style>
-        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button,
-        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button {
-            width: 100% !important;
-            height: 108px !important;
-            min-height: 108px !important;
-            background-color: #E4E0D6 !important;
-            border: 1px solid rgba(27, 94, 32, 0.30) !important;
-            border-radius: 12px !important;
-            padding: 14px 16px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: flex-start !important;
-            align-items: flex-start !important;
-            text-align: left !important;
-            white-space: normal !important;
-            transition: all 0.18s ease !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-        }
-        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button:hover,
-        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button:hover {
-            background-color: #EAE7DE !important;
-            border-color: #1B5E20 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 5px 14px rgba(27, 94, 32, 0.12) !important;
-        }
-        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button > div,
-        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button > div {
-            width: 100% !important;
-            display: block !important;
-            text-align: left !important;
-        }
-        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button p,
-        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button p {
-            white-space: pre-line !important;
-            overflow: visible !important;
-            text-overflow: unset !important;
-            text-align: left !important;
-            line-height: 1.38 !important;
-            font-size: 0.76rem !important;
-            color: #4A524C !important;
-            font-weight: 400 !important;
-            margin: 0 !important;
-        }
-        div.wms-grid-cards + div[data-testid="stHorizontalBlock"] button p::first-line,
-        div[data-testid="stElementContainer"]:has(.wms-grid-cards) + div[data-testid="stHorizontalBlock"] button p::first-line {
-            font-weight: 700 !important;
-            font-size: 0.90rem !important;
-            color: #141A16 !important;
-        }
-        </style>
-        <div class="wms-grid-cards"></div>
-        """,
-        unsafe_allow_html=True
-    )
     desc_modulos = {
         "📊 Análise de Pedidos": "Importar carteira do BI, calcular SLA/dias úteis e vincular NF-e.",
         "🚚 Planejamento Logística": "Programar frota, acompanhar status e disparar alertas.",
@@ -2031,10 +1974,22 @@ if aba == "🏠 Início":
     cols_atalho = st.columns(4)
     for idx_at, mod_at in enumerate(modulos_disponiveis):
         with cols_atalho[idx_at % 4]:
-            desc_at = desc_modulos.get(mod_at, "Acessar módulo operacional.")
-            if st.button(f"{mod_at}\n{desc_at}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
+            if st.button(f"{mod_at} || {desc_modulos.get(mod_at, '')}", key=f"btn_atalho_ini_{idx_at}", use_container_width=True):
                 st.session_state.aba_ativa = mod_at
                 st.rerun()
+
+    components.html("""<script>
+    const d = window.parent.document;
+    const f = () => d.querySelectorAll('section[data-testid="stMain"] button').forEach(b => {
+        const p = b.querySelector('p');
+        if (!p || !p.textContent.includes(' || ')) return;
+        const [t, s] = p.textContent.split(' || ');
+        p.innerHTML = `<b style="display:block;font-size:.9rem;color:#141A16;margin-bottom:4px;white-space:normal">${t}</b><span style="display:block;font-size:.75rem;color:#4A524C;line-height:1.35;white-space:normal">${s}</span>`;
+        b.style.cssText = 'width:100%!important;height:105px!important;background:#E4E0D6!important;border:1px solid rgba(27,94,32,.32)!important;border-radius:12px!important;padding:14px 16px!important;align-items:flex-start!important;text-align:left!important';
+        p.style.cssText = 'white-space:normal!important;overflow:visible!important;text-align:left!important;margin:0!important';
+    });
+    f(); new MutationObserver(f).observe(d.body, {childList:true, subtree:true});
+    </script>""", height=0, width=0)
 
     # 4. Banda de Vegetais Ilustrada 3D (Black Line + Verde Grano)
     components.html(
