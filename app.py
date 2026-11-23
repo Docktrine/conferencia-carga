@@ -2416,7 +2416,7 @@ elif aba == "📊 Análise de Pedidos":
                         cidades_sem_lt.add(f"{cid_val}/{uf_val}")
 
                     if pd.notna(dt_c) and pd.notna(dt_e) and lt_dias is not None:
-                        dias_rota = round(max(0.0, lt_dias - 5.0), 1)
+                        dias_rota = round(max(0.0, lt_dias - 2.0), 1)
                         dt_sug_carreg = subtrair_dias_uteis(dt_e, dias_rota, feriados_sys)
                         uteis_desde_criacao = contar_dias_uteis_entre(dt_c, hoje_dt, feriados_sys)
                         uteis_ate_carreg = contar_dias_uteis_entre(hoje_dt, dt_sug_carreg, feriados_sys)
@@ -2891,7 +2891,7 @@ elif aba == "🚚 Planejamento Logística":
             lt_v = mapa_lt_plan.get((u_p, c_p))
             if lt_v is None:
                 return "-", "-"
-            rota_v = round(max(0.0, lt_v - 5.0), 1)
+            rota_v = round(max(0.0, lt_v - 2.0), 1)
             dt_ent_p = pd.to_datetime(str(row_p.get("Data da entrega", "")).strip(), dayfirst=True, errors="coerce")
             if pd.isna(dt_ent_p):
                 return f"{lt_v}d ({rota_v}d rota)", "-"
@@ -3013,7 +3013,7 @@ elif aba == "🚚 Planejamento Logística":
         if q_uf.strip() and q_cid.strip():
             lt_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
             if lt_q is not None:
-                rota_q = round(max(0.0, lt_q - 5.0), 1)
+                rota_q = round(max(0.0, lt_q - 2.0), 1)
                 dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
                 if pd.notna(dt_ent_q):
                     dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
