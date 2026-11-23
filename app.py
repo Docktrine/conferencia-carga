@@ -208,7 +208,7 @@ def _calcular_pascoa(ano):
     dia = ((h + l - 7 * m + 114) % 31) + 1
     return datetime(ano, mes, dia).date()
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=43200, show_spinner=False)
 def obter_feriados_sistema():
     feriados = set()
     ano_base = datetime.now().year
