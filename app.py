@@ -2649,6 +2649,75 @@ elif aba == "🚚 Planejamento Logística":
     df_plan["Nº Pedido"] = df_plan["Nº Pedido"].apply(limpar_texto)
     status_padrao = STATUS_PLANEJAMENTO.copy().pop(0)
     df_plan["Status"] = df_plan["Status"].apply(lambda s: s if str(s).strip() != "" else status_padrao)
+    def _carga_bate_com_pedido(id_carga_limpo, campo_plan_limpo):
+        if not id_carga_limpo or not campo_plan_limpo:
+            return False
+        if id_carga_limpo == campo_plan_limpo:
+            return True
+        return bool(re.search(r"(?<![A-Z0-9])" + re.escape(id_carga_limpo) + r"(?![A-Z0-9])", campo_plan_limpo))
+
+    def sincronizar_status_planejamento_auto(df_p_in):
+        if df_p_in.empty:
+            return df_p_in
+        df_c_sync = carregar_dados("cargas")
+        status_cargas_map = {}
+        if not df_c_sync.empty and "id_carga" in df_c_sync.columns:
+            df_c_sync["pedido_real"] = pd.to_numeric(df_c_sync["pedido_real"], errors="coerce").fillna(0).astype(int)
+            df_c_sync["bipado"] = pd.to_numeric(df_c_sync["bipado"], errors="coerce").fillna(0).astype(int)
+            for cid_s, grp_s in df_c_sync.groupby("id_carga", sort=False):
+                cid_k = limpar_texto(cid_s)
+                if cid_k:
+                    status_cargas_map[cid_k] = {
+                        "bipado": int(grp_s["bipado"].sum()),
+                        "concluida": verificar_carga_100_concluida(grp_s)
+                    }
+
+        agora_sp = datetime.now(FUSO_BR)
+        alterou_algo = False
+        df_p_out = df_p_in.copy()
+        df_p_out["Status"] = df_p_out["Status"].astype(object)
+
+        for idx_s, row_s in df_p_out.iterrows():
+            ped_s = limpar_texto(row_s.get("Nº Pedido", ""))
+            idc_s = limpar_texto(row_s.get("id_carga", ""))
+            st_atual = str(row_s.get("Status", "")).strip()
+            val_s = str(row_s.get("validado", "")).strip()
+            esta_auditada = bool(val_s and val_s.lower() not in ("nan", "none", "null", "nao", "não"))
+
+            info_c = status_cargas_map.get(idc_s) or status_cargas_map.get(ped_s)
+            if info_c is None and ped_s:
+                for k_cid, v_inf in status_cargas_map.items():
+                    if _carga_bate_com_pedido(k_cid, ped_s):
+                        info_c = v_inf
+                        break
+
+            novo_st = st_atual
+
+            if esta_auditada and (info_c is None or info_c["concluida"]):
+                novo_st = "✅ Carregado / Liberado"
+            elif info_c is not None and info_c["bipado"] > 0 and st_atual != "✅ Carregado / Liberado":
+                novo_st = "📦 Em Conferência"
+            elif limpar_texto(st_atual) == limpar_texto("⏳ Aguardando Veículo"):
+                dt_ag = interpretar_data_br(row_s.get("Data", ""))
+                hr_ag = formatar_hora_br_str(row_s.get("Hora", ""))
+                if dt_ag is not None and (agora_sp.date() - dt_ag).days <= 7:
+                    if hr_ag and ":" in hr_ag:
+                        hh, mm = [int(x) for x in hr_ag.split(":")[:2]]
+                        dt_hr_ag = datetime(dt_ag.year, dt_ag.month, dt_ag.day, hh, mm, tzinfo=FUSO_BR)
+                        if agora_sp > dt_hr_ag:
+                            novo_st = "⚠️ Atrasado / Ocorrência"
+                    elif agora_sp.date() > dt_ag:
+                        novo_st = "⚠️ Atrasado / Ocorrência"
+
+            if novo_st != st_atual:
+                df_p_out.at[idx_s, "Status"] = novo_st
+                alterou_algo = True
+
+        if alterou_algo:
+            salvar_dados(df_p_out[COLUNAS_PLANEJAMENTO], "planejamento")
+        return df_p_out
+
+    df_plan = sincronizar_status_planejamento_auto(df_plan)    
     MESES_PT = {
         "01": "Janeiro", "02": "Fevereiro", "03": "Março", "04": "Abril",
         "05": "Maio", "06": "Junho", "07": "Julho", "08": "Agosto",
@@ -4535,7 +4604,12 @@ elif aba == "✅ Auditoria e Ajustes":
                 df_plan_salvar["validado"] = ""
 
             df_plan_salvar["validado"] = df_plan_salvar["validado"].astype(object)
-            mask_p = df_plan_salvar["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada)
+            cid_aud_limpo = limpar_texto(carga_selecionada)
+            padrao_aud = r"(?<![A-Z0-9])" + re.escape(cid_aud_limpo) + r"(?![A-Z0-9])"
+            mask_p = (
+                (df_plan_salvar["id_carga"].apply(limpar_texto) == cid_aud_limpo) |
+                df_plan_salvar["Nº Pedido"].apply(limpar_texto).str.contains(padrao_aud, regex=True, na=False)
+            )
 
             if mask_p.any():
                 df_plan_salvar.loc[mask_p, "validado"] = carimbo_val
@@ -4908,4 +4982,5 @@ elif aba == "👥 Central de Usuários":
                 st.cache_data.clear()
                 st.success(f"✅ Acessos e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
                 st.rerun()
+
 
