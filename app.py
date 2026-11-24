@@ -287,11 +287,9 @@ def subtrair_dias_uteis(dt_alvo, qtd_dias, feriados_set):
         d = ts.date()
     except Exception:
         return pd.NaT
-    passos = int(math.ceil(max(0.0, float(qtd_dias))))
-    while passos > 0:
-        d = (pd.Timestamp(d) - pd.Timedelta(days=1)).date()
-        if d.weekday() < 5 and d not in feriados_set:
-            passos -= 1
+    dias_corridos_rota = int(round(max(0.0, float(qtd_dias))))
+    if dias_corridos_rota > 0:
+        d = (pd.Timestamp(d) - pd.Timedelta(days=dias_corridos_rota)).date()
     while d.weekday() >= 5 or d in feriados_set:
         d = (pd.Timestamp(d) - pd.Timedelta(days=1)).date()
     return pd.Timestamp(d)
@@ -317,7 +315,7 @@ def obter_mapa_lead_time():
     df_lt = carregar_dados("lead time")
     mapa = {}
     if df_lt is not None and not df_lt.empty:
-        col_uf, col_cid, col_dias = None, None, None
+        col_uf, col_cid, col_dias, col_km = None, None, None, None
         for c in df_lt.columns:
             cl = limpar_texto(c)
             if not col_uf and cl in ("ESTADO", "UF"):
@@ -326,15 +324,36 @@ def obter_mapa_lead_time():
                 col_cid = c
             elif not col_dias and ("DIAS" in cl or "LEAD" in cl or "PRAZO" in cl):
                 col_dias = c
+            elif not col_km and ("KM" in cl or "DIST" in cl):
+                col_km = c
         if col_uf and col_cid and col_dias:
             for _, r in df_lt.iterrows():
                 u_k = limpar_texto(r[col_uf])
                 c_k = limpar_texto(r[col_cid])
                 try:
-                    mapa[(u_k, c_k)] = float(str(r[col_dias]).strip().replace(",", "."))
+                    dias_v = float(str(r[col_dias]).strip().replace(",", "."))
+                    km_v = None
+                    if col_km and str(r[col_km]).strip() not in ("", "NAN", "NONE"):
+                        km_v = float(str(r[col_km]).strip().replace(",", "."))
+                    mapa[(u_k, c_k)] = (dias_v, km_v)
                 except Exception:
                     pass
     return mapa
+
+def calcular_dias_rota_efetivos(lt_info):
+    if lt_info is None:
+        return None, None, None
+    lt_dias, km_val = lt_info if isinstance(lt_info, tuple) else (lt_info, None)
+    if km_val is not None:
+        if km_val <= 80:
+            dias_rota = 0.0
+        elif km_val <= 350:
+            dias_rota = 1.0
+        else:
+            dias_rota = round(max(0.0, lt_dias - 2.0), 1)
+    else:
+        dias_rota = round(max(0.0, lt_dias - 2.0), 1)
+    return lt_dias, dias_rota, km_val
 
 def limpar_texto(valor):
     if pd.isna(valor):
@@ -2444,12 +2463,13 @@ elif aba == "📊 Análise de Pedidos":
                     dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce")
                     dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce")
 
-                    lt_dias = mapa_lt.get((uf_val, cid_val))
-                    if lt_dias is None and (uf_val or cid_val):
+                    lt_info = mapa_lt.get((uf_val, cid_val))
+                    if lt_info is None and (uf_val or cid_val):
                         cidades_sem_lt.add(f"{cid_val}/{uf_val}")
 
-                    if pd.notna(dt_c) and pd.notna(dt_e) and lt_dias is not None:
-                        dias_rota = round(max(0.0, lt_dias - 2.0), 1)
+                    if pd.notna(dt_c) and pd.notna(dt_e) and lt_info is not None:
+                        lt_dias, dias_rota, km_val = calcular_dias_rota_efetivos(lt_info)
+                        km_tag_bi = f" • {int(round(km_val))}km" if km_val is not None else ""
                         dt_sug_carreg = subtrair_dias_uteis(dt_e, dias_rota, feriados_sys)
                         uteis_desde_criacao = contar_dias_uteis_entre(dt_c, hoje_dt, feriados_sys)
                         uteis_ate_carreg = contar_dias_uteis_entre(hoje_dt, dt_sug_carreg, feriados_sys)
@@ -2470,12 +2490,13 @@ elif aba == "📊 Análise de Pedidos":
 
                         dt_lim_str = dt_sug_carreg.strftime("%d/%m/%Y")
                         obs_criacao = f"{uteis_desde_criacao}d úteis (SLA 1d)" if uteis_desde_criacao <= 1 else f"⚠️ {uteis_desde_criacao}d úteis (perdeu {uteis_desde_criacao - 1}d)"
-                        rota_str = f"{lt_dias}d ({dias_rota}d rota)"
+                        rota_str = f"{lt_dias}d ({dias_rota}d rota{km_tag_bi})"
                     else:
                         janela_exp = None
                         dt_lim_str = "-"
                         obs_criacao = "-"
-                        rota_str = f"{lt_dias}d" if lt_dias is not None else "-"
+                        lt_tot_exib = lt_info[0] if isinstance(lt_info, tuple) else lt_info
+                        rota_str = f"{lt_tot_exib}d" if lt_tot_exib is not None else "-"
                         status_sla = "⚪ Sem Lead Time / Data Inválida"
                         ordem_prio = 5
 
@@ -3008,15 +3029,16 @@ elif aba == "🚚 Planejamento Logística":
         def calc_lt_e_sugestao(row_p):
             u_p = limpar_texto(row_p.get("UF", ""))
             c_p = limpar_texto(row_p.get("Cidade", ""))
-            lt_v = mapa_lt_plan.get((u_p, c_p))
-            if lt_v is None:
+            lt_info_p = mapa_lt_plan.get((u_p, c_p))
+            if lt_info_p is None:
                 return "-", "-"
-            rota_v = round(max(0.0, lt_v - 2.0), 1)
+            lt_v, rota_v, km_v = calcular_dias_rota_efetivos(lt_info_p)
+            km_tag = f" • {int(round(km_v))}km" if km_v is not None else ""
             dt_ent_p = pd.to_datetime(str(row_p.get("Data da entrega", "")).strip(), dayfirst=True, errors="coerce")
             if pd.isna(dt_ent_p):
-                return f"{lt_v}d ({rota_v}d rota)", "-"
+                return f"{lt_v}d ({rota_v}d rota{km_tag})", "-"
             dt_sug_p = subtrair_dias_uteis(dt_ent_p, rota_v, feriados_plan)
-            return f"{lt_v}d ({rota_v}d rota)", dt_sug_p.strftime("%d/%m/%Y")
+            return f"{lt_v}d ({rota_v}d rota{km_tag})", dt_sug_p.strftime("%d/%m/%Y")
 
         df_tab_plan = df_exibir_plan.drop(columns=["Notificação"], errors="ignore").copy()
         res_lt_plan = [list(t) for t in df_tab_plan.apply(calc_lt_e_sugestao, axis=1).tolist()]
@@ -3131,16 +3153,17 @@ elif aba == "🚚 Planejamento Logística":
         q_cid = q_c2.text_input("Cidade p/ Consulta:", placeholder="Ex: BRASILIA", key="q_lt_cid")
         q_ent = q_c3.text_input("Data Entrega Prevista:", placeholder="Ex: 26/11/2026", key="q_lt_ent")
         if q_uf.strip() and q_cid.strip():
-            lt_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
-            if lt_q is not None:
-                rota_q = round(max(0.0, lt_q - 2.0), 1)
+            lt_info_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
+            if lt_info_q is not None:
+                lt_q, rota_q, km_q = calcular_dias_rota_efetivos(lt_info_q)
+                km_txt_q = f" • {int(round(km_q))} km" if km_q is not None else ""
                 dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
                 if pd.notna(dt_ent_q):
                     dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
                     if pd.notna(dt_sug_q):
-                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota) | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
+                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}) | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
                 else:
-                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota). Informe a data de entrega ao lado para ver a data sugerida.")
+                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}). Informe a data de entrega ao lado para ver a data sugerida.")
             else:
                 st.warning(f"⚠️ Cidade **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}** não encontrada na aba `lead time`.")
         
