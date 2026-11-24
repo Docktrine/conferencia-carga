@@ -23,28 +23,37 @@ st.set_page_config(
     layout="wide"
 )
 
-_SVG_ROCK = f'<svg xmlns="{"http://www." + "w3.org/2000/svg"}" viewBox="0 0 96 86" fill="none"><ellipse cx="22" cy="40" rx="11" ry="3.5" transform="rotate(-12 22 40)" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/><line x1="22" y1="43" x2="22" y2="74" stroke="#141A16" stroke-width="2" stroke-linecap="round"/><ellipse cx="74" cy="40" rx="11" ry="3.5" transform="rotate(12 74 40)" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/><line x1="74" y1="43" x2="74" y2="74" stroke="#141A16" stroke-width="2" stroke-linecap="round"/><circle cx="36" cy="24" r="9" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/><circle cx="60" cy="24" r="9" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/><circle cx="48" cy="16" r="11" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/><path d="M32 32 C27 28 29 19 36 19 C38 11 46 9 50 13 C55 9 63 12 63 20 C69 22 69 30 63 32 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/><rect x="40" y="34" width="7" height="4.5" rx="1.5" fill="#141A16"/><rect x="49" y="34" width="7" height="4.5" rx="1.5" fill="#141A16"/><path d="M45 41 Q48 44 51 41" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/><line x1="38" y1="44" x2="26" y2="30" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/><line x1="58" y1="44" x2="70" y2="30" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/><circle cx="48" cy="60" r="17" fill="#EAE7E0" stroke="#141A16" stroke-width="2.4"/><circle cx="48" cy="60" r="12" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.8"/><circle cx="48" cy="60" r="4" fill="#1B5E20"/><line x1="35" y1="73" x2="31" y2="79" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/><line x1="61" y1="73" x2="65" y2="79" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/></svg>'
-_B64_ROCK = base64.b64encode(_SVG_ROCK.encode("utf-8")).decode("utf-8")
+    """,
 st.markdown(
     """
     <style>
     div[data-testid="stStatusWidget"] {
         display: none !important;
     }
-    /* === MASCOTE VERDURA DANÇANDO NO CARREGAMENTO === */
-    @keyframes dancaVerduraGrano {
-        0%, 100% { transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
-        25% { transform: translate(-50%, -58%) rotate(0deg) scale(1.06); }
-        50% { transform: translate(-50%, -50%) rotate(8deg) scale(1); }
-        75% { transform: translate(-50%, -58%) rotate(0deg) scale(1.06); }
+    /* === LOADER EXECUTIVO GRANO (G + ANEL GIRANDO) === */
+    @keyframes giroAnelGrano {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
     div[data-testid="stAppViewContainer"][aria-busy="true"]::before,
     .stApp[data-test-script-state="running"]::before {
-        content: "";
+        content: "G";
         position: fixed;
-        inset: 0;
-        background: rgba(201, 197, 186, 0.42);
-        backdrop-filter: blur(2px);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Montserrat', 'Segoe UI', sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #1B5E20;
+        background-color: #FFFFFF;
+        border-radius: 50%;
+        box-shadow: 0 0 0 9999px rgba(201, 197, 186, 0.42), 0 6px 18px rgba(20, 26, 22, 0.16);
         z-index: 999990;
         pointer-events: none;
     }
@@ -54,17 +63,13 @@ st.markdown(
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 96px;
-        height: 96px;
-        background-color: transparent;
-        border: none;
-        border-radius: 0;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        background-image: url("data:image/svg+xml;base64,__ROCK_B64__");
-        animation: dancaVerduraGrano 0.65s ease-in-out infinite;
-        filter: drop-shadow(0 6px 12px rgba(20, 26, 22, 0.25));
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        border: 3.5px solid rgba(27, 94, 32, 0.18);
+        border-top-color: #1B5E20;
+        border-right-color: #4CAF50;
+        animation: giroAnelGrano 0.75s linear infinite;
         z-index: 999991;
         pointer-events: none;
     }
