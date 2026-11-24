@@ -213,7 +213,7 @@ st.markdown(
         background-color: rgba(76, 175, 80, 0.10) !important;
     }        
     </style>
-    """.replace("__ROCK_B64__", _B64_ROCK),
+    """,
     unsafe_allow_html=True
 )
 conn = st.connection("gsheets", type=GSheetsConnection)
