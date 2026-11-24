@@ -618,16 +618,17 @@ def padronizar_df_maiusculo(df):
             )
     return df
 
-@st.cache_data(ttl=1800, show_spinner=False)
+@st.cache_data(ttl=3600, show_spinner=False)
 def _ler_planilha_com_cache(aba):
-    for tentativa in range(3):
+    for tentativa in range(4):
         try:
             df = conn.read(worksheet=aba, ttl=0)
             df = df.dropna(how="all")
             return padronizar_df_maiusculo(df)
         except Exception as e:
-            if tentativa < 2:
-                time.sleep(4.0 * (tentativa + 1))
+            if tentativa < 3:
+                espera = 3.0 * (tentativa + 1) if "429" in str(e) or "Quota" in str(e) else 1.5
+                time.sleep(espera)
             else:
                 raise e
 
@@ -635,7 +636,7 @@ def carregar_dados(aba):
     try:
         return _ler_planilha_com_cache(aba).copy()
     except Exception as e:
-        st.error(f"⚠️ Instabilidade temporária na comunicação com o Google Sheets ao ler '{aba}'. Aguarde 3 segundos e recarregue. (Detalhe: {e})")
+        st.warning(f"⏳ O Google Sheets pediu uma pausa rápida ao ler '{aba}'. Aguarde 10 segundos e clique em atualizar.")
         st.stop()
 
 def salvar_dados(df, aba):
@@ -645,14 +646,15 @@ def salvar_dados(df, aba):
     df_padronizado = padronizar_df_maiusculo(df)
     if df_padronizado.empty:
         return
-    for tentativa in range(3):
+    for tentativa in range(4):
         try:
             conn.update(worksheet=aba, data=df_padronizado)
             _ler_planilha_com_cache.clear(aba)
             return
         except Exception as e:
-            if tentativa < 2:
-                time.sleep(4.0 * (tentativa + 1))
+            if tentativa < 3:
+                espera = 3.0 * (tentativa + 1) if "429" in str(e) or "Quota" in str(e) else 1.5
+                time.sleep(espera)
             else:
                 raise e
 
