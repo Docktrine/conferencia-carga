@@ -1318,11 +1318,13 @@ with st.sidebar:
         }
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="select"] > div,
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="input"] > div,
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="base-input"],
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) input,
         div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div,
         div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) div[data-baseweb="select"] > div,
         div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div {
-            background-color: #F4F7F3 !important;
-            border: 1px solid rgba(27, 94, 32, 0.45) !important;
+            background-color: #F6F8F5 !important;
+            border-color: rgba(27, 94, 32, 0.45) !important;
             border-radius: 8px !important;
         }
         div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]),
