@@ -278,9 +278,15 @@ def obter_feriados_sistema():
     return feriados
 
 def subtrair_dias_uteis(dt_alvo, qtd_dias, feriados_set):
-    if pd.isna(dt_alvo):
+    if dt_alvo is None or pd.isna(dt_alvo):
         return pd.NaT
-    d = dt_alvo.date() if hasattr(dt_alvo, "date") else dt_alvo
+    try:
+        ts = pd.Timestamp(dt_alvo)
+        if pd.isna(ts):
+            return pd.NaT
+        d = ts.date()
+    except Exception:
+        return pd.NaT
     passos = int(math.ceil(max(0.0, float(qtd_dias))))
     while passos > 0:
         d = (pd.Timestamp(d) - pd.Timedelta(days=1)).date()
@@ -3131,7 +3137,8 @@ elif aba == "🚚 Planejamento Logística":
                 dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
                 if pd.notna(dt_ent_q):
                     dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
-                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota) | 🎯 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
+                    if pd.notna(dt_sug_q):
+                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota) | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
                 else:
                     st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota). Informe a data de entrega ao lado para ver a data sugerida.")
             else:
