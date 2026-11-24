@@ -1292,12 +1292,28 @@ with st.sidebar:
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         }
 
-        /* 4. Tabelas e Dataframes */
+        /* 4. Tabelas e Dataframes (Alto Contraste Corporativo Grano) */
         [data-testid="stDataFrame"] {
-            border: 1px solid rgba(27, 94, 32, 0.30) !important;
+            background-color: #FFFFFF !important;
+            border: 1.5px solid #2E7D32 !important;
             border-radius: 12px !important;
             overflow: hidden !important;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.08) !important;
+        }
+        [data-testid="stDataFrame"] [data-testid="glideDataEditor"] {
+            --gdg-bg-cell: #FFFFFF !important;
+            --gdg-bg-cell-medium: #F4F7F3 !important;
+            --gdg-bg-header: #1B5E20 !important;
+            --gdg-bg-header-has-focus: #144718 !important;
+            --gdg-bg-header-hovered: #236B28 !important;
+            --gdg-text-header: #FFFFFF !important;
+            --gdg-text-dark: #111827 !important;
+            --gdg-text-medium: #1F2937 !important;
+            --gdg-text-light: #4B5563 !important;
+            --gdg-border-color: #D1DDD0 !important;
+            --gdg-horizontal-border-color: #DCE6DB !important;
+            --gdg-accent-color: #1B5E20 !important;
+            --gdg-accent-light: rgba(27, 94, 32, 0.12) !important;
         }
         /* 5. Destaque Visual Refinado para Barras e Caixas de Filtro (Verde-Sálvia Grano) */
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) {
