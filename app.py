@@ -48,24 +48,26 @@ st.markdown(
     }
     div[data-testid="stAppViewContainer"][aria-busy="true"]::after,
     .stApp[data-test-script-state="running"]::after {
-        content: "";
+        content: "🥬";
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 88px;
-        height: 88px;
+        width: 84px;
+        height: 84px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 46px;
+        line-height: 1;
         background-color: #E8F5E9;
         border: 3px solid #1B5E20;
         border-radius: 50%;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 68px 68px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 80 86' fill='none'%3E%3Cpath d='M31 44 L33 65 H47 L49 44 Z' fill='%23EAE7E0' stroke='%23141A16' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='25' cy='34' r='10' fill='%23A5D6A7' stroke='%231B5E20' stroke-width='2'/%3E%3Ccircle cx='55' cy='34' r='10' fill='%23A5D6A7' stroke='%231B5E20' stroke-width='2'/%3E%3Ccircle cx='40' cy='24' r='12' fill='%23C8E6C9' stroke='%231B5E20' stroke-width='2'/%3E%3Cpath d='M21 43 C15 39 17 28 25 28 C27 19 37 16 42 21 C48 16 58 20 58 29 C65 31 65 41 58 44 Z' fill='%23E8F5E9' stroke='%231B5E20' stroke-width='2.2' stroke-linejoin='round'/%3E%3Crect x='30' y='48' width='8' height='5' rx='1.5' fill='%23141A16'/%3E%3Crect x='42' y='48' width='8' height='5' rx='1.5' fill='%23141A16'/%3E%3Cpath d='M37 56 Q40 59 43 56' stroke='%23141A16' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M31 50 Q23 43 20 38 M49 50 Q57 43 60 38' stroke='%23141A16' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M34 65 V72 M46 65 V72' stroke='%23141A16' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
         animation: dancaVerduraGrano 0.65s ease-in-out infinite;
         box-shadow: 0 8px 20px rgba(20, 26, 22, 0.22);
         z-index: 999991;
         pointer-events: none;
     }
+    
 
     div[data-testid="InputInstructions"] {
         font-size: 0 !important;
