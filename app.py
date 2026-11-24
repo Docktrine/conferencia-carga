@@ -3518,7 +3518,7 @@ elif aba == "📋 Gestão de Pedidos":
                 "Conferido por": conferentes_por_carga.get(cid, "-"),
                 "Lacre": obter_lacre_carga(grupo) or "-",
                 "Situação": f"🟢 100% Conferida{selo_corte}",
-                "Validação Final": f"✅ {mapa_validados_gp[limpar_texto(cid)]}" if limpar_texto(cid) in mapa_validados_gp else "⏳ Aguardando Auditoria"
+                "Validação Final": next((f"✅ {val_v}" for ped_k, val_v in mapa_validados_gp.items() if limpar_texto(cid) == ped_k or bool(re.search(r"(?<![A-Z0-9])" + re.escape(limpar_texto(cid)) + r"(?![A-Z0-9])", ped_k))), "⏳ Aguardando Auditoria")
             })
         else:
             if tot_bip == 0:
@@ -4270,12 +4270,17 @@ elif aba == "✅ Auditoria e Ajustes":
 
     df_plan_aud = carregar_dados("planejamento")
     cargas_ja_validadas = set()
-    if not df_plan_aud.empty and "id_carga" in df_plan_aud.columns and "validado" in df_plan_aud.columns:
+    if not df_plan_aud.empty and "validado" in df_plan_aud.columns:
         for _, r_pa in df_plan_aud.iterrows():
             v_str = str(r_pa.get("validado", "")).strip()
             if v_str and v_str.lower() not in ["nan", "none", "null", "nao", "não"]:
-                cargas_ja_validadas.add(limpar_texto(r_pa["id_carga"]))
-
+                for col_aud_k in ("id_carga", "Nº Pedido"):
+                    val_k = limpar_texto(r_pa.get(col_aud_k, ""))
+                    if val_k:
+                        cargas_ja_validadas.add(val_k)
+                        for tok in re.findall(r"[A-Z0-9-]+", val_k):
+                            cargas_ja_validadas.add(tok)
+                
     todas_cargas_lista = df_todas_cargas["id_carga"].unique().tolist()
     eh_gestao_aud = st.session_state.get("perfil_usuario", "") in ("ADMIN", "GERENTE", "SUPERVISOR", "ANALISTA")
     mostrar_validadas = False
