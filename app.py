@@ -55,8 +55,8 @@ st.markdown(
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 88px;
-        height: 88px;
+        width: 68px;
+        height: 68px;
         border-radius: 50%;
         border: 3.5px solid rgba(27, 94, 32, 0.18);
         border-top-color: #1B5E20;
