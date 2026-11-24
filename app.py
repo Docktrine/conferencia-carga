@@ -4833,7 +4833,6 @@ elif aba == "✅ Auditoria e Ajustes":
                 
     st.divider()
     if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
-    if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
         with st.expander("🗄️ Arquivar Cargas Já Auditadas (Por Período)"):
             st.caption("Selecione um período para arquivar cargas já auditadas. Os registros encerrados são movidos para o histórico para manter o sistema leve, sem afetar as cargas em andamento.")
 
