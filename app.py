@@ -3237,7 +3237,8 @@ elif aba == "🚚 Planejamento Logística":
                         v_norm = limpar_texto(in_tipo_veic)
                         val_m = fc_m if "CARRETA" in v_norm else (ft_m if ("TRUCK" in v_norm or "BITRUCK" in v_norm or "BI-TRUCK" in v_norm) else None)
                         if val_m and val_m > 0:
-                            frete_final_manual = f"R$ {val_m:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")                    
+                            frete_final_manual = f"R$ {val_m:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") 
+                            
                     nova_linha_plan = pd.DataFrame([{
                         "Data": formatar_data_br_str(in_data),
                         "Hora": formatar_hora_br_str(in_hora),
