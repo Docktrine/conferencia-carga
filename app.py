@@ -3711,8 +3711,8 @@ elif aba == "📋 Gestão de Pedidos":
     st.subheader("✅ Pedidos Conferidos (100% Concluídos)")
     if lista_concluidas:
         renderizar_tabela_wms(
-            pd.DataFrame(lista_pendentes),
-            "gestao_pendentes",
+                pd.DataFrame(lista_concluidas),
+                "gestao_concluidas",
             use_container_width=True,
             hide_index=True,
             column_config={
