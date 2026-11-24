@@ -173,6 +173,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 conn = st.connection("gsheets", type=GSheetsConnection)
+if st.session_state.get("toast_global"):
+    st.toast(st.session_state.pop("toast_global"), icon="✅")
 
 FUSO_BR = ZoneInfo("America/Sao_Paulo")
 
@@ -3159,7 +3161,7 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
 
-    with st.expander("✏️ Editar ou Excluir Pedido"):
+    with st.expander("✏️ Editar ou Excluir Pedido", expanded=False):    
         if not df_plan.empty:
             opcoes_plan = {
                 f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Status: {r['Status']}": idx
@@ -3234,7 +3236,8 @@ elif aba == "🚚 Planejamento Logística":
                         df_plan.at[idx_plan, col_nome] = novo_valor
 
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                    st.success("✅ Agendamento atualizado com sucesso!")
+                    st.session_state.toast_global = f"Agendamento do pedido '{limpar_texto(ed_pedido)}' atualizado com sucesso!"
+                    st.session_state.pop("sel_edit_plan", None)
                     st.rerun()
 
                 if btn_excluir_plan:
@@ -3242,7 +3245,7 @@ elif aba == "🚚 Planejamento Logística":
                     if df_plan_rest.empty:
                         df_plan_rest = pd.DataFrame(columns=COLUNAS_PLANEJAMENTO)
                     salvar_dados(df_plan_rest[COLUNAS_PLANEJAMENTO], "planejamento")
-                    st.warning("🗑️ Agendamento removido da agenda!")
+                    st.session_state.toast_global = "Agendamento removido da agenda com sucesso!"
                     st.rerun()
         else:
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
