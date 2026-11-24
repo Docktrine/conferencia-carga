@@ -3872,7 +3872,7 @@ elif aba == "📋 Gestão de Pedidos":
         else:
             st.info("Nenhum item encontrado neste pedido.")
     if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR", "ANALISTA") and lista_pendentes:
-        with st.expander("✅ Administrativo: Concluir Carga 100% Manualmente (Sem Bipar)"):
+        with st.expander("✅ Administrativo: Concluir Carga 100% Automaticamente"):
             st.caption("Use esta opção quando uma carga já foi expedida ou conferida fisicamente e precisa sair da fila de pendentes.")
             opcoes_baixa = [item["Carga / Pedido"] for item in lista_pendentes]
             c_bx1, c_bx2 = st.columns((2, 1))
