@@ -23,6 +23,8 @@ st.set_page_config(
     layout="wide"
 )
 
+_SVG_ROCK = f'<svg xmlns="{"http://www." + "w3.org/2000/svg"}" viewBox="0 0 82 84" fill="none"><path d="M22 41 L24 65 H39 L41 41 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/><circle cx="47" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/><circle cx="31.5" cy="21" r="12" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/><path d="M12 40 C6 36 8 25 16 25 C18 16 28 13 33 18 C39 13 49 17 49 26 C56 28 56 38 49 41 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/><rect x="23" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/><rect x="32.5" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/><path d="M29 53 Q32 56 35 53" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/><path d="M18 59 C14 55 17 49 23 51 L33 54 C36 55 36 61 31 62 L22 62 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.8"/><line x1="34" y1="54" x2="62" y2="42" stroke="#141A16" stroke-width="2.5" stroke-linecap="round"/><path d="M61 40 L66 38 L67 42 L62 44 Z" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/><path d="M25 65 V76 M38 65 V76" stroke="#141A16" stroke-width="2" stroke-linecap="round"/></svg>'
+_B64_ROCK = base64.b64encode(_SVG_ROCK.encode("utf-8")).decode("utf-8")
 st.markdown(
     """
     <style>
@@ -48,27 +50,25 @@ st.markdown(
     }
     div[data-testid="stAppViewContainer"][aria-busy="true"]::after,
     .stApp[data-test-script-state="running"]::after {
-        content: "🥬";
+        content: "";
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 84px;
-        height: 84px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 46px;
-        line-height: 1;
+        width: 92px;
+        height: 92px;
         background-color: #E8F5E9;
         border: 3px solid #1B5E20;
         border-radius: 50%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 72px 72px;
+        background-image: url("data:image/svg+xml;base64,__ROCK_B64__");
         animation: dancaVerduraGrano 0.65s ease-in-out infinite;
         box-shadow: 0 8px 20px rgba(20, 26, 22, 0.22);
         z-index: 999991;
         pointer-events: none;
     }
     
-
     div[data-testid="InputInstructions"] {
         font-size: 0 !important;
     }
@@ -209,7 +209,7 @@ st.markdown(
         background-color: rgba(76, 175, 80, 0.10) !important;
     }        
     </style>
-    """,
+    """.replace("__ROCK_B64__", _B64_ROCK),
     unsafe_allow_html=True
 )
 conn = st.connection("gsheets", type=GSheetsConnection)
