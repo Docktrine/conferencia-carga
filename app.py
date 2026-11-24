@@ -4833,6 +4833,7 @@ elif aba == "✅ Auditoria e Ajustes":
                 
     st.divider()
     if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
+    if st.session_state.perfil_usuario in ("ADMIN", "GERENTE", "SUPERVISOR") and cargas_ja_validadas:
         with st.expander("🗄️ Arquivar Cargas Já Auditadas (Por Período)"):
             st.caption("Selecione um período para arquivar cargas já auditadas. Os registros encerrados são movidos para o histórico para manter o sistema leve, sem afetar as cargas em andamento.")
 
@@ -4845,19 +4846,41 @@ elif aba == "✅ Auditoria e Ajustes":
                 st.warning("⚠️ A Data Inicial não pode ser maior que a Data Final.")
             else:
                 df_cargas_base_arq = carregar_dados("cargas")
-                df_cargas_aud_only = df_cargas_base_arq[df_cargas_base_arq["id_carga"].apply(limpar_texto).isin(cargas_ja_validadas)].copy()
-                col_data_arq = next((c for c in ["data_carregamento", "data_criacao", "data", "data_entrega"] if c in df_cargas_aud_only.columns), None)
+                df_plan_base_arq = carregar_dados("planejamento")
+                df_bipes_base_arq = carregar_dados("bipes")
 
-                if col_data_arq:
-                    datas_parsed_arq = pd.to_datetime(df_cargas_aud_only[col_data_arq].astype(str).str.strip(), dayfirst=True, errors="coerce").dt.date
-                    mask_periodo_arq = (datas_parsed_arq >= dt_ini_arq) & (datas_parsed_arq <= dt_fim_arq)
-                    cargas_no_periodo = sorted(df_cargas_aud_only.loc[mask_periodo_arq, "id_carga"].apply(limpar_texto).unique().tolist())
-                else:
-                    cargas_no_periodo = sorted(list(cargas_ja_validadas))
+                mapa_data_carga = {}
+                if df_plan_base_arq is not None and not df_plan_base_arq.empty and "Data" in df_plan_base_arq.columns:
+                    for _, rp_a in df_plan_base_arq.iterrows():
+                        dt_p_a = interpretar_data_br(rp_a.get("Data", ""))
+                        if dt_p_a is not None:
+                            for col_k_a in ("id_carga", "Nº Pedido"):
+                                val_k_a = limpar_texto(rp_a.get(col_k_a, ""))
+                                if val_k_a:
+                                    mapa_data_carga[val_k_a] = dt_p_a
+                                    for tok_a in re.findall(r"[A-Z0-9-]+", val_k_a):
+                                        mapa_data_carga[tok_a] = dt_p_a
+
+                if df_bipes_base_arq is not None and not df_bipes_base_arq.empty and "id_carga" in df_bipes_base_arq.columns and "data_hora" in df_bipes_base_arq.columns:
+                    for _, rb_a in df_bipes_base_arq.iterrows():
+                        cid_b_a = limpar_texto(rb_a.get("id_carga", ""))
+                        if cid_b_a and cid_b_a not in mapa_data_carga:
+                            dt_b_a = interpretar_data_br(rb_a.get("data_hora", ""))
+                            if dt_b_a is not None:
+                                mapa_data_carga[cid_b_a] = dt_b_a
+
+                cargas_ativas_aud = [
+                    limpar_texto(c) for c in df_cargas_base_arq["id_carga"].dropna().unique().tolist()
+                    if limpar_texto(c) in cargas_ja_validadas
+                ]
+                cargas_no_periodo = sorted([
+                    cid_chk for cid_chk in cargas_ativas_aud
+                    if (cid_chk in mapa_data_carga) and (dt_ini_arq <= mapa_data_carga[cid_chk] <= dt_fim_arq)
+                ])
 
                 if cargas_no_periodo:
                     st.info(f"📋 **{len(cargas_no_periodo)} carga(s) auditada(s)** encontrada(s) entre **{dt_ini_arq.strftime('%d/%m/%Y')}** e **{dt_fim_arq.strftime('%d/%m/%Y')}**.")
-                    sel_arq_todas = st.checkbox("Selecionar todas as cargas deste período", value=True, key="chk_arq_todas")
+                    sel_arq_todas = st.checkbox("Selecionar todas as cargas deste período", value=False, key="chk_arq_todas")
                     escolhidas_arq = st.multiselect(
                         "Confirme ou ajuste as cargas que serão arquivadas:",
                         options=cargas_no_periodo,
@@ -4877,7 +4900,6 @@ elif aba == "✅ Auditoria e Ajustes":
 
                             ids_arq_set = {limpar_texto(x) for x in escolhidas_arq}
 
-                            # 1. Arquiva CARGAS
                             mask_c_arq = df_c_at["id_carga"].apply(limpar_texto).isin(ids_arq_set)
                             df_c_mover = df_c_at[mask_c_arq].copy()
                             df_c_ficar = df_c_at[~mask_c_arq].copy()
@@ -4893,7 +4915,6 @@ elif aba == "✅ Auditoria e Ajustes":
                                 else:
                                     salvar_dados(df_c_ficar, "cargas")
 
-                            # 2. Arquiva BIPES
                             if df_b_at is not None and not df_b_at.empty and "id_carga" in df_b_at.columns:
                                 mask_b_arq = df_b_at["id_carga"].apply(limpar_texto).isin(ids_arq_set)
                                 df_b_mover = df_b_at[mask_b_arq].copy()
@@ -4910,9 +4931,18 @@ elif aba == "✅ Auditoria e Ajustes":
                                     else:
                                         salvar_dados(df_b_ficar, "bipes")
 
-                            # 3. Arquiva PLANEJAMENTO (somente das cargas auditadas escolhidas)
-                            if df_p_at is not None and not df_p_at.empty and "id_carga" in df_p_at.columns:
-                                mask_p_arq = df_p_at["id_carga"].apply(limpar_texto).isin(ids_arq_set)
+                            if df_p_at is not None and not df_p_at.empty:
+                                def _linha_plan_no_arq(row_pa):
+                                    for c_pa in ("id_carga", "Nº Pedido"):
+                                        v_pa = limpar_texto(row_pa.get(c_pa, ""))
+                                        if v_pa in ids_arq_set:
+                                            return True
+                                        for tk in re.findall(r"[A-Z0-9-]+", v_pa):
+                                            if tk in ids_arq_set:
+                                                return True
+                                    return False
+
+                                mask_p_arq = df_p_at.apply(_linha_plan_no_arq, axis=1)
                                 df_p_mover = df_p_at[mask_p_arq].copy()
                                 df_p_ficar = df_p_at[~mask_p_arq].copy()
 
