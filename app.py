@@ -311,11 +311,12 @@ def contar_dias_uteis_entre(dt_inicio, dt_fim, feriados_set):
     return uteis * sinal
 
 @st.cache_data(ttl=43200, show_spinner=False)
+@st.cache_data(ttl=43200, show_spinner=False)
 def obter_mapa_lead_time():
     df_lt = carregar_dados("lead time")
     mapa = {}
     if df_lt is not None and not df_lt.empty:
-        col_uf, col_cid, col_dias, col_km = None, None, None, None
+        col_uf, col_cid, col_dias, col_km, col_fc, col_ft = None, None, None, None, None, None
         for c in df_lt.columns:
             cl = limpar_texto(c)
             if not col_uf and cl in ("ESTADO", "UF"):
@@ -326,24 +327,31 @@ def obter_mapa_lead_time():
                 col_dias = c
             elif not col_km and ("KM" in cl or "DIST" in cl):
                 col_km = c
+            elif not col_fc and "CARRETA" in cl:
+                col_fc = c
+            elif not col_ft and "TRUCK" in cl:
+                col_ft = c
         if col_uf and col_cid and col_dias:
             for _, r in df_lt.iterrows():
                 u_k = limpar_texto(r[col_uf])
                 c_k = limpar_texto(r[col_cid])
                 try:
                     dias_v = float(str(r[col_dias]).strip().replace(",", "."))
-                    km_v = None
-                    if col_km and str(r[col_km]).strip() not in ("", "NAN", "NONE"):
-                        km_v = float(str(r[col_km]).strip().replace(",", "."))
-                    mapa[(u_k, c_k)] = (dias_v, km_v)
+                    km_v = converter_moeda_para_float(r[col_km]) if (col_km and str(r[col_km]).strip() not in ("", "NAN", "NONE")) else None
+                    fc_v = converter_moeda_para_float(r[col_fc]) if (col_fc and str(r[col_fc]).strip() not in ("", "NAN", "NONE")) else None
+                    ft_v = converter_moeda_para_float(r[col_ft]) if (col_ft and str(r[col_ft]).strip() not in ("", "NAN", "NONE")) else None
+                    mapa[(u_k, c_k)] = (dias_v, km_v, fc_v, ft_v)
                 except Exception:
                     pass
     return mapa
 
 def calcular_dias_rota_efetivos(lt_info):
     if lt_info is None:
-        return None, None, None
-    lt_dias, km_val = lt_info if isinstance(lt_info, tuple) else (lt_info, None)
+        return None, None, None, None, None
+    vals = list(lt_info) if isinstance(lt_info, (tuple, list)) else [lt_info]
+    while len(vals) < 4:
+        vals.append(None)
+    lt_dias, km_val, fc_val, ft_val = vals
     if km_val is not None:
         if km_val <= 80:
             dias_rota = 0.0
@@ -353,7 +361,7 @@ def calcular_dias_rota_efetivos(lt_info):
             dias_rota = round(max(0.0, lt_dias - 2.0), 1)
     else:
         dias_rota = round(max(0.0, lt_dias - 2.0), 1)
-    return lt_dias, dias_rota, km_val
+    return lt_dias, dias_rota, km_val, fc_val, ft_val
 
 def limpar_texto(valor):
     if pd.isna(valor):
@@ -2468,8 +2476,11 @@ elif aba == "📊 Análise de Pedidos":
                         cidades_sem_lt.add(f"{cid_val}/{uf_val}")
 
                     if pd.notna(dt_c) and pd.notna(dt_e) and lt_info is not None:
-                        lt_dias, dias_rota, km_val = calcular_dias_rota_efetivos(lt_info)
+                        lt_dias, dias_rota, km_val, fc_val, ft_val = calcular_dias_rota_efetivos(lt_info)
                         km_tag_bi = f" • {int(round(km_val))}km" if km_val is not None else ""
+                        veic_sug = "CARRETA" if vol_num > 1800 else "TRUCK"
+                        frete_sug_num = (fc_val if veic_sug == "CARRETA" else ft_val) or 0.0
+                        frete_sug_fmt = f"R$ {frete_sug_num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if frete_sug_num > 0 else "-"
                         dt_sug_carreg = subtrair_dias_uteis(dt_e, dias_rota, feriados_sys)
                         uteis_desde_criacao = contar_dias_uteis_entre(dt_c, hoje_dt, feriados_sys)
                         uteis_ate_carreg = contar_dias_uteis_entre(hoje_dt, dt_sug_carreg, feriados_sys)
@@ -2495,6 +2506,8 @@ elif aba == "📊 Análise de Pedidos":
                         janela_exp = None
                         dt_lim_str = "-"
                         obs_criacao = "-"
+                        veic_sug = "CARRETA" if vol_num > 1800 else "TRUCK"
+                        frete_sug_fmt = "-"
                         lt_tot_exib = lt_info[0] if isinstance(lt_info, tuple) else lt_info
                         rota_str = f"{lt_tot_exib}d" if lt_tot_exib is not None else "-"
                         status_sla = "⚪ Sem Lead Time / Data Inválida"
@@ -2536,8 +2549,12 @@ elif aba == "📊 Análise de Pedidos":
                         "Entrega": dt_e.strftime("%d/%m/%Y") if pd.notna(dt_e) else "-",
                         "LT Total (Rota)": rota_str,
                         "Dias Úteis p/ Carregar": janela_exp,
+                        "Dias Úteis p/ Carregar": janela_exp,
                         "Sugestão Carregamento": dt_lim_str,
+                        "Veículo Sugerido": veic_sug,
+                        "Frete Tabela": frete_sug_fmt,
                         "Situação WMS": ja_wms
+
                     })
 
                 df_res_bi = pd.DataFrame(linhas_analise)
@@ -2664,6 +2681,9 @@ elif aba == "📊 Análise de Pedidos":
                             nova_l["Observação"] = f"SLA BI | {r_esc['Volumes']} vol | LT: {r_esc['LT Total (Rota)']} | {r_esc['Tempo Parado']}"
                             nova_l["Status"] = "⏳ Aguardando Veículo"
                             nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
+                            nova_l["Tipo de Veículo"] = r_esc.get("Veículo Sugerido", "")
+                            nova_l["Valor de Frete"] = r_esc.get("Frete Tabela", "") if r_esc.get("Frete Tabela", "-") != "-" else ""
+                            
                             novos_plan.append(nova_l)
 
                         if novos_plan:
@@ -3032,7 +3052,7 @@ elif aba == "🚚 Planejamento Logística":
             lt_info_p = mapa_lt_plan.get((u_p, c_p))
             if lt_info_p is None:
                 return "-", "-"
-            lt_v, rota_v, km_v = calcular_dias_rota_efetivos(lt_info_p)
+            lt_v, rota_v, km_v, _, _ = calcular_dias_rota_efetivos(lt_info_p)
             km_tag = f" • {int(round(km_v))}km" if km_v is not None else ""
             dt_ent_p = pd.to_datetime(str(row_p.get("Data da entrega", "")).strip(), dayfirst=True, errors="coerce")
             if pd.isna(dt_ent_p):
@@ -3155,17 +3175,21 @@ elif aba == "🚚 Planejamento Logística":
         if q_uf.strip() and q_cid.strip():
             lt_info_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
             if lt_info_q is not None:
-                lt_q, rota_q, km_q = calcular_dias_rota_efetivos(lt_info_q)
+                lt_q, rota_q, km_q, fc_q, ft_q = calcular_dias_rota_efetivos(lt_info_q)
                 km_txt_q = f" • {int(round(km_q))} km" if km_q is not None else ""
+                ft_str_q = f"R$ {ft_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if ft_q else "-"
+                fc_str_q = f"R$ {fc_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if fc_q else "-"
+                frete_txt_q = f" | 💰 **Frete Tabela:** Truck/Bi-truck `{ft_str_q}` • Carreta `{fc_str_q}`" if (ft_q or fc_q) else ""
                 dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
                 if pd.notna(dt_ent_q):
                     dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
                     if pd.notna(dt_sug_q):
-                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}) | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
+                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}){frete_txt_q} | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
                 else:
-                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}). Informe a data de entrega ao lado para ver a data sugerida.")
+                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}){frete_txt_q}. Informe a data de entrega ao lado para ver a data sugerida.")
             else:
                 st.warning(f"⚠️ Cidade **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}** não encontrada na aba `lead time`.")
+
         
         with st.form("form_novo_planejamento", clear_on_submit=True):
             r1c1, r1c2, r1c3, r1c4 = st.columns(4)
@@ -3205,6 +3229,15 @@ elif aba == "🚚 Planejamento Logística":
                 elif ped_limpo in df_plan["Nº Pedido"].values:
                     st.error(f"🚫 O pedido **'{ped_limpo}'** já está cadastrado na agenda! Use a opção de editar abaixo.")
                 else:
+                frete_final_manual = formatar_moeda_br_str(in_val_frete)
+                if not frete_final_manual and in_uf.strip() and in_cidade.strip() and in_tipo_veic.strip():
+                    lt_m = obter_mapa_lead_time().get((limpar_texto(in_uf), limpar_texto(in_cidade)))
+                    if lt_m is not None:
+                        _, _, _, fc_m, ft_m = calcular_dias_rota_efetivos(lt_m)
+                        v_norm = limpar_texto(in_tipo_veic)
+                        val_m = fc_m if "CARRETA" in v_norm else (ft_m if ("TRUCK" in v_norm or "BITRUCK" in v_norm or "BI-TRUCK" in v_norm) else None)
+                        if val_m and val_m > 0:
+                            frete_final_manual = f"R$ {val_m:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")                    
                     nova_linha_plan = pd.DataFrame([{
                         "Data": formatar_data_br_str(in_data),
                         "Hora": formatar_hora_br_str(in_hora),
@@ -3216,7 +3249,7 @@ elif aba == "🚚 Planejamento Logística":
                         "Transportadora": in_transp.strip(),
                         "Placa do veículo": limpar_texto(in_placa),
                         "Tipo de Veículo": in_tipo_veic.strip(),
-                        "Valor de Frete": formatar_moeda_br_str(in_val_frete),
+                        "Valor de Frete": frete_final_manual,
                         "UF": limpar_texto(in_uf),
                         "Cidade": in_cidade.strip(),
                         "CIF/FOB": in_cif_fob,
