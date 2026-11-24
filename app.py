@@ -3015,18 +3015,18 @@ elif aba == "🚚 Planejamento Logística":
                     st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
                     st.rerun()
 
-    if not df_exibir_plan.empty:
-            f_col1, f_col2 = st.columns(2)
-            with f_col1:
-                datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
-                filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
-            with f_col2:
-                filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
-
-            if filtro_data_carreg != "Todas as datas":
-                df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
-            if filtro_status_plan != "Todos os status":
-                df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"].apply(limpar_texto) == limpar_texto(filtro_status_plan)]
+        if not df_exibir_plan.empty:
+                f_col1, f_col2 = st.columns(2)
+                with f_col1:
+                    datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
+                    filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
+                with f_col2:
+                    filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
+    
+                if filtro_data_carreg != "Todas as datas":
+                    df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
+                if filtro_status_plan != "Todos os status":
+                    df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"].apply(limpar_texto) == limpar_texto(filtro_status_plan)]
 
         st_norm = df_exibir_plan["Status"].apply(limpar_texto)
         tr_norm = df_exibir_plan["Transportadora"].apply(limpar_texto)
