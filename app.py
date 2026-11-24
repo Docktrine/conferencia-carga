@@ -54,17 +54,17 @@ st.markdown(
         position: fixed;
         top: 50%;
         left: 50%;
-        width: 92px;
-        height: 92px;
-        background-color: #E8F5E9;
-        border: 3px solid #1B5E20;
-        border-radius: 50%;
+        width: 96px;
+        height: 96px;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
         background-repeat: no-repeat;
         background-position: center;
-        background-size: 72px 72px;
+        background-size: contain;
         background-image: url("data:image/svg+xml;base64,__ROCK_B64__");
         animation: dancaVerduraGrano 0.65s ease-in-out infinite;
-        box-shadow: 0 8px 20px rgba(20, 26, 22, 0.22);
+        filter: drop-shadow(0 6px 12px rgba(20, 26, 22, 0.25));
         z-index: 999991;
         pointer-events: none;
     }
