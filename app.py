@@ -1299,6 +1299,33 @@ with st.sidebar:
             overflow: hidden !important;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
         }
+        /* 5. Destaque Visual para Barras e Caixas de Filtro (Verde-Sálvia Grano) */
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) {
+            background-color: #D3DFD2 !important;
+            border: 1.5px solid #2E7D32 !important;
+            border-left: 5px solid #1B5E20 !important;
+            border-radius: 10px !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary p {
+            color: #143618 !important;
+            font-weight: 700 !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]),
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]),
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) {
+            background-color: #D7E2D6 !important;
+            border: 1px solid rgba(27, 94, 32, 0.45) !important;
+            border-left: 4px solid #1B5E20 !important;
+            border-radius: 10px !important;
+            padding: 6px 10px 8px 10px !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) label p,
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) label p,
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) label p {
+            color: #143618 !important;
+            font-weight: 700 !important;
+        }
+        
         </style>
         """,
         unsafe_allow_html=True
