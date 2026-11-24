@@ -2520,23 +2520,32 @@ elif aba == "📊 Análise de Pedidos":
                     return cols_bi.index(c_enc) if c_enc in cols_bi else 0
 
                 with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
+                    def _opcoes_bi(termos):
+                        enc = achar_col_bi(cols_bi, termos)
+                        return ["(Nenhum)"] + cols_bi, (cols_bi.index(enc) + 1) if enc in cols_bi else 0
+
                     m1, m2, m3, m4 = st.columns(4)
-                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", cols_bi, index=achar_idx_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO")))
-                    cli_enc = achar_col_bi(cols_bi, ("CLIENTE", "DESTINATARIO", "RAZAO"))
-                    col_cli_bi = m2.selectbox("Cliente (Opcional):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(cli_enc) + 1) if cli_enc in cols_bi else 0)
-                    col_uf_bi = m3.selectbox("Estado (UF):", cols_bi, index=achar_idx_bi(("UF", "ESTADO")))
-                    col_cid_bi = m4.selectbox("Cidade:", cols_bi, index=achar_idx_bi(("CIDADE", "MUNICIPIO")))
+                    op_ped, idx_ped = _opcoes_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"))
+                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", op_ped, index=idx_ped)
+                    op_cli, idx_cli = _opcoes_bi(("CLIENTE", "DESTINATARIO", "RAZAO"))
+                    col_cli_bi = m2.selectbox("Cliente (Opcional):", op_cli, index=idx_cli)
+                    op_uf, idx_uf = _opcoes_bi(("UF", "ESTADO"))
+                    col_uf_bi = m3.selectbox("Estado (UF):", op_uf, index=idx_uf)
+                    op_cid, idx_cid = _opcoes_bi(("CIDADE", "MUNICIPIO"))
+                    col_cid_bi = m4.selectbox("Cidade:", op_cid, index=idx_cid)
 
                     m5, m6, m7, m8 = st.columns(4)
-                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", cols_bi, index=achar_idx_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA")))
-                    col_dt_ent = m6.selectbox("Data de Entrega:", cols_bi, index=achar_idx_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO")))
-                    val_enc = achar_col_bi(cols_bi, ("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
-                    col_val_bi = m7.selectbox("Valor do Pedido (R$):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(val_enc) + 1) if val_enc in cols_bi else 0)
-                    vol_enc = achar_col_bi(cols_bi, ("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
-                    col_vol_bi = m8.selectbox("Qtd de Volumes:", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(vol_enc) + 1) if vol_enc in cols_bi else 0)
+                    op_dc, idx_dc = _opcoes_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA"))
+                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
+                    op_de, idx_de = _opcoes_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"))
+                    col_dt_ent = m6.selectbox("Data de Entrega:", op_de, index=idx_de)
+                    op_val, idx_val = _opcoes_bi(("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
+                    col_val_bi = m7.selectbox("Valor do Pedido (R$):", op_val, index=idx_val)
+                    op_vol, idx_vol = _opcoes_bi(("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
+                    col_vol_bi = m8.selectbox("Qtd de Volumes:", op_vol, index=idx_vol)
 
-                    nf_enc = achar_col_bi(cols_bi, ("NOTA FISCAL", "NF", "NFE", "NOTA", "DANFE"))
-                    col_nf_bi = st.selectbox("Nota Fiscal de Venda (Opcional — para vincular pedidos faturados):", ["(Nenhum)"] + cols_bi, index=(cols_bi.index(nf_enc) + 1) if nf_enc in cols_bi else 0)
+                    op_nf, idx_nf = _opcoes_bi(("NOTA FISCAL", "NF", "NFE", "NOTA", "DANFE"))
+                    col_nf_bi = st.selectbox("Nota Fiscal de Venda (Opcional — para vincular pedidos faturados):", op_nf, index=idx_nf)
 
                 df_plan_exist = carregar_dados("planejamento")
                 lista_peds_plan = list()
@@ -2548,13 +2557,13 @@ elif aba == "📊 Análise de Pedidos":
                 cidades_sem_lt = set()
                 alteracoes_entrega = list()
 
-                for _, r_bi in df_bi.iterrows():
-                    ped_val = str(r_bi[col_ped_bi]).strip()
+                for idx_bi, r_bi in df_bi.iterrows():
+                    ped_val = str(r_bi[col_ped_bi]).strip() if col_ped_bi != "(Nenhum)" else f"LINHA-{idx_bi + 1}"
                     if not ped_val:
                         continue
                     cli_val = str(r_bi[col_cli_bi]).strip() if col_cli_bi != "(Nenhum)" else ""
-                    uf_val = limpar_texto(r_bi[col_uf_bi])
-                    cid_val = limpar_texto(r_bi[col_cid_bi])
+                    uf_val = limpar_texto(r_bi[col_uf_bi]) if col_uf_bi != "(Nenhum)" else ""
+                    cid_val = limpar_texto(r_bi[col_cid_bi]) if col_cid_bi != "(Nenhum)" else ""
                     valor_num = limpar_numero_bi(r_bi[col_val_bi]) if col_val_bi != "(Nenhum)" else 0.0
                     vol_num = int(round(limpar_numero_bi(r_bi[col_vol_bi]))) if col_vol_bi != "(Nenhum)" else 0
                     nf_raw = str(r_bi[col_nf_bi]).strip() if col_nf_bi != "(Nenhum)" else ""
@@ -2563,8 +2572,9 @@ elif aba == "📊 Análise de Pedidos":
                     elif nf_raw.endswith(".0"):
                         nf_raw = nf_raw[:-2]
 
-                    dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce")
-                    dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce")
+                    dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce") if col_dt_cria != "(Nenhum)" else pd.NaT
+                    dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce") if col_dt_ent != "(Nenhum)" else pd.NaT
+
 
                     lt_info = mapa_lt.get((uf_val, cid_val))
                     if lt_info is None and (uf_val or cid_val):
