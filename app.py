@@ -622,7 +622,7 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
         return st.dataframe(df_in, **kwargs)
     df_f = df_in.copy()
     cols_disponiveis = [c for c in df_f.columns if str(c).strip() != ""]
-    with st.expander("🔍 Filtros por Coluna (Estilo WMS)", expanded=False):
+    with st.expander("🔍 Filtrar Tabela por Coluna", expanded=False):
         fc1, fc2, fc3 = st.columns((1.4, 2.0, 1.2), vertical_alignment="bottom")
         col_sel = fc1.selectbox("Coluna:", ["(Todas as colunas)"] + cols_disponiveis, key=f"wms_col_{chave_unica}")
         if col_sel == "(Todas as colunas)":
