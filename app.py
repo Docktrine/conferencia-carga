@@ -3079,8 +3079,8 @@ elif aba == "🚚 Planejamento Logística":
 
         df_tab_plan = df_exibir_plan.drop(columns=["Notificação"], errors="ignore").copy()
         res_lt_plan = [list(t) for t in df_tab_plan.apply(calc_lt_e_sugestao, axis=1).tolist()]
-        df_tab_plan["Lead Time"] = [x.pop(0) for x in res_lt_plan]
-        df_tab_plan["Sugestão Carreg."] = [x.pop(0) for x in res_lt_plan]
+        df_tab_plan["Lead Time"] = [t[0] for t in res_lt_plan]
+        df_tab_plan["Sugestão Carreg."] = [t[1] for t in res_lt_plan]
 
         renderizar_tabela_wms(
             df_tab_plan,
