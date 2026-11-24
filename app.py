@@ -3413,8 +3413,11 @@ elif aba == "📥 Importação de Pedidos":
                             df_bipes_ren.loc[df_bipes_ren["id_carga"] == carga_antiga, "id_carga"] = novo_nome_limpo
                             salvar_dados(df_bipes_ren, "bipes")
 
-                        st.success(f"✅ Carga '{carga_antiga}' renomeada para '{novo_nome_limpo}' com sucesso!")
+                        st.session_state.toast_global = f"Carga '{carga_antiga}' renomeada para '{novo_nome_limpo}' com sucesso!"
+                        st.session_state.pop("sel_renomear_carga", None)
+                        st.session_state.pop("input_novo_nome_carga", None)
                         st.rerun()
+                        
             else:
                 st.info("Nenhuma carga cadastrada no momento.")
         else:
@@ -3442,8 +3445,10 @@ elif aba == "📥 Importação de Pedidos":
                             df_bipes_restante = pd.DataFrame(columns=["data_hora", "id_carga", "etiqueta", "codigo_bipado", "codigo_vinculado", "tipo", "lote", "quantidade", "conferente"])
                         salvar_dados(df_bipes_restante, "bipes")
 
-                    st.success(f"✅ Carga '{carga_para_excluir}' excluída com sucesso!")
+                    st.session_state.toast_global = f"Carga '{carga_para_excluir}' excluída com sucesso!"
+                    st.session_state.pop("sel_excluir_carga", None)
                     st.rerun()
+                    
             else:
                 st.info("Nenhuma carga cadastrada no momento.")
         else:
@@ -3669,7 +3674,7 @@ elif aba == "📋 Gestão de Pedidos":
                             nova_tag = f" [CORTADO: {dados_edit['qtd_corte_str']}]"
                         df_banco_edit_corte.at[idx_ed, "produto"] = dados_edit["desc_limpa"] + nova_tag
                         salvar_dados(df_banco_edit_corte, "cargas")
-                        st.success("✅ Motivo do corte atualizado com sucesso!")
+                        st.session_state.toast_global = "Motivo do corte atualizado com sucesso!"
                         st.rerun()
         else:
             st.info("Nenhum item encontrado neste pedido.")
@@ -3710,7 +3715,7 @@ elif aba == "📋 Gestão de Pedidos":
                     df_bipes_bx = pd.concat([reg_bx, df_bipes_bx], ignore_index=True) if not df_bipes_bx.empty else reg_bx
                     salvar_dados(df_bipes_bx, "bipes")
 
-                    st.success(f"🎉 Carga '{carga_baixa}' concluída 100% com sucesso e movida para Conferidas!")
+                    st.session_state.toast_global = f"Carga '{carga_baixa}' concluída 100% e movida para Conferidas!"
                     st.rerun()
             
 elif aba == "📦 Conferência dos Pedidos":
@@ -4427,7 +4432,7 @@ elif aba == "✅ Auditoria e Ajustes":
     
                                 if "relatorio_final" in st.session_state:
                                     del st.session_state.relatorio_final
-                                st.success(f"✅ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!")
+                                st.session_state.toast_global = f"Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' atualizada (Lote: {limpar_texto(novo_lote_input)} | Qtd: {int(nova_qtd_input)})!"
                                 st.rerun()
 
                     with col_estorno:
@@ -4453,7 +4458,7 @@ elif aba == "✅ Auditoria e Ajustes":
 
                             if "relatorio_final" in st.session_state:
                                 del st.session_state.relatorio_final
-                            st.warning(f"↩️ Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! O conferente já pode bipar novamente.")
+                            st.session_state.toast_global = f"Etiqueta '{limpar_texto(registro_alvo['etiqueta'])}' estornada! Liberada para rebipagem."
                             st.rerun()
                 else:
                     st.info("Nenhuma etiqueta bipada nesta carga ainda.")
@@ -4630,7 +4635,7 @@ elif aba == "✅ Auditoria e Ajustes":
 
             salvar_dados(df_plan_salvar, "planejamento")
             st.cache_data.clear()
-            st.success(f"🎉 Pedido **{carga_selecionada}** validado com sucesso e liberado para expedição!")
+            st.session_state.toast_global = f"Pedido '{carga_selecionada}' validado e liberado para expedição!"
             st.rerun()
                 
     st.divider()
