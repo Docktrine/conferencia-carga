@@ -211,7 +211,7 @@ st.markdown(
 )
 _SVG_LOGO_GRANO = f'<svg xmlns="{"http://www." + "w3.org/2000/svg"}" viewBox="0 0 100 100"><path fill="none" stroke="#1B5E20" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M68 26 L50 16 L23 31.5 L23 68.5 L50 84 L77 68.5 L77 48 C77 35 65.5 27 52 27 C39 27 31 36.5 31 49.5 C31 61.5 40.5 70 52 70 C61.5 70 68 62.5 68 53 C68 44.5 61.5 39 53 39 C45.5 39 41 44.5 41 51 C41 55.5 44.5 59 49 59 C52.5 59 55 56 55 52.5"/></svg>'
 _B64_LOGO_GRANO = base64.b64encode(_SVG_LOGO_GRANO.encode("utf-8")).decode("utf-8")
-st.markdown(f'<style>div[data-testid="stAppViewContainer"][aria-busy="true"]::before,.stApp[data-test-script-state="running"]::before{{background-image:url("data:image/svg+xml;base64,{_B64_LOGO_GRANO}") !important;background-repeat:no-repeat !important;background-position:center !important;background-size:36px 36px !important;}}</style>', unsafe_allow_html=True)
+st.markdown(f'<style>div[data-testid="stAppViewContainer"][aria-busy="true"]::before,.stApp[data-test-script-state="running"]::before{{background-image:url("data:image/svg+xml;base64,{_B64_LOGO_GRANO}") !important;background-repeat:no-repeat !important;background-position:center !important;background-size:54px 54px !important;}}</style>', unsafe_allow_html=True)
 
 conn = st.connection("gsheets", type=GSheetsConnection)
 if st.session_state.get("toast_global"):
