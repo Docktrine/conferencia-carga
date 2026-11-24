@@ -1428,7 +1428,7 @@ with st.sidebar:
     st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
 agora_ping = datetime.now()
 ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
-if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 180:
+if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 600:
     _ler_planilha_com_cache.clear("usuarios")
     df_u_ping = carregar_dados("usuarios")
     if not df_u_ping.empty and len(df_u_ping) >= 1 and "login" in df_u_ping.columns:
