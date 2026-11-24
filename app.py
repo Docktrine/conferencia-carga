@@ -342,6 +342,7 @@ def limpar_texto(valor):
     if pd.isna(valor):
         return ""
     texto = str(valor).strip().upper()
+    texto = unicodedata.normalize("NFKD", texto).encode("ASCII", "ignore").decode("ASCII")
     if texto in ("NAN", "NONE", "<NA>"):
         return ""
     if texto.endswith(".0"):
