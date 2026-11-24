@@ -1299,21 +1299,36 @@ with st.sidebar:
             overflow: hidden !important;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
         }
-        /* 5. Destaque Visual para Barras e Caixas de Filtro (Verde-Sálvia Grano) */
+        /* 5. Destaque Visual Refinado para Barras e Caixas de Filtro (Verde-Sálvia Grano) */
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) {
-            background-color: #D3DFD2 !important;
+            background-color: #D5E2D4 !important;
             border: 1.5px solid #2E7D32 !important;
             border-left: 5px solid #1B5E20 !important;
             border-radius: 10px !important;
+            overflow: hidden !important;
         }
-        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary p {
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary,
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) [data-testid="stExpanderDetails"] {
+            background-color: #D5E2D4 !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary p,
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) label p {
             color: #143618 !important;
             font-weight: 700 !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="select"] > div,
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="input"] > div,
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div,
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) div[data-baseweb="select"] > div,
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div {
+            background-color: #F4F7F3 !important;
+            border: 1px solid rgba(27, 94, 32, 0.45) !important;
+            border-radius: 8px !important;
         }
         div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]),
         div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]),
         div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) {
-            background-color: #D7E2D6 !important;
+            background-color: #D5E2D4 !important;
             border: 1px solid rgba(27, 94, 32, 0.45) !important;
             border-left: 4px solid #1B5E20 !important;
             border-radius: 10px !important;
