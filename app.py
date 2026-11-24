@@ -617,6 +617,32 @@ def padronizar_df_maiusculo(df):
                 lambda v: "" if (pd.isna(v) or str(v).strip().upper() in ("NAN", "NONE", "<NA>")) else str(v).strip().upper()
             )
     return df
+def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
+    if df_in is None or df_in.empty:
+        return st.dataframe(df_in, **kwargs)
+    df_f = df_in.copy()
+    cols_disponiveis = [c for c in df_f.columns if str(c).strip() != ""]
+    with st.expander("🔍 Filtros por Coluna (Estilo WMS)", expanded=False):
+        fc1, fc2, fc3 = st.columns((1.4, 2.0, 1.2), vertical_alignment="bottom")
+        col_sel = fc1.selectbox("Coluna:", ["(Todas as colunas)"] + cols_disponiveis, key=f"wms_col_{chave_unica}")
+        if col_sel == "(Todas as colunas)":
+            termo_g = fc2.text_input("Buscar em qualquer coluna:", placeholder="Digite pedido, cliente, cidade, NF, placa...", key=f"wms_txt_{chave_unica}")
+            if termo_g.strip():
+                t_l = termo_g.strip().lower()
+                mask_g = df_f.apply(lambda r: r.astype(str).str.lower().str.contains(t_l, na=False).any(), axis=1)
+                df_f = df_f[mask_g]
+        else:
+            vals_unicos = sorted([str(v).strip() for v in df_f[col_sel].dropna().unique() if str(v).strip() not in ("", "nan", "None")])
+            if 0 < len(vals_unicos) <= 40:
+                vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=list(), placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
+                if vals_esc:
+                    df_f = df_f[df_f[col_sel].astype(str).str.strip().isin(vals_esc)]
+            else:
+                termo_c = fc2.text_input(f"Filtrar '{col_sel}':", placeholder="Digite para filtrar...", key=f"wms_c_{chave_unica}")
+                if termo_c.strip():
+                    df_f = df_f[df_f[col_sel].astype(str).str.lower().str.contains(termo_c.strip().lower(), na=False)]
+        fc3.caption(f"📋 Exibindo **{len(df_f)}** de **{len(df_in)}** registro(s)")
+    return st.dataframe(df_f, **kwargs)    
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def _ler_planilha_com_cache(aba):
@@ -2613,7 +2639,7 @@ elif aba == "📊 Análise de Pedidos":
                     )
                     df_exib_bi = df_res_bi[df_res_bi["Status SLA"].isin(filtro_sla)].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"])
 
-                    st.dataframe(df_exib_bi, use_container_width=True, hide_index=True)
+                    renderizar_tabela_wms(df_exib_bi, "analise_bi", use_container_width=True, hide_index=True)
 
                     df_com_nf = df_res_bi[(df_res_bi["NF_Raw"] != "") & (df_res_bi["Situação WMS"] == "🚚 Já no Planejamento")]
                     if not df_com_nf.empty:
@@ -3067,8 +3093,10 @@ elif aba == "🚚 Planejamento Logística":
         df_tab_plan["Lead Time"] = [x.pop(0) for x in res_lt_plan]
         df_tab_plan["Sugestão Carreg."] = [x.pop(0) for x in res_lt_plan]
 
-        st.dataframe(
+        renderizar_tabela_wms(
             df_tab_plan,
+            "planejamento_geral",
+
             use_container_width=True,
             hide_index=True,
             column_order=[
@@ -3662,8 +3690,9 @@ elif aba == "📋 Gestão de Pedidos":
 
     st.subheader("⏳ Pedidos Aguardando Conferir")
     if lista_pendentes:
-        st.dataframe(
+        renderizar_tabela_wms(
             pd.DataFrame(lista_pendentes),
+            "gestao_pendentes",
             use_container_width=True,
             hide_index=True,
             column_config={
@@ -3681,8 +3710,9 @@ elif aba == "📋 Gestão de Pedidos":
 
     st.subheader("✅ Pedidos Conferidos (100% Concluídos)")
     if lista_concluidas:
-        st.dataframe(
-            pd.DataFrame(lista_concluidas),
+        renderizar_tabela_wms(
+            pd.DataFrame(lista_pendentes),
+            "gestao_pendentes",
             use_container_width=True,
             hide_index=True,
             column_config={
@@ -4200,9 +4230,9 @@ elif aba == "📦 Conferência dos Pedidos":
             df_carga_bipes["quantidade"] = pd.to_numeric(df_carga_bipes["quantidade"], errors="coerce").fillna(0).astype(int)
 
         if tem_permissao("👁️ Ver Conferência Completa (Supervisão)"):
-            st.dataframe(df_carga_bipes, use_container_width=True, hide_index=True, height=385)
+            renderizar_tabela_wms(df_carga_bipes, "conf_bipes_sup", use_container_width=True, hide_index=True, height=385)
         else:
-            st.dataframe(df_carga_bipes.head(10), use_container_width=True, hide_index=True)
+            renderizar_tabela_wms(df_carga_bipes.head(10), "conf_bipes_op", use_container_width=True, hide_index=True)
 
 elif aba == "📈 Painel de Acompanhamento":
     st.title("📈 Painel de Acompanhamento")
