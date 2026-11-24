@@ -1295,22 +1295,62 @@ with st.sidebar:
             --gdg-accent-color: #1B5E20 !important;
             --gdg-accent-light: rgba(27, 94, 32, 0.12) !important;
         }
-        /* 5. Destaque Visual Refinado para Barras e Caixas de Filtro (Verde-Sálvia Grano) */
+        /* 5. Barras e Caixas de Filtro Sofisticadas (Acabamento Premium Grano) */
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) {
-            background-color: #D5E2D4 !important;
-            border: 1.5px solid #2E7D32 !important;
-            border-left: 5px solid #1B5E20 !important;
-            border-radius: 10px !important;
+            background: linear-gradient(135deg, #DCE7DB 0%, #D0DED0 100%) !important;
+            border: 1px solid rgba(27, 94, 32, 0.35) !important;
+            border-left: 3.5px solid #1B5E20 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.06) !important;
             overflow: hidden !important;
+            transition: all 0.2s ease !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]):hover {
+            border-color: rgba(27, 94, 32, 0.65) !important;
+            box-shadow: 0 5px 14px rgba(27, 94, 32, 0.11) !important;
         }
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary,
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) [data-testid="stExpanderDetails"] {
-            background-color: #D5E2D4 !important;
+            background: transparent !important;
         }
-        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary p,
-        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) label p {
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary {
+            padding: 8px 14px !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) summary p {
             color: #143618 !important;
             font-weight: 700 !important;
+            font-size: 0.85rem !important;
+            letter-spacing: 0.02em !important;
+        }
+        [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) label p {
+            color: #1B4320 !important;
+            font-weight: 600 !important;
+            font-size: 0.78rem !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]),
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]),
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) {
+            background: linear-gradient(135deg, #DCE7DB 0%, #D2DFD1 100%) !important;
+            border: 1px solid rgba(27, 94, 32, 0.35) !important;
+            border-left: 3.5px solid #1B5E20 !important;
+            border-radius: 12px !important;
+            padding: 8px 14px 10px 14px !important;
+            box-shadow: 0 3px 10px rgba(27, 94, 32, 0.06) !important;
+            transition: all 0.2s ease !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]):hover,
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]):hover,
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]):hover {
+            border-color: rgba(27, 94, 32, 0.65) !important;
+            box-shadow: 0 5px 14px rgba(27, 94, 32, 0.11) !important;
+        }
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) label p,
+        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) label p,
+        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) label p {
+            color: #143618 !important;
+            font-weight: 700 !important;
+            font-size: 0.79rem !important;
+            letter-spacing: 0.02em !important;
         }
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="select"] > div,
         [data-testid="stExpander"]:has(input[aria-label^="Coluna:"]) div[data-baseweb="input"] > div,
@@ -1319,24 +1359,10 @@ with st.sidebar:
         div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div,
         div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) div[data-baseweb="select"] > div,
         div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) div[data-baseweb="select"] > div {
-            background-color: #F6F8F5 !important;
-            border-color: rgba(27, 94, 32, 0.45) !important;
-            border-radius: 8px !important;
-        }
-        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]),
-        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]),
-        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) {
-            background-color: #D5E2D4 !important;
-            border: 1px solid rgba(27, 94, 32, 0.45) !important;
-            border-left: 4px solid #1B5E20 !important;
-            border-radius: 10px !important;
-            padding: 6px 10px 8px 10px !important;
-        }
-        div[data-testid="stSelectbox"]:has(input[aria-label*="Filtrar"]) label p,
-        div[data-testid="stSelectbox"]:has(input[aria-label*="Selecione a Carga"]) label p,
-        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) label p {
-            color: #143618 !important;
-            font-weight: 700 !important;
+            background-color: #FAFBF9 !important;
+            border: 1px solid rgba(27, 94, 32, 0.28) !important;
+            border-radius: 9px !important;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
         }
         
         </style>
