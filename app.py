@@ -36,23 +36,16 @@ st.markdown(
     }
     div[data-testid="stAppViewContainer"][aria-busy="true"]::before,
     .stApp[data-test-script-state="running"]::before {
-        content: "G";
+        content: "";
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 58px;
         height: 58px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Montserrat', 'Segoe UI', sans-serif;
-        font-size: 28px;
-        font-weight: 800;
-        color: #1B5E20;
-        background-color: #FFFFFF;
+        background-color: transparent;
         border-radius: 50%;
-        box-shadow: 0 0 0 9999px rgba(201, 197, 186, 0.42), 0 6px 18px rgba(20, 26, 22, 0.16);
+        box-shadow: 0 0 0 9999px rgba(201, 197, 186, 0.42);
         z-index: 999990;
         pointer-events: none;
     }
@@ -216,6 +209,10 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+_SVG_LOGO_GRANO = f'<svg xmlns="{"http://www." + "w3.org/2000/svg"}" viewBox="0 0 100 100" fill="none"><path d="M68 27 L50 17 L24 32 L24 68 L50 83 L76 68 L76 46 C76 34 65 27 52 27 C39 27 32 36 32 49 C32 61 41 69 52 69 C61 69 67 62 67 53 C67 45 61 40 53 40 C46 40 42 45 42 51 C42 55 45 58 49 58 C52 58 54 55 54 52" stroke="#1B5E20" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+_B64_LOGO_GRANO = base64.b64encode(_SVG_LOGO_GRANO.encode("utf-8")).decode("utf-8")
+st.markdown(f'<style>div[data-testid="stAppViewContainer"][aria-busy="true"]::before,.stApp[data-test-script-state="running"]::before{{background-image:url("data:image/svg+xml;base64,{_B64_LOGO_GRANO}") !important;background-repeat:no-repeat !important;background-position:center !important;background-size:44px 44px !important;filter:drop-shadow(0 2px 6px rgba(20, 26, 22, 0.18));}}</style>', unsafe_allow_html=True)
+
 conn = st.connection("gsheets", type=GSheetsConnection)
 if st.session_state.get("toast_global"):
     st.toast(st.session_state.pop("toast_global"), icon="✅")
