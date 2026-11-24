@@ -180,31 +180,6 @@ st.markdown(
         background-color: #C2BBA9 !important;
         border-color: #1B5E20 !important;
         }
-    /* === TABELAS SOFISTICADAS ESTILO ERP === */
-    [data-testid="stDataFrame"] {
-        border: 1px solid rgba(27, 94, 32, 0.45) !important;
-        border-radius: 12px !important;
-        overflow: hidden !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
-    }
-    [data-testid="stDataFrame"] [role="columnheader"] {
-        background-color: #1F2922 !important;
-        color: #E6E1D6 !important;
-        font-weight: 700 !important;
-        font-size: 0.80rem !important;
-        letter-spacing: 0.03em !important;
-        border-bottom: 2px solid #4CAF50 !important;
-    }
-    [data-testid="stDataFrame"] [role="columnheader"] * {
-        color: #E6E1D6 !important;
-    }
-    [data-testid="stDataFrame"] [role="gridcell"] {
-        font-size: 0.84rem !important;
-        border-bottom: 1px solid rgba(27, 94, 32, 0.12) !important;
-    }
-    [data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
-        background-color: rgba(76, 175, 80, 0.10) !important;
-    }        
     </style>
     """,
     unsafe_allow_html=True
@@ -642,7 +617,12 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
                 if termo_c.strip():
                     df_f = df_f[df_f[col_sel].astype(str).str.lower().str.contains(termo_c.strip().lower(), na=False)]
         fc3.caption(f"📋 Exibindo **{len(df_f)}** de **{len(df_in)}** registro(s)")
-    return st.dataframe(df_f, **kwargs)    
+    df_f_reset = df_f.reset_index(drop=True)
+    styler = df_f_reset.style.apply(
+        lambda row: ["background-color: #EFF4EE; color: #111812;" if row.name % 2 == 1 else "background-color: #FAF8F5; color: #111812;" for _ in row],
+        axis=1
+    )
+    return st.dataframe(styler, **kwargs)   
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def _ler_planilha_com_cache(aba):
