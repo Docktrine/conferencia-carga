@@ -3229,15 +3229,15 @@ elif aba == "🚚 Planejamento Logística":
                 elif ped_limpo in df_plan["Nº Pedido"].values:
                     st.error(f"🚫 O pedido **'{ped_limpo}'** já está cadastrado na agenda! Use a opção de editar abaixo.")
                 else:
-                frete_final_manual = formatar_moeda_br_str(in_val_frete)
-                if not frete_final_manual and in_uf.strip() and in_cidade.strip() and in_tipo_veic.strip():
-                    lt_m = obter_mapa_lead_time().get((limpar_texto(in_uf), limpar_texto(in_cidade)))
-                    if lt_m is not None:
-                        _, _, _, fc_m, ft_m = calcular_dias_rota_efetivos(lt_m)
-                        v_norm = limpar_texto(in_tipo_veic)
-                        val_m = fc_m if "CARRETA" in v_norm else (ft_m if ("TRUCK" in v_norm or "BITRUCK" in v_norm or "BI-TRUCK" in v_norm) else None)
-                        if val_m and val_m > 0:
-                            frete_final_manual = f"R$ {val_m:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") 
+                    frete_final_manual = formatar_moeda_br_str(in_val_frete)
+                    if not frete_final_manual and in_uf.strip() and in_cidade.strip() and in_tipo_veic.strip():
+                        lt_m = obter_mapa_lead_time().get((limpar_texto(in_uf), limpar_texto(in_cidade)))
+                        if lt_m is not None:
+                            _, _, _, fc_m, ft_m = calcular_dias_rota_efetivos(lt_m)
+                            v_norm = limpar_texto(in_tipo_veic)
+                            val_m = fc_m if "CARRETA" in v_norm else (ft_m if ("TRUCK" in v_norm or "BITRUCK" in v_norm or "BI-TRUCK" in v_norm) else None)
+                            if val_m and val_m > 0:
+                                frete_final_manual = f"R$ {val_m:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") 
                             
                     nova_linha_plan = pd.DataFrame([{
                         "Data": formatar_data_br_str(in_data),
