@@ -3016,28 +3016,17 @@ elif aba == "🚚 Planejamento Logística":
                     st.rerun()
 
     if not df_exibir_plan.empty:
-        f_col1, f_col2, f_col3 = st.columns(3)
-        with f_col1:
-            datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
-            filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
-        with f_col2:
-            filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
-        with f_col3:
-            busca_livre = st.text_input("Buscar Pedido, Cliente, Placa ou Transportadora:", placeholder="Ex: 303820, Zaffari, ABC1D23 ou Transportadora...")
+            f_col1, f_col2 = st.columns(2)
+            with f_col1:
+                datas_carreg = sorted([d for d in df_exibir_plan["Data"].dropna().unique().tolist() if str(d).strip() != ""])
+                filtro_data_carreg = st.selectbox("Filtrar por Data de Carregamento:", ["Todas as datas"] + datas_carreg, key="filtro_fila_data_carreg")
+            with f_col2:
+                filtro_status_plan = st.selectbox("Filtrar por Status:", ["Todos os status"] + STATUS_PLANEJAMENTO, key="filtro_fila_status")
 
-        if filtro_data_carreg != "Todas as datas":
-            df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
-        if filtro_status_plan != "Todos os status":
-            df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"].apply(limpar_texto) == limpar_texto(filtro_status_plan)]
-        if busca_livre.strip():
-            termo = busca_livre.strip().lower()
-            mask_busca = (
-                df_exibir_plan["Nº Pedido"].astype(str).str.lower().str.contains(termo, na=False) |
-                df_exibir_plan["Cliente"].astype(str).str.lower().str.contains(termo, na=False) |
-                df_exibir_plan["Placa do veículo"].astype(str).str.lower().str.contains(termo, na=False) |
-                df_exibir_plan["Transportadora"].astype(str).str.lower().str.contains(termo, na=False)
-            )
-            df_exibir_plan = df_exibir_plan[mask_busca]
+            if filtro_data_carreg != "Todas as datas":
+                df_exibir_plan = df_exibir_plan[df_exibir_plan["Data"] == filtro_data_carreg]
+            if filtro_status_plan != "Todos os status":
+                df_exibir_plan = df_exibir_plan[df_exibir_plan["Status"].apply(limpar_texto) == limpar_texto(filtro_status_plan)]
 
         st_norm = df_exibir_plan["Status"].apply(limpar_texto)
         tr_norm = df_exibir_plan["Transportadora"].apply(limpar_texto)
