@@ -1687,7 +1687,7 @@ if len(abas_nav) > 1:
             max-height: 38px !important;
             margin: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 0 !important;
+            padding-bottom: 5px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
