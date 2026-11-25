@@ -3065,6 +3065,102 @@ elif aba == "📊 Análise de Pedidos":
         except Exception as e_bi:
             st.error(f"Erro ao ler a planilha do BI: {e_bi}")
 
+    if arq_trizy is None and st.session_state.get("bi_cache_bytes") is None:
+        components.html(
+            """
+            <style>
+            body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+            @keyframes digitarAnalise {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-2.5px); }
+            }
+            @keyframes brilhoTela {
+                0%, 100% { opacity: 0.75; }
+                50% { opacity: 1; }
+            }
+            @keyframes lupaFlutua {
+                0%, 100% { transform: translate(0, 0) rotate(-6deg); }
+                50% { transform: translate(4px, -5px) rotate(6deg); }
+            }
+            .analista-wrap {
+                width: 100%;
+                max-width: 420px;
+                margin: 36px auto 0 auto;
+                text-align: center;
+                font-family: sans-serif;
+            }
+            .mao-esq { animation: digitarAnalise 0.45s ease-in-out infinite; }
+            .mao-dir { animation: digitarAnalise 0.45s ease-in-out 0.22s infinite; }
+            .tela-glow { animation: brilhoTela 2.2s ease-in-out infinite; }
+            .lupa-anim { transform-box: fill-box; transform-origin: center; animation: lupaFlutua 3s ease-in-out infinite; }
+            </style>
+            <div class="analista-wrap">
+                <svg width="240" height="145" viewBox="0 0 240 145" fill="none">
+                    <!-- Sombra da Mesa -->
+                    <ellipse cx="120" cy="126" rx="88" ry="4" fill="#141A16" opacity="0.14"/>
+
+                    <!-- Lupa Flutuante de Conferência -->
+                    <g class="lupa-anim">
+                        <circle cx="176" cy="40" r="13" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2"/>
+                        <path d="M171 40 L174.5 43.5 L181.5 36.5" stroke="#1B5E20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="185.5" y1="49.5" x2="194" y2="58" stroke="#141A16" stroke-width="2.6" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Brócolis Analista (Sentado atrás do notebook) -->
+                    <g>
+                        <!-- Caule / Tronco -->
+                        <path d="M84 68 L87 104 H111 L114 68 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- Copa do Brócolis -->
+                        <circle cx="77" cy="54" r="13" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                        <circle cx="121" cy="54" r="13" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                        <circle cx="99" cy="41" r="15" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.7"/>
+                        <path d="M72 66 C64 61 67 46 77 46 C80 35 93 31 100 37 C108 31 121 36 121 48 C130 51 130 64 121 67 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
+                        <!-- Óculos de Grau Analista + Olhos Atentos -->
+                        <circle cx="92" cy="76" r="5" fill="#FFFFFF" stroke="#141A16" stroke-width="1.5"/>
+                        <circle cx="106" cy="76" r="5" fill="#FFFFFF" stroke="#141A16" stroke-width="1.5"/>
+                        <line x1="97" y1="76" x2="101" y2="76" stroke="#141A16" stroke-width="1.5"/>
+                        <circle cx="93.2" cy="76" r="1.7" fill="#141A16"/>
+                        <circle cx="107.2" cy="76" r="1.7" fill="#141A16"/>
+                        <path d="M96 84 Q99 86.5 102 84" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Caneca de Café Grano na Mesa -->
+                    <g>
+                        <rect x="46" y="106" width="14" height="16" rx="2" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6"/>
+                        <path d="M60 110 H63 C65 110 65 118 63 118 H60" stroke="#141A16" stroke-width="1.6"/>
+                        <rect x="49" y="111" width="8" height="6" rx="1" fill="#1B5E20"/>
+                    </g>
+
+                    <!-- Notebook Corporativo na Mesa -->
+                    <g>
+                        <!-- Tela do Notebook -->
+                        <rect x="114" y="72" width="54" height="38" rx="3" fill="#1F2922" stroke="#141A16" stroke-width="1.8"/>
+                        <rect class="tela-glow" x="118" y="76" width="46" height="30" rx="1.5" fill="#E8F5E9"/>
+                        <!-- Gráficos na Tela -->
+                        <rect x="123" y="92" width="5" height="10" rx="1" fill="#81C784"/>
+                        <rect x="131" y="86" width="5" height="16" rx="1" fill="#2E7D32"/>
+                        <rect x="139" y="81" width="5" height="21" rx="1" fill="#1B5E20"/>
+                        <line x1="148" y1="84" x2="159" y2="84" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+                        <line x1="148" y1="89" x2="156" y2="89" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
+                        <line x1="148" y1="94" x2="159" y2="94" stroke="#81C784" stroke-width="1.6" stroke-linecap="round"/>
+                        <!-- Base / Teclado -->
+                        <polygon points="102,110 168,110 176,121 94,121" fill="#D5D0C5" stroke="#141A16" stroke-width="1.7" stroke-linejoin="round"/>
+                    </g>
+
+                    <!-- Mãozinhas Digitando -->
+                    <circle class="mao-esq" cx="114" cy="113" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.4"/>
+                    <circle class="mao-dir" cx="132" cy="113" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.4"/>
+
+                    <!-- Tampo da Mesa -->
+                    <line x1="34" y1="122" x2="206" y2="122" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #141A16; margin-top: 2px;">Aguardando planilha para análise</div>
+                <div style="font-size: 0.75rem; color: #5A635C; margin-top: 3px;">Abra um dos painéis acima para importar dados do <b>Portal Trizy</b> ou do <b>BI</b>.</div>
+            </div>
+            """,
+            height=210
+        )
+
 elif aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
     st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
