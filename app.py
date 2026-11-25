@@ -2309,32 +2309,68 @@ if aba == "🏠 Início":
             0%, 100% { transform: rotateZ(-2.5deg) translateY(0px); }
             50% { transform: rotateZ(2.5deg) translateY(-3px); }
         }
+        @keyframes palhetaRapida {
+            0%, 100% { transform: rotateZ(-14deg); }
+            50% { transform: rotateZ(18deg); }
+        }
+        @keyframes cabecaSolo {
+            0%, 100% { transform: rotateZ(-3deg); }
+            50% { transform: rotateZ(4deg); }
+        }
         @keyframes vocalistaShow3D {
             0%, 100% { transform: rotateZ(-2deg) translateY(0px); }
             50% { transform: rotateZ(3deg) translateY(-3px); }
         }
+        @keyframes bocaCantaAnim {
+            0%, 100% { transform: scaleY(0.65) scaleX(1.1); }
+            50% { transform: scaleY(1.25) scaleX(0.92); }
+        }
+        @keyframes topeteBalanca {
+            0%, 100% { transform: rotateZ(-5deg); }
+            50% { transform: rotateZ(6deg); }
+        }
+        @keyframes bracoCanta {
+            0%, 100% { transform: rotateZ(0deg); }
+            50% { transform: rotateZ(-14deg); }
+        }
         @keyframes bateristaShow3D {
             0%, 100% { transform: translateY(0px) scaleY(1); }
-            50% { transform: translateY(-2px) scaleY(0.98); }
+            50% { transform: translateY(-2.5px) scaleY(0.97); }
+        }
+        @keyframes bumboPulsa {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
         }
         @keyframes pratoVibra {
             0%, 100% { transform: rotateZ(0deg); }
-            25% { transform: rotateZ(-9deg); }
-            75% { transform: rotateZ(9deg); }
+            25% { transform: rotateZ(-11deg); }
+            75% { transform: rotateZ(11deg); }
         }
         @keyframes baqE {
-            0%, 100% { transform: rotateZ(-22deg); }
-            50% { transform: rotateZ(18deg); }
+            0%, 100% { transform: rotateZ(-28deg); }
+            50% { transform: rotateZ(20deg); }
         }
         @keyframes baqD {
-            0%, 100% { transform: rotateZ(18deg); }
-            50% { transform: rotateZ(-22deg); }
+            0%   { transform: translate(0px, 0px) rotateZ(20deg); }
+            12%  { transform: translate(0px, 0px) rotateZ(-28deg); }
+            25%  { transform: translate(0px, 0px) rotateZ(20deg); }
+            37%  { transform: translate(0px, 0px) rotateZ(-28deg); }
+            50%  { transform: translate(0px, 0px) rotateZ(15deg); }
+            75%  { transform: translate(6px, -28px) rotateZ(200deg); }
+            100% { transform: translate(0px, 0px) rotateZ(380deg); }
         }
         @keyframes baixistaGroove3D {
             0%, 100% { transform: rotateZ(2deg) translateY(0px); }
             50% { transform: rotateZ(-2deg) translateY(-2.5px); }
         }
-
+        @keyframes dedilhaBaixo {
+            0%, 100% { transform: translateY(-2px) rotateZ(-8deg); }
+            50% { transform: translateY(3px) rotateZ(12deg); }
+        }
+        @keyframes palhaGroove {
+            0%, 100% { transform: rotateZ(-3deg); }
+            50% { transform: rotateZ(4deg); }
+        }
         @keyframes ondaSom {
             0% { transform: scale(0.6); opacity: 0; }
             40% { opacity: 0.9; }
@@ -2349,7 +2385,7 @@ if aba == "🏠 Início":
             width: 100%;
             max-width: 920px;
             margin: 6px auto 0 auto;
-            height: 134px;
+            height: 152px;
             position: relative;
         }
         .musico-box {
@@ -2363,51 +2399,56 @@ if aba == "🏠 Início":
         .m-tomate   { left: 55%; animation: bateristaShow3D 0.55s ease-in-out infinite; }
         .m-vagem    { left: 74%; animation: baixistaGroove3D 1.5s ease-in-out infinite; }
 
+        /* Articulações individuais */
+        .copa-brocolis { transform-box: fill-box; transform-origin: bottom center; animation: cabecaSolo 0.8s ease-in-out infinite; }
+        .palheta-brocolis { transform-box: fill-box; transform-origin: top center; animation: palhetaRapida 0.32s ease-in-out infinite; }
+
+        .topete-cenoura { transform-box: fill-box; transform-origin: bottom center; animation: topeteBalanca 0.9s ease-in-out infinite; }
+        .boca-canta { transform-box: fill-box; transform-origin: center; animation: bocaCantaAnim 0.45s ease-in-out infinite; }
+        .braco-cenoura-esq { transform-box: fill-box; transform-origin: top right; animation: bracoCanta 0.9s ease-in-out infinite; }
+
+        .bumbo-anim { transform-box: fill-box; transform-origin: center; animation: bumboPulsa 0.55s ease-in-out infinite; }
         .prato-anim { transform-box: fill-box; transform-origin: center; animation: pratoVibra 0.55s ease-in-out infinite; }
         .be-anim { transform-box: fill-box; transform-origin: bottom right; animation: baqE 0.55s ease-in-out infinite; }
-        .bd-anim { transform-box: fill-box; transform-origin: bottom left; animation: baqD 0.55s ease-in-out infinite; }
+        .bd-anim { transform-box: fill-box; transform-origin: center; animation: baqD 2.2s ease-in-out infinite; }
+
+        .dedilha-milho { transform-box: fill-box; transform-origin: top center; animation: dedilhaBaixo 0.42s ease-in-out infinite; }
+        .palha-milho { transform-box: fill-box; transform-origin: bottom center; animation: palhaGroove 1.5s ease-in-out infinite; }
+
         .onda-1 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.4s ease-out infinite; }
         .onda-2 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.4s ease-out 0.7s infinite; }
 
         .nota-flut { position: absolute; pointer-events: none; }
-        .nf-1 { left: 22%; top: 14px; animation: notaSobe3D 2.3s ease-out infinite; }
-        .nf-2 { left: 41%; top: 10px; animation: notaSobe3D 2.6s ease-out 0.6s infinite; }
-        .nf-3 { left: 59%; top: 14px; animation: notaSobe3D 2.1s ease-out 1.1s infinite; }
-        .nf-4 { left: 78%; top: 12px; animation: notaSobe3D 2.5s ease-out 1.6s infinite; }
+        .nf-1 { left: 22%; top: 24px; animation: notaSobe3D 2.3s ease-out infinite; }
+        .nf-2 { left: 41%; top: 20px; animation: notaSobe3D 2.6s ease-out 0.6s infinite; }
+        .nf-3 { left: 59%; top: 24px; animation: notaSobe3D 2.1s ease-out 1.1s infinite; }
+        .nf-4 { left: 78%; top: 22px; animation: notaSobe3D 2.5s ease-out 1.6s infinite; }
         </style>
 
         <div class="palco-3d-container">
-            <!-- Tablado de Palco Minimalista + Luz Verde Suave -->
-            <svg width="100%" height="134" viewBox="0 0 920 134" fill="none" style="position:absolute; left:0; top:0;">
+            <svg width="100%" height="152" viewBox="0 0 920 152" fill="none" style="position:absolute; left:0; top:0;">
                 <defs>
                     <radialGradient id="holofoteGrano" cx="50%" cy="88%" r="52%">
                         <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.22"/>
                         <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
                     </radialGradient>
                 </defs>
-                <!-- Luz suave de palco -->
-                <ellipse cx="460" cy="114" rx="380" ry="22" fill="url(#holofoteGrano)"/>
-                <!-- Plataforma do Palco em Perspectiva (Os pés ficam em y=118) -->
-                <polygon points="62,110 858,110 882,122 38,122" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
-                <!-- Espelho / Frente do Tablado -->
-                <rect x="38" y="122" width="844" height="6" rx="1" fill="#D5D0C5" stroke="#141A16" stroke-width="1.6"/>
-                <!-- Tábuas sutis do piso -->
-                <line x1="190" y1="110" x2="178" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="345" y1="110" x2="339" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="460" y1="110" x2="460" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="575" y1="110" x2="581" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="730" y1="110" x2="742" y2="122" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <!-- Caixas de Retorno (Monitores de Palco nas pontas) -->
-                <polygon points="78,117 102,117 106,122 74,122" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
-                <polygon points="818,117 842,117 846,122 814,122" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
-                <!-- Luzes de Ribalta na borda frontal -->
-                <rect x="225" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="385" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="522" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="682" y="119" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <ellipse cx="460" cy="132" rx="380" ry="22" fill="url(#holofoteGrano)"/>
+                <polygon points="62,128 858,128 882,140 38,140" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+                <rect x="38" y="140" width="844" height="6" rx="1" fill="#D5D0C5" stroke="#141A16" stroke-width="1.6"/>
+                <line x1="190" y1="128" x2="178" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="345" y1="128" x2="339" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="460" y1="128" x2="460" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="575" y1="128" x2="581" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="730" y1="128" x2="742" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <polygon points="78,135 102,135 106,140 74,140" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <polygon points="818,135 842,135 846,140 814,140" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <rect x="225" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="385" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="522" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="682" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
             </svg>
 
-            <!-- Notas musicais girando em 3D -->
             <svg class="nota-flut nf-1" width="18" height="22" viewBox="0 0 18 22" fill="none">
                 <circle cx="5" cy="17" r="3" fill="#1B5E20"/><path d="M8 17 V4 L15 2 V14" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="14" r="3" fill="#1B5E20"/>
             </svg>
@@ -2421,68 +2462,69 @@ if aba == "🏠 Início":
                 <circle cx="5" cy="15" r="3.2" fill="#1B5E20"/><path d="M8.2 15 V3 L14 5" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
             </svg>
 
-            <!-- 1. BRÓCOLIS GUITARRISTA (Óculos de Rockstar + Guitarra Elétrica) -->
+            <!-- 1. BRÓCOLIS GUITARRISTA (Articulado: copa balança + braço palhetando) -->
             <div class="musico-box m-brocolis">
                 <svg width="82" height="84" viewBox="0 0 82 84" fill="none">
                     <ellipse cx="32" cy="81" rx="18" ry="2.8" fill="#141A16" opacity="0.18"/>
-                    <!-- Pernas e Sapatinhos -->
                     <path d="M25 65 V79 M38 65 V79" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <path d="M20 80 H27 C27 77.5 22 77.5 20 80 Z M36 80 H43 C43 77.5 38 77.5 36 80 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
-                    <!-- Caule/Tronco com sombra -->
                     <path d="M22 41 L24 65 H39 L41 41 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <path d="M35 41 L34 65 H39 L41 41 Z" fill="#D5D0C5"/>
-                    <!-- Copa do Brócolis em 2 camadas (volume) -->
-                    <circle cx="16" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
-                    <circle cx="47" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
-                    <circle cx="31.5" cy="21" r="12" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.7"/>
-                    <path d="M12 40 C6 36 8 25 16 25 C18 16 28 13 33 18 C39 13 49 17 49 26 C56 28 56 38 49 41 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
-                    <path d="M20 27 C23 23 28 23 30 26 M36 28 C39 25 43 26 44 29" stroke="#2E7D32" stroke-width="1.3" stroke-linecap="round"/>
-                    <!-- Óculos Escuros Rockstar + Sorriso -->
+
+                    <g class="copa-brocolis">
+                        <circle cx="16" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                        <circle cx="47" cy="31" r="10" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7"/>
+                        <circle cx="31.5" cy="21" r="12" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.7"/>
+                        <path d="M12 40 C6 36 8 25 16 25 C18 16 28 13 33 18 C39 13 49 17 49 26 C56 28 56 38 49 41 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.9" stroke-linejoin="round"/>
+                        <path d="M20 27 C23 23 28 23 30 26 M36 28 C39 25 43 26 44 29" stroke="#2E7D32" stroke-width="1.3" stroke-linecap="round"/>
+                    </g>
+
                     <path d="M22 46 H41" stroke="#141A16" stroke-width="1.5"/>
                     <rect x="23" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/>
                     <rect x="32.5" y="45" width="7.5" height="5" rx="1.5" fill="#141A16"/>
                     <line x1="25" y1="46.5" x2="27" y2="48.5" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round"/>
                     <line x1="34.5" y1="46.5" x2="36.5" y2="48.5" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round"/>
                     <path d="M29 53 Q32 56 35 53" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
-                    <!-- Guitarra Elétrica + Bracinhos -->
+
                     <path d="M18 59 C14 55 17 49 23 51 L33 54 C36 55 36 61 31 62 L22 62 C19 62 18 60 18 59 Z" fill="#C8E6C9" stroke="#141A16" stroke-width="1.7"/>
                     <circle cx="25" cy="56.5" r="2.2" fill="#1B5E20"/>
                     <line x1="34" y1="54" x2="60" y2="43" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
                     <path d="M59 41 L64 39 L65 43 L60 45 Z" fill="#1B5E20" stroke="#141A16" stroke-width="1.3"/>
-                    <!-- Bracinho direito palhetando e esquerdo no braço -->
-                    <path d="M23 48 Q20 53 24 56" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+
+                    <path class="palheta-brocolis" d="M23 48 Q19 54 25 58" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     <path d="M40 48 Q45 50 48 48" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
-                    <!-- Ondas sonoras -->
+
                     <path class="onda-1" d="M67 35 C71 39 71 45 67 49" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                     <path class="onda-2" d="M72 31 C77 37 77 47 72 53" stroke="#4CAF50" stroke-width="1.4" stroke-linecap="round"/>
                 </svg>
             </div>
 
-            <!-- 2. CENOURA VOCALISTA (Topete Folhudo + Olhos Expressivos + Pedestal) -->
+            <!-- 2. CENOURA VOCALISTA (Articulada: topete + boca cantando + braço expressivo) -->
             <div class="musico-box m-cenoura">
                 <svg width="74" height="88" viewBox="0 0 74 88" fill="none">
                     <ellipse cx="30" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
-                    <!-- Pernas e Sapatinhos -->
                     <path d="M24 68 V83 M35 68 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <path d="M19 84 H26 C26 81.5 21 81.5 19 84 Z M34 84 H41 C41 81.5 36 81.5 34 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
-                    <!-- Topete de Folhas Verdes em Camadas -->
-                    <path d="M29 22 C22 10 14 12 19 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M30 22 C28 8 34 8 32 22 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M31 22 C38 10 45 13 39 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
-                    <!-- Corpo da Cenoura com Sombra Lateral e Ranhuras -->
+
+                    <g class="topete-cenoura">
+                        <path d="M29 22 C22 10 14 12 19 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                        <path d="M30 22 C28 8 34 8 32 22 Z" fill="#66BB6A" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                        <path d="M31 22 C38 10 45 13 39 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
+                    </g>
+
                     <path d="M16 26 C16 19 43 19 43 26 L33 68 C32 71 27 71 26 68 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <path d="M37 22 C41 22 43 24 43 26 L33 68 C32 70 31 70 30 70 L37 22 Z" fill="#D5D0C5"/>
                     <path d="M19 34 H24 M35 44 H40 M21 53 H25" stroke="#141A16" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
-                    <!-- Olhos com Brilho e Boca Cantando -->
+
                     <circle cx="25" cy="34" r="2.2" fill="#141A16"/>
                     <circle cx="24.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
                     <circle cx="34" cy="34" r="2.2" fill="#141A16"/>
                     <circle cx="33.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
-                    <ellipse cx="29.5" cy="41.5" rx="2.6" ry="3.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
-                    <!-- Bracinho esquerdo na cintura e direito no microfone -->
-                    <path d="M17 42 Q11 46 18 50" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
+                    <ellipse class="boca-canta" cx="29.5" cy="41.5" rx="2.6" ry="3.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
+
+                    <path class="braco-cenoura-esq" d="M17 42 Q10 45 17 50" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     <path d="M40 43 L49 38" stroke="#141A16" stroke-width="1.7" stroke-linecap="round"/>
-                    <!-- Pedestal e Microfone Profissional -->
+
                     <line x1="54" y1="38" x2="54" y2="84" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     <path d="M47 84 H61" stroke="#141A16" stroke-width="2" stroke-linecap="round"/>
                     <circle cx="51" cy="36" r="4.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.5"/>
@@ -2491,94 +2533,82 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 3. TOMATE BATERISTA (Fone de Retorno + Bateria Completa) -->
+            <!-- 3. TOMATE BATERISTA (Baqueta direita voa girando 360° no compasso!) -->
             <div class="musico-box m-tomate">
-                <svg width="94" height="76" viewBox="0 0 94 76" fill="none">
+                <svg width="94" height="96" viewBox="0 -20 94 96" fill="none" style="overflow:visible;">
                     <ellipse cx="47" cy="73" rx="30" ry="3.2" fill="#141A16" opacity="0.20"/>
-                    <!-- Corpo do Tomate com Brilho -->
                     <ellipse cx="47" cy="36" rx="19" ry="15" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
                     <path d="M35 28 C37 25 41 24 44 25" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-                    <!-- Coroa de Sépalas Verdes -->
                     <path d="M47 21 L39 16 L44 21 L47 13 L50 21 L55 16 L47 21 Z" fill="#81C784" stroke="#1B5E20" stroke-width="1.6" stroke-linejoin="round"/>
-                    <!-- Fone de Retorno -->
                     <path d="M28 35 C28 22 66 22 66 35" stroke="#141A16" stroke-width="1.6"/>
                     <rect x="25.5" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
                     <rect x="65" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                    <!-- Olhos com Brilho e Sorriso -->
                     <circle cx="41.5" cy="35" r="2" fill="#141A16"/>
                     <circle cx="40.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
                     <circle cx="52.5" cy="35" r="2" fill="#141A16"/>
                     <circle cx="51.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
                     <path d="M43.5 40.5 Q47 44 50.5 40.5" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
-                    <!-- Baquetas Animadas -->
-                    <line class="be-anim" x1="31" y1="39" x2="20" y2="26" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <line class="bd-anim" x1="63" y1="39" x2="74" y2="26" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
-                    <!-- Bumbo Central Duplo -->
-                    <circle cx="47" cy="58" r="15" fill="#DDD8CE" stroke="#141A16" stroke-width="2"/>
-                    <circle cx="47" cy="58" r="11.5" stroke="#141A16" stroke-width="1" stroke-dasharray="3 3"/>
-                    <circle cx="47" cy="58" r="6" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.6"/>
-                    <!-- Caixa à Esquerda -->
+
+                    <line class="be-anim" x1="31" y1="39" x2="20" y2="26" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+                    <line class="bd-anim" x1="63" y1="39" x2="74" y2="26" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
+
+                    <g class="bumbo-anim">
+                        <circle cx="47" cy="58" r="15" fill="#DDD8CE" stroke="#141A16" stroke-width="2"/>
+                        <circle cx="47" cy="58" r="11.5" stroke="#141A16" stroke-width="1" stroke-dasharray="3 3"/>
+                        <circle cx="47" cy="58" r="6" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.6"/>
+                    </g>
+
                     <rect x="17" y="47" width="15" height="9" rx="1.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6"/>
                     <line x1="17" y1="50" x2="32" y2="50" stroke="#1B5E20" stroke-width="1.3"/>
                     <line x1="24.5" y1="56" x2="24.5" y2="73" stroke="#141A16" stroke-width="1.7"/>
-                    <!-- Prato de Ataque à Direita -->
                     <line x1="74" y1="33" x2="74" y2="73" stroke="#141A16" stroke-width="1.7"/>
                     <ellipse class="prato-anim" cx="74" cy="33" rx="13" ry="2.8" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/>
                 </svg>
             </div>
 
-            <!-- 4. MILHO BAIXISTA (Topo com Cabelo de Sabugo + Palhas Suaves + Baixo Verde Escuro) -->
+            <!-- 4. MILHO BAIXISTA (Articulado: mão dedilhando o baixo + palhas no groove) -->
             <div class="musico-box m-vagem">
                 <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
                     <ellipse cx="32" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
-                    <!-- Pernas e Sapatinhos -->
                     <path d="M27 69 V83 M37 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
                     <path d="M22 84 H29 C29 81.5 24 81.5 22 84 Z M36 84 H43 C43 81.5 38 81.5 36 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
 
-                    <!-- Palhas Internas Suaves (Camada de trás) -->
-                    <path d="M32 69 C22 63 18 44 10 34 C18 35 24 46 28 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
-                    <path d="M32 69 C42 63 46 44 54 34 C46 35 40 46 36 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    <g class="palha-milho">
+                        <path d="M32 69 C22 63 18 44 10 34 C18 35 24 46 28 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M32 69 C42 63 46 44 54 34 C46 35 40 46 36 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
+                    </g>
 
-                    <!-- Cabelo de Sabugo no Topo (igual à segunda imagem) -->
                     <path d="M29 16 C25 9 20 11 22 16 M32 15 C31 7 35 7 34 15 M35 16 C39 9 43 12 40 17" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
 
-                    <!-- Espiga de Milho Arredondada -->
                     <path d="M32 15 C22 15 21 56 32 67 C43 56 42 15 32 15 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
-                    <!-- Sombra Lateral da Espiga -->
                     <path d="M36 17 C41 23 41 53 32 65 C37 54 38 24 36 17 Z" fill="#D5D0C5"/>
-
-                    <!-- Textura Sutil dos Grãos -->
                     <path d="M27 23 V48 M32 20 V50 M37 23 V48" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round" opacity="0.32"/>
 
-                    <!-- Rostinho com Olhinhos Brilhantes -->
                     <circle cx="28.8" cy="28.5" r="1.9" fill="#141A16"/>
                     <circle cx="28.2" cy="27.9" r="0.65" fill="#FFFFFF"/>
                     <circle cx="35.5" cy="28.5" r="1.9" fill="#141A16"/>
                     <circle cx="34.9" cy="27.9" r="0.65" fill="#FFFFFF"/>
                     <path d="M29.5 34 Q32.5 36.5 35.5 33.8" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
 
-                    <!-- Palhas Externas Suaves (Camada da frente) -->
                     <path d="M32 70 C19 66 14 53 7 45 C16 45 23 51 32 63 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
                     <path d="M28 65 Q20 55 12 48" stroke="#1B5E20" stroke-width="1" stroke-linecap="round" opacity="0.65"/>
-
                     <path d="M32 70 C45 66 50 53 57 45 C48 45 41 51 32 63 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
                     <path d="M36 65 Q44 55 52 48" stroke="#1B5E20" stroke-width="1" stroke-linecap="round" opacity="0.65"/>
 
-                    <!-- Contrabaixo Verde-Floresta para Destaque + Bracinhos -->
                     <ellipse cx="31" cy="52" rx="10" ry="5.8" transform="rotate(-15 31 52)" fill="#2E7D32" stroke="#141A16" stroke-width="1.7"/>
                     <circle cx="29" cy="52.5" r="2" fill="#EAE7E0"/>
                     <line x1="40" y1="49" x2="66" y2="41" stroke="#141A16" stroke-width="2.3" stroke-linecap="round"/>
                     <rect x="65" y="38.5" width="5" height="4" rx="1" transform="rotate(-15 65 38.5)" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                    <path d="M22 47 Q20 51 25 52" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+
+                    <path class="dedilha-milho" d="M22 47 Q20 52 26 53" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
                     <path d="M42 45 Q48 46 52 44" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
 
-                    <!-- Onda Sonora -->
                     <path class="onda-1" d="M73 34 C77 38 77 44 73 48" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </div>
         </div>
         """,
-        height=138
+        height=156
     )
     
 elif aba == "📊 Análise de Pedidos":
