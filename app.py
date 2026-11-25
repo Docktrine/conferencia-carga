@@ -483,7 +483,7 @@ def tem_permissao(nome_permissao):
     return nome_permissao in st.session_state.get("permissoes_usuario", list())
 
 def carregar_usuarios_sistema():
-    st.cache_data.clear()
+    limpar_cache_operacional()
     df_u = carregar_dados("usuarios")
     if df_u.empty or "login" not in df_u.columns:
         df_init = pd.DataFrame([{
@@ -674,6 +674,10 @@ def salvar_dados(df, aba):
                 time.sleep(espera)
             else:
                 raise e
+def limpar_cache_operacional():
+    for _aba_op in ("planejamento", "cargas", "bipes", "usuarios"):
+        _ler_planilha_com_cache.clear(_aba_op)
+    montar_html_usuarios_online.clear()                
 
 def verificar_carga_100_concluida(df_carga_especifica):
     if df_carga_especifica.empty:
@@ -1525,7 +1529,7 @@ with st.sidebar:
         if mask_out.any():
             df_u_out.loc[mask_out, "ultimo_acesso"] = ""
             salvar_dados(df_u_out[COLUNAS_USUARIOS], "usuarios")
-            st.cache_data.clear()
+            limpar_cache_operacional()
         st.session_state.usuario_autenticado = False
         st.rerun()
     st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
@@ -1710,10 +1714,21 @@ if len(abas_nav) > 1:
                 if (!p.querySelector('.wms-x-close') && p.innerHTML.includes('✕')) {
                     p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
                 }
+                const xBtn = p.querySelector('.wms-x-close');
+                if (xBtn && !xBtn.dataset.bound) {
+                    xBtn.dataset.bound = '1';
+                    xBtn.addEventListener('click', (ev) => {
+                        const btnPai = xBtn.closest('button');
+                        if (btnPai && btnPai.getAttribute('aria-pressed') !== 'true') {
+                            setTimeout(() => { btnPai.click(); }, 120);
+                        }
+                    });
+                }
             });
         }
         estilarXGuias();
         new MutationObserver(estilarXGuias).observe(doc.body, { childList: true, subtree: true });
+
         </script>
         """,
         height=0,
@@ -2692,7 +2707,7 @@ elif aba == "📊 Análise de Pedidos":
                             st.error(f"🚨 **ALERTA COMERCIAL: {len(alteracoes_entrega)} pedido(s) já programado(s) tiveram a Data de Entrega alterada no BI!**")
                             st.dataframe(pd.DataFrame(alteracoes_entrega).drop(columns=["idx_plan"]), use_container_width=True, hide_index=True)
                             if st.button("🔄 Atualizar Datas no Planejamento e Disparar Alerta para a Equipe", type="primary"):
-                                st.cache_data.clear()
+                                limpar_cache_operacional()
                                 df_p_alt = carregar_dados("planejamento")
                                 for col_p_a in COLUNAS_PLANEJAMENTO:
                                     if col_p_a not in df_p_alt.columns:
@@ -2714,7 +2729,7 @@ elif aba == "📊 Análise de Pedidos":
                                         qtd_alt += 1
                                 if qtd_alt > 0:
                                     salvar_dados(df_p_alt[COLUNAS_PLANEJAMENTO], "planejamento")
-                                    st.cache_data.clear()
+                                   limpar_cache_operacional()
                                     st.success(f"🔔 {qtd_alt} pedido(s) atualizados no Planejamento e notificação disparada para toda a equipe!")
                                     st.rerun()
 
@@ -2765,7 +2780,7 @@ elif aba == "📊 Análise de Pedidos":
 
                             if qtd_vinc > 0:
                                 salvar_dados(df_p_nf[COLUNAS_PLANEJAMENTO], "planejamento")
-                                st.cache_data.clear()
+                                limpar_cache_operacional()
                                 st.success(f"✅ {qtd_vinc} Nota(s) Fiscal(is) vinculada(s) com sucesso!")
                                 st.rerun()
                             else:
@@ -2779,7 +2794,7 @@ elif aba == "📊 Análise de Pedidos":
                     pedidos_escolhidos = st.multiselect("Pedidos selecionados para programar:", options=opcoes_envio)
 
                     if st.button("🚚 Imputar Selecionados no Planejamento Logística", type="primary", disabled=(len(pedidos_escolhidos) == 0)):
-                        st.cache_data.clear()
+                        limpar_cache_operacional()
                         df_p_atual = carregar_dados("planejamento")
                         if df_p_atual is None:
                             st.error("⚠️ Falha temporária ao ler a aba 'planejamento' no Google Sheets. Tente clicar novamente em 3 segundos (nenhum dado foi alterado).")
@@ -2815,7 +2830,7 @@ elif aba == "📊 Análise de Pedidos":
                         if novos_plan:
                             df_p_final = pd.concat([df_p_atual[COLUNAS_PLANEJAMENTO], pd.DataFrame(novos_plan)], ignore_index=True)
                             salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
-                            st.cache_data.clear()
+                           limpar_cache_operacional()
                             st.success(f"🎉 {len(novos_plan)} pedido(s) adicionado(s) ao Planejamento sem alterar os existentes!")
                             st.rerun()
 
@@ -3680,7 +3695,7 @@ elif aba == "📋 Gestão de Pedidos":
     st.title("📋 Gestão de Pedidos: Conferidos x Pendentes")
 
     if st.button("🔄 Atualizar Status"):
-        st.cache_data.clear()
+        limpar_cache_operacional()
         st.rerun()
 
     df_todas = carregar_dados("cargas")
@@ -4332,7 +4347,7 @@ elif aba == "📈 Painel de Acompanhamento":
     c_sel_pa, c_btn_pa, _ = st.columns((2.0, 1.0, 3.0), vertical_alignment="bottom")
     carga_selecionada = c_sel_pa.selectbox("Selecione a Carga:", df_todas_cargas["id_carga"].unique().tolist(), key="sel_carga_painel")
     if c_btn_pa.button("🔄 Atualizar Dados", type="primary"):
-        st.cache_data.clear()
+        limpar_cache_operacional()
         st.rerun()
 
     df = df_todas_cargas[df_todas_cargas["id_carga"] == carga_selecionada].copy()
@@ -4529,7 +4544,7 @@ elif aba == "✅ Auditoria e Ajustes":
                 default=cargas_disponiveis_aud if selecionar_todos_lote else []
             )
             if st.button("✅ Marcar Selecionados como Auditado (Histórico)", disabled=len(cargas_lote_escolhidas) == 0):
-                st.cache_data.clear()
+                limpar_cache_operacional()
                 df_plan_lote = carregar_dados("planejamento")
                 if df_plan_lote is None:
                     st.error("⚠️ Falha temporária ao ler a aba 'planejamento'. Tente novamente em 3 segundos.")
@@ -4556,7 +4571,7 @@ elif aba == "✅ Auditoria e Ajustes":
                     df_plan_lote = pd.concat([df_plan_lote[COLUNAS_PLANEJAMENTO], pd.DataFrame(novas_linhas_lote)], ignore_index=True)
 
                 salvar_dados(df_plan_lote[COLUNAS_PLANEJAMENTO], "planejamento")
-                st.cache_data.clear()
+                limpar_cache_operacional()
                 st.success(f"🎉 {len(cargas_lote_escolhidas)} pedido(s) marcados como Auditado (Histórico)!")
                 st.rerun()
 
@@ -4582,7 +4597,7 @@ elif aba == "✅ Auditoria e Ajustes":
                     df_p_reab["validado"] = df_p_reab["validado"].astype(object)
                     df_p_reab.loc[df_p_reab["id_carga"].apply(limpar_texto) == limpar_texto(carga_selecionada), "validado"] = ""
                     salvar_dados(df_p_reab, "planejamento")
-                    st.cache_data.clear()
+                    limpar_cache_operacional()
                     st.warning(f"🔓 Carga **{carga_selecionada}** reaberta pela gestão para ajustes!")
                     st.rerun()
 
@@ -4858,7 +4873,7 @@ elif aba == "✅ Auditoria e Ajustes":
                 df_plan_salvar = pd.concat([df_plan_salvar, pd.DataFrame([nova_linha_p])], ignore_index=True)
 
             salvar_dados(df_plan_salvar, "planejamento")
-            st.cache_data.clear()
+            limpar_cache_operacional()
             st.session_state.toast_global = f"Pedido '{carga_selecionada}' validado e liberado para expedição!"
             st.rerun()
                 
@@ -4919,7 +4934,7 @@ elif aba == "✅ Auditoria e Ajustes":
                     )
                     if st.button("🗄️ Mover Selecionadas para o Histórico", type="primary", disabled=len(escolhidas_arq) == 0, key="btn_exec_arquivar"):
                         with st.spinner("Arquivando cargas, etiquetas e planejamento com segurança..."):
-                            st.cache_data.clear()
+                            limpar_cache_operacional()
                             df_c_at = carregar_dados("cargas")
                             df_b_at = carregar_dados("bipes")
                             df_p_at = carregar_dados("planejamento")
@@ -4987,7 +5002,7 @@ elif aba == "✅ Auditoria e Ajustes":
                                     else:
                                         salvar_dados(df_p_ficar, "planejamento")
 
-                            st.cache_data.clear()
+                            limpar_cache_operacional()
                             st.success(f"🗄️ {len(escolhidas_arq)} carga(s) arquivada(s) com segurança em 'cargas_historico', 'bipes_historico' e 'planejamento_historico'!")
                             st.rerun()
                 else:
@@ -5245,7 +5260,7 @@ elif aba == "👥 Central de Usuários":
                     df_usuarios.at[idx_u_edit, "senha"] = gerar_hash_senha(eu_nova_senha)
 
                 salvar_dados(df_usuarios[COLUNAS_USUARIOS], "usuarios")
-                st.cache_data.clear()
+                limpar_cache_operacional()
                 st.success(f"✅ Acessos e dados de **{limpar_texto(eu_nome)}** atualizados com sucesso!")
                 st.rerun()
 
