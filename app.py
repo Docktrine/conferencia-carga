@@ -2306,86 +2306,98 @@ if aba == "🏠 Início":
         <style>
         body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
         @keyframes soloGuitarra3D {
-            0%, 100% { transform: rotateZ(-2.5deg) translateY(0px); }
-            50% { transform: rotateZ(2.5deg) translateY(-3px); }
+            0%, 100% { transform: rotateZ(-3deg) translateY(0px); }
+            50% { transform: rotateZ(4deg) translateY(-4px); }
         }
         @keyframes palhetaRapida {
-            0%, 100% { transform: rotateZ(-14deg); }
-            50% { transform: rotateZ(18deg); }
+            0%, 100% { transform: rotateZ(-16deg); }
+            50% { transform: rotateZ(20deg); }
         }
         @keyframes cabecaSolo {
-            0%, 100% { transform: rotateZ(-3deg); }
-            50% { transform: rotateZ(4deg); }
+            0%, 100% { transform: rotateZ(-4deg); }
+            50% { transform: rotateZ(5deg); }
         }
         @keyframes vocalistaShow3D {
-            0%, 100% { transform: rotateZ(-2deg) translateY(0px); }
-            50% { transform: rotateZ(3deg) translateY(-3px); }
+            0%, 100% { transform: rotateZ(-2.5deg) translateY(0px); }
+            50% { transform: rotateZ(3.5deg) translateY(-3.5px); }
         }
         @keyframes bocaCantaAnim {
-            0%, 100% { transform: scaleY(0.65) scaleX(1.1); }
-            50% { transform: scaleY(1.25) scaleX(0.92); }
+            0%, 100% { transform: scaleY(0.6) scaleX(1.15); }
+            50% { transform: scaleY(1.3) scaleX(0.9); }
+        }
+        @keyframes piscaOlho {
+            0%, 44%, 48%, 100% { transform: scaleY(1); }
+            46% { transform: scaleY(0.1); }
         }
         @keyframes topeteBalanca {
-            0%, 100% { transform: rotateZ(-5deg); }
-            50% { transform: rotateZ(6deg); }
+            0%, 100% { transform: rotateZ(-6deg); }
+            50% { transform: rotateZ(7deg); }
         }
         @keyframes bracoCanta {
             0%, 100% { transform: rotateZ(0deg); }
-            50% { transform: rotateZ(-14deg); }
+            50% { transform: rotateZ(-16deg); }
         }
         @keyframes bateristaShow3D {
             0%, 100% { transform: translateY(0px) scaleY(1); }
-            50% { transform: translateY(-2.5px) scaleY(0.97); }
+            50% { transform: translateY(-3px) scaleY(0.96); }
         }
         @keyframes bumboPulsa {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+            50% { transform: scale(1.08); }
         }
         @keyframes pratoVibra {
             0%, 100% { transform: rotateZ(0deg); }
-            25% { transform: rotateZ(-11deg); }
-            75% { transform: rotateZ(11deg); }
+            25% { transform: rotateZ(-13deg); }
+            75% { transform: rotateZ(13deg); }
         }
         @keyframes baqE {
-            0%, 100% { transform: rotateZ(-28deg); }
-            50% { transform: rotateZ(20deg); }
+            0%, 100% { transform: rotateZ(-30deg); }
+            50% { transform: rotateZ(22deg); }
         }
         @keyframes baqD {
             0%   { transform: translate(0px, 0px) rotateZ(20deg); }
-            12%  { transform: translate(0px, 0px) rotateZ(-28deg); }
+            12%  { transform: translate(0px, 0px) rotateZ(-30deg); }
             25%  { transform: translate(0px, 0px) rotateZ(20deg); }
-            37%  { transform: translate(0px, 0px) rotateZ(-28deg); }
+            37%  { transform: translate(0px, 0px) rotateZ(-30deg); }
             50%  { transform: translate(0px, 0px) rotateZ(15deg); }
-            75%  { transform: translate(6px, -28px) rotateZ(200deg); }
+            75%  { transform: translate(6px, -30px) rotateZ(200deg); }
             100% { transform: translate(0px, 0px) rotateZ(380deg); }
         }
         @keyframes baixistaGroove3D {
-            0%, 100% { transform: rotateZ(2deg) translateY(0px); }
-            50% { transform: rotateZ(-2deg) translateY(-2.5px); }
+            0%, 100% { transform: rotateZ(2.5deg) translateY(0px); }
+            50% { transform: rotateZ(-2.5deg) translateY(-3px); }
         }
         @keyframes dedilhaBaixo {
-            0%, 100% { transform: translateY(-2px) rotateZ(-8deg); }
-            50% { transform: translateY(3px) rotateZ(12deg); }
+            0%, 100% { transform: translateY(-2.5px) rotateZ(-10deg); }
+            50% { transform: translateY(3.5px) rotateZ(14deg); }
         }
         @keyframes palhaGroove {
-            0%, 100% { transform: rotateZ(-3deg); }
-            50% { transform: rotateZ(4deg); }
+            0%, 100% { transform: rotateZ(-4deg); }
+            50% { transform: rotateZ(5deg); }
         }
+        @keyframes peRitmo {
+            0%, 100% { transform: rotateZ(0deg); }
+            50% { transform: rotateZ(-14deg); }
+        }
+        @keyframes eqBar1 { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
+        @keyframes eqBar2 { 0%, 100% { transform: scaleY(0.85); } 50% { transform: scaleY(0.3); } }
+        @keyframes eqBar3 { 0%, 100% { transform: scaleY(0.45); } 50% { transform: scaleY(0.95); } }
+        @keyframes luzPalco { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.75; } }
         @keyframes ondaSom {
             0% { transform: scale(0.6); opacity: 0; }
-            40% { opacity: 0.9; }
-            100% { transform: scale(1.45); opacity: 0; }
+            40% { opacity: 0.95; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
         @keyframes notaSobe3D {
             0% { transform: perspective(260px) translateY(6px) rotateY(0deg) scale(0.75); opacity: 0; }
             25% { opacity: 1; }
-            100% { transform: perspective(260px) translateY(-30px) rotateY(360deg) scale(1.15); opacity: 0; }
+            100% { transform: perspective(260px) translateY(-34px) rotateY(360deg) scale(1.18); opacity: 0; }
         }
         .palco-3d-container {
             width: 100%;
             max-width: 920px;
             margin: 6px auto 0 auto;
-            height: 152px;
+            height: 158px;
             position: relative;
         }
         .musico-box {
@@ -2394,59 +2406,97 @@ if aba == "🏠 Início":
             transform-origin: bottom center;
             filter: drop-shadow(0 4px 5px rgba(20, 26, 22, 0.18));
         }
-        .m-brocolis { left: 16%; animation: soloGuitarra3D 1.6s ease-in-out infinite; }
-        .m-cenoura  { left: 36%; animation: vocalistaShow3D 1.35s ease-in-out infinite; }
+        .m-brocolis { left: 16%; animation: soloGuitarra3D 1.5s ease-in-out infinite; }
+        .m-cenoura  { left: 36%; animation: vocalistaShow3D 1.3s ease-in-out infinite; }
         .m-tomate   { left: 55%; animation: bateristaShow3D 0.55s ease-in-out infinite; }
-        .m-vagem    { left: 74%; animation: baixistaGroove3D 1.5s ease-in-out infinite; }
+        .m-vagem    { left: 74%; animation: baixistaGroove3D 1.45s ease-in-out infinite; }
 
         /* Articulações individuais */
-        .copa-brocolis { transform-box: fill-box; transform-origin: bottom center; animation: cabecaSolo 0.8s ease-in-out infinite; }
-        .palheta-brocolis { transform-box: fill-box; transform-origin: top center; animation: palhetaRapida 0.32s ease-in-out infinite; }
+        .copa-brocolis { transform-box: fill-box; transform-origin: bottom center; animation: cabecaSolo 0.75s ease-in-out infinite; }
+        .palheta-brocolis { transform-box: fill-box; transform-origin: top center; animation: palhetaRapida 0.3s ease-in-out infinite; }
 
-        .topete-cenoura { transform-box: fill-box; transform-origin: bottom center; animation: topeteBalanca 0.9s ease-in-out infinite; }
-        .boca-canta { transform-box: fill-box; transform-origin: center; animation: bocaCantaAnim 0.45s ease-in-out infinite; }
-        .braco-cenoura-esq { transform-box: fill-box; transform-origin: top right; animation: bracoCanta 0.9s ease-in-out infinite; }
+        .topete-cenoura { transform-box: fill-box; transform-origin: bottom center; animation: topeteBalanca 0.85s ease-in-out infinite; }
+        .boca-canta { transform-box: fill-box; transform-origin: center; animation: bocaCantaAnim 0.42s ease-in-out infinite; }
+        .olho-pisca { transform-box: fill-box; transform-origin: center; animation: piscaOlho 3.6s ease-in-out infinite; }
+        .braco-cenoura-esq { transform-box: fill-box; transform-origin: top right; animation: bracoCanta 0.85s ease-in-out infinite; }
 
         .bumbo-anim { transform-box: fill-box; transform-origin: center; animation: bumboPulsa 0.55s ease-in-out infinite; }
         .prato-anim { transform-box: fill-box; transform-origin: center; animation: pratoVibra 0.55s ease-in-out infinite; }
         .be-anim { transform-box: fill-box; transform-origin: bottom right; animation: baqE 0.55s ease-in-out infinite; }
         .bd-anim { transform-box: fill-box; transform-origin: center; animation: baqD 2.2s ease-in-out infinite; }
 
-        .dedilha-milho { transform-box: fill-box; transform-origin: top center; animation: dedilhaBaixo 0.42s ease-in-out infinite; }
-        .palha-milho { transform-box: fill-box; transform-origin: bottom center; animation: palhaGroove 1.5s ease-in-out infinite; }
+        .dedilha-milho { transform-box: fill-box; transform-origin: top center; animation: dedilhaBaixo 0.4s ease-in-out infinite; }
+        .palha-milho { transform-box: fill-box; transform-origin: bottom center; animation: palhaGroove 1.45s ease-in-out infinite; }
+        .pe-batida { transform-box: fill-box; transform-origin: bottom left; animation: peRitmo 0.55s ease-in-out infinite; }
 
-        .onda-1 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.4s ease-out infinite; }
-        .onda-2 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.4s ease-out 0.7s infinite; }
+        .eq-1 { transform-box: fill-box; transform-origin: bottom center; animation: eqBar1 0.55s ease-in-out infinite; }
+        .eq-2 { transform-box: fill-box; transform-origin: bottom center; animation: eqBar2 0.72s ease-in-out infinite; }
+        .eq-3 { transform-box: fill-box; transform-origin: bottom center; animation: eqBar3 0.62s ease-in-out infinite; }
+        .holofote-feixe { animation: luzPalco 2.4s ease-in-out infinite; }
+
+        .onda-1 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.3s ease-out infinite; }
+        .onda-2 { transform-box: fill-box; transform-origin: center; animation: ondaSom 1.3s ease-out 0.65s infinite; }
 
         .nota-flut { position: absolute; pointer-events: none; }
-        .nf-1 { left: 22%; top: 24px; animation: notaSobe3D 2.3s ease-out infinite; }
-        .nf-2 { left: 41%; top: 20px; animation: notaSobe3D 2.6s ease-out 0.6s infinite; }
-        .nf-3 { left: 59%; top: 24px; animation: notaSobe3D 2.1s ease-out 1.1s infinite; }
-        .nf-4 { left: 78%; top: 22px; animation: notaSobe3D 2.5s ease-out 1.6s infinite; }
+        .nf-1 { left: 22%; top: 26px; animation: notaSobe3D 2.2s ease-out infinite; }
+        .nf-2 { left: 41%; top: 22px; animation: notaSobe3D 2.5s ease-out 0.6s infinite; }
+        .nf-3 { left: 59%; top: 26px; animation: notaSobe3D 2.0s ease-out 1.1s infinite; }
+        .nf-4 { left: 78%; top: 24px; animation: notaSobe3D 2.4s ease-out 1.6s infinite; }
         </style>
 
         <div class="palco-3d-container">
-            <svg width="100%" height="152" viewBox="0 0 920 152" fill="none" style="position:absolute; left:0; top:0;">
+            <svg width="100%" height="158" viewBox="0 0 920 158" fill="none" style="position:absolute; left:0; top:0;">
                 <defs>
                     <radialGradient id="holofoteGrano" cx="50%" cy="88%" r="52%">
-                        <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.22"/>
+                        <stop offset="0%" stop-color="#4CAF50" stop-opacity="0.26"/>
                         <stop offset="100%" stop-color="#4CAF50" stop-opacity="0"/>
                     </radialGradient>
+                    <linearGradient id="feixeLuzShow" x1="50%" y1="0%" x2="50%" y2="100%">
+                        <stop offset="0%" stop-color="#81C784" stop-opacity="0.28"/>
+                        <stop offset="100%" stop-color="#81C784" stop-opacity="0"/>
+                    </linearGradient>
                 </defs>
-                <ellipse cx="460" cy="132" rx="380" ry="22" fill="url(#holofoteGrano)"/>
-                <polygon points="62,128 858,128 882,140 38,140" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
-                <rect x="38" y="140" width="844" height="6" rx="1" fill="#D5D0C5" stroke="#141A16" stroke-width="1.6"/>
-                <line x1="190" y1="128" x2="178" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="345" y1="128" x2="339" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="460" y1="128" x2="460" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="575" y1="128" x2="581" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <line x1="730" y1="128" x2="742" y2="140" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
-                <polygon points="78,135 102,135 106,140 74,140" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
-                <polygon points="818,135 842,135 846,140 814,140" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
-                <rect x="225" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="385" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="522" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
-                <rect x="682" y="137" width="13" height="3" rx="1" fill="#1B5E20"/>
+
+                <!-- Feixes de Holofote Cênico no Palco -->
+                <g class="holofote-feixe">
+                    <polygon points="210,8 145,134 275,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="390,8 325,134 455,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="565,8 500,134 630,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="735,8 670,134 800,134" fill="url(#feixeLuzShow)"/>
+                </g>
+
+                <!-- Equalizador Gráfico Sutil no Fundo do Palco -->
+                <g opacity="0.28" fill="#1B5E20">
+                    <rect class="eq-1" x="285" y="108" width="5" height="24" rx="1.5"/>
+                    <rect class="eq-2" x="294" y="102" width="5" height="30" rx="1.5"/>
+                    <rect class="eq-3" x="303" y="110" width="5" height="22" rx="1.5"/>
+                    <rect class="eq-1" x="312" y="105" width="5" height="27" rx="1.5"/>
+
+                    <rect class="eq-2" x="452" y="106" width="5" height="26" rx="1.5"/>
+                    <rect class="eq-3" x="461" y="100" width="5" height="32" rx="1.5"/>
+                    <rect class="eq-1" x="470" y="108" width="5" height="24" rx="1.5"/>
+                    <rect class="eq-2" x="479" y="104" width="5" height="28" rx="1.5"/>
+
+                    <rect class="eq-3" x="625" y="108" width="5" height="24" rx="1.5"/>
+                    <rect class="eq-1" x="634" y="101" width="5" height="31" rx="1.5"/>
+                    <rect class="eq-2" x="643" y="109" width="5" height="23" rx="1.5"/>
+                    <rect class="eq-3" x="652" y="104" width="5" height="28" rx="1.5"/>
+                </g>
+
+                <ellipse cx="460" cy="138" rx="380" ry="22" fill="url(#holofoteGrano)"/>
+                <polygon points="62,134 858,134 882,146 38,146" fill="#EAE7E0" stroke="#141A16" stroke-width="1.6" stroke-linejoin="round"/>
+                <rect x="38" y="146" width="844" height="6" rx="1" fill="#D5D0C5" stroke="#141A16" stroke-width="1.6"/>
+                <line x1="190" y1="134" x2="178" y2="146" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="345" y1="134" x2="339" y2="146" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="460" y1="134" x2="460" y2="146" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="575" y1="134" x2="581" y2="146" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <line x1="730" y1="134" x2="742" y2="146" stroke="#141A16" stroke-width="0.9" opacity="0.25"/>
+                <polygon points="78,141 102,141 106,146 74,146" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <polygon points="818,141 842,141 846,146 814,146" fill="#C8E6C9" stroke="#141A16" stroke-width="1.3" stroke-linejoin="round"/>
+                <rect x="225" y="143" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="385" y="143" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="522" y="143" width="13" height="3" rx="1" fill="#1B5E20"/>
+                <rect x="682" y="143" width="13" height="3" rx="1" fill="#1B5E20"/>
             </svg>
 
             <svg class="nota-flut nf-1" width="18" height="22" viewBox="0 0 18 22" fill="none">
@@ -2462,12 +2512,13 @@ if aba == "🏠 Início":
                 <circle cx="5" cy="15" r="3.2" fill="#1B5E20"/><path d="M8.2 15 V3 L14 5" stroke="#1B5E20" stroke-width="1.7" stroke-linecap="round"/>
             </svg>
 
-            <!-- 1. BRÓCOLIS GUITARRISTA (Articulado: copa balança + braço palhetando) -->
+            <!-- 1. BRÓCOLIS GUITARRISTA -->
             <div class="musico-box m-brocolis">
                 <svg width="82" height="84" viewBox="0 0 82 84" fill="none">
                     <ellipse cx="32" cy="81" rx="18" ry="2.8" fill="#141A16" opacity="0.18"/>
                     <path d="M25 65 V79 M38 65 V79" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <path d="M20 80 H27 C27 77.5 22 77.5 20 80 Z M36 80 H43 C43 77.5 38 77.5 36 80 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path d="M20 80 H27 C27 77.5 22 77.5 20 80 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path class="pe-batida" d="M36 80 H43 C43 77.5 38 77.5 36 80 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
                     <path d="M22 41 L24 65 H39 L41 41 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8" stroke-linejoin="round"/>
                     <path d="M35 41 L34 65 H39 L41 41 Z" fill="#D5D0C5"/>
 
@@ -2499,12 +2550,13 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 2. CENOURA VOCALISTA (Articulada: topete + boca cantando + braço expressivo) -->
+            <!-- 2. CENOURA VOCALISTA -->
             <div class="musico-box m-cenoura">
                 <svg width="74" height="88" viewBox="0 0 74 88" fill="none">
                     <ellipse cx="30" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
                     <path d="M24 68 V83 M35 68 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <path d="M19 84 H26 C26 81.5 21 81.5 19 84 Z M34 84 H41 C41 81.5 36 81.5 34 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path d="M19 84 H26 C26 81.5 21 81.5 19 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path class="pe-batida" d="M34 84 H41 C41 81.5 36 81.5 34 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
 
                     <g class="topete-cenoura">
                         <path d="M29 22 C22 10 14 12 19 22 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.7" stroke-linejoin="round"/>
@@ -2516,10 +2568,12 @@ if aba == "🏠 Início":
                     <path d="M37 22 C41 22 43 24 43 26 L33 68 C32 70 31 70 30 70 L37 22 Z" fill="#D5D0C5"/>
                     <path d="M19 34 H24 M35 44 H40 M21 53 H25" stroke="#141A16" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
 
-                    <circle cx="25" cy="34" r="2.2" fill="#141A16"/>
-                    <circle cx="24.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
-                    <circle cx="34" cy="34" r="2.2" fill="#141A16"/>
-                    <circle cx="33.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
+                    <g class="olho-pisca">
+                        <circle cx="25" cy="34" r="2.2" fill="#141A16"/>
+                        <circle cx="24.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
+                        <circle cx="34" cy="34" r="2.2" fill="#141A16"/>
+                        <circle cx="33.3" cy="33.3" r="0.7" fill="#FFFFFF"/>
+                    </g>
                     <ellipse class="boca-canta" cx="29.5" cy="41.5" rx="2.6" ry="3.2" fill="#1B5E20" stroke="#141A16" stroke-width="1.4"/>
 
                     <path class="braco-cenoura-esq" d="M17 42 Q10 45 17 50" stroke="#141A16" stroke-width="1.8" stroke-linecap="round"/>
@@ -2533,7 +2587,7 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 3. TOMATE BATERISTA (Baqueta direita voa girando 360° no compasso!) -->
+            <!-- 3. TOMATE BATERISTA -->
             <div class="musico-box m-tomate">
                 <svg width="94" height="96" viewBox="0 -20 94 96" fill="none" style="overflow:visible;">
                     <ellipse cx="47" cy="73" rx="30" ry="3.2" fill="#141A16" opacity="0.20"/>
@@ -2543,10 +2597,12 @@ if aba == "🏠 Início":
                     <path d="M28 35 C28 22 66 22 66 35" stroke="#141A16" stroke-width="1.6"/>
                     <rect x="25.5" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
                     <rect x="65" y="32" width="3.5" height="7" rx="1.5" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                    <circle cx="41.5" cy="35" r="2" fill="#141A16"/>
-                    <circle cx="40.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
-                    <circle cx="52.5" cy="35" r="2" fill="#141A16"/>
-                    <circle cx="51.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
+                    <g class="olho-pisca">
+                        <circle cx="41.5" cy="35" r="2" fill="#141A16"/>
+                        <circle cx="40.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
+                        <circle cx="52.5" cy="35" r="2" fill="#141A16"/>
+                        <circle cx="51.9" cy="34.4" r="0.6" fill="#FFFFFF"/>
+                    </g>
                     <path d="M43.5 40.5 Q47 44 50.5 40.5" stroke="#141A16" stroke-width="1.5" stroke-linecap="round"/>
 
                     <line class="be-anim" x1="31" y1="39" x2="20" y2="26" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
@@ -2566,12 +2622,13 @@ if aba == "🏠 Início":
                 </svg>
             </div>
 
-            <!-- 4. MILHO BAIXISTA (Articulado: mão dedilhando o baixo + palhas no groove) -->
+            <!-- 4. MILHO BAIXISTA -->
             <div class="musico-box m-vagem">
                 <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
                     <ellipse cx="32" cy="85" rx="16" ry="2.8" fill="#141A16" opacity="0.18"/>
                     <path d="M27 69 V83 M37 69 V83" stroke="#141A16" stroke-width="1.9" stroke-linecap="round"/>
-                    <path d="M22 84 H29 C29 81.5 24 81.5 22 84 Z M36 84 H43 C43 81.5 38 81.5 36 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path d="M22 84 H29 C29 81.5 24 81.5 22 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
+                    <path class="pe-batida" d="M36 84 H43 C43 81.5 38 81.5 36 84 Z" fill="#141A16" stroke="#141A16" stroke-width="1.4"/>
 
                     <g class="palha-milho">
                         <path d="M32 69 C22 63 18 44 10 34 C18 35 24 46 28 58 Z" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
@@ -2584,10 +2641,12 @@ if aba == "🏠 Início":
                     <path d="M36 17 C41 23 41 53 32 65 C37 54 38 24 36 17 Z" fill="#D5D0C5"/>
                     <path d="M27 23 V48 M32 20 V50 M37 23 V48" stroke="#141A16" stroke-width="1.1" stroke-dasharray="2 3" stroke-linecap="round" opacity="0.32"/>
 
-                    <circle cx="28.8" cy="28.5" r="1.9" fill="#141A16"/>
-                    <circle cx="28.2" cy="27.9" r="0.65" fill="#FFFFFF"/>
-                    <circle cx="35.5" cy="28.5" r="1.9" fill="#141A16"/>
-                    <circle cx="34.9" cy="27.9" r="0.65" fill="#FFFFFF"/>
+                    <g class="olho-pisca">
+                        <circle cx="28.8" cy="28.5" r="1.9" fill="#141A16"/>
+                        <circle cx="28.2" cy="27.9" r="0.65" fill="#FFFFFF"/>
+                        <circle cx="35.5" cy="28.5" r="1.9" fill="#141A16"/>
+                        <circle cx="34.9" cy="27.9" r="0.65" fill="#FFFFFF"/>
+                    </g>
                     <path d="M29.5 34 Q32.5 36.5 35.5 33.8" stroke="#141A16" stroke-width="1.4" stroke-linecap="round"/>
 
                     <path d="M32 70 C19 66 14 53 7 45 C16 45 23 51 32 63 Z" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5" stroke-linejoin="round"/>
@@ -2608,7 +2667,7 @@ if aba == "🏠 Início":
             </div>
         </div>
         """,
-        height=156
+        height=162
     )
     
 elif aba == "📊 Análise de Pedidos":
