@@ -1776,7 +1776,7 @@ if len(abas_nav) > 1:
         div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button[kind="primary"]),
         div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]):hover,
         div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button[kind="primary"]):hover {
-            background-color: #D4E4D7 !important;
+            background-color: #A5D6A7 !important;
             border-top: 2.5px solid #1B5E20 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button p,
