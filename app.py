@@ -1801,21 +1801,32 @@ if len(abas_nav) > 1:
                     p.dataset.rotuloGuia = nomeLimpo;
                     p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
                 }
-                const xBtn = p.querySelector('.wms-x-close');
-                if (xBtn && !xBtn.dataset.bound) {
-                    xBtn.dataset.bound = '1';
-                    xBtn.addEventListener('pointerdown', (ev) => {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        const inp = doc.querySelector('input[aria-label="Fechar guia:"]');
-                        if (inp && p.dataset.rotuloGuia) {
-                            const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-                            setter.call(inp, p.dataset.rotuloGuia);
-                            inp.dispatchEvent(new Event('input', { bubbles: true }));
-                            inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                        }
-                    }, true);
-                }
+                    const xBtn = p.querySelector('.wms-x-close');
+                    if (xBtn && !xBtn.dataset.bound) {
+                        xBtn.dataset.bound = '1';
+                        const fecharEstaGuia = (ev) => {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            ev.stopImmediatePropagation();
+                            if (ev.type === 'click') {
+                                const inp = doc.querySelector('input[aria-label="Fechar guia:"]');
+                                if (inp && p.dataset.rotuloGuia) {
+                                    inp.focus();
+                                    const proto = window.parent.HTMLInputElement ? window.parent.HTMLInputElement.prototype : window.HTMLInputElement.prototype;
+                                    const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+                                    setter.call(inp, p.dataset.rotuloGuia);
+                                    inp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    inp.dispatchEvent(new Event('change', { bubbles: true }));
+                                    inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                                    inp.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                                    inp.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                                }
+                            }
+                        };
+                        xBtn.addEventListener('pointerdown', fecharEstaGuia, true);
+                        xBtn.addEventListener('mousedown', fecharEstaGuia, true);
+                        xBtn.addEventListener('click', fecharEstaGuia, true);
+                    }
             });
         }
         estilarXGuias();
