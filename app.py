@@ -2743,11 +2743,13 @@ elif aba == "📊 Análise de Pedidos":
     feriados_sys = obter_feriados_sistema()
     mapa_lt = obter_mapa_lead_time()
 
-    c_up_bi, c_cfg_bi = st.columns((3, 1))
-    with c_up_bi:
-        arquivo_bi = st.file_uploader("📂 Importar Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=("xls", "xlsx", "csv"), key="up_bi_analise")
-    with c_cfg_bi:
-        limite_critico = st.number_input("⚠️ Limite Crítico (dias úteis p/ carregar):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
+    with st.expander("📂 Importar Planilha de Pedidos do BI (Excel .xls / .xlsx / .csv)", expanded=False):
+        st.caption("Suba a carteira exportada do BI para cruzar com o Lead Time, calcular a sugestão de carregamento e enviar pedidos ao Planejamento.")
+        c_up_bi, c_cfg_bi = st.columns((3, 1))
+        with c_up_bi:
+            arquivo_bi = st.file_uploader("📂 Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=("xls", "xlsx", "csv"), key="up_bi_analise")
+        with c_cfg_bi:
+            limite_critico = st.number_input("⚠️ Limite Crítico (dias úteis p/ carregar):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
 
     if arquivo_bi is not None:
         st.session_state["bi_cache_nome"] = arquivo_bi.name
