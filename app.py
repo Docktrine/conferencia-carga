@@ -1640,10 +1640,7 @@ if len(abas_nav) > 1:
         header[data-testid="stHeader"] * {
             pointer-events: auto !important;
         }
-        [data-testid="stButtonGroup"],
-        [data-testid="stPills"],
-        div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
-        div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             position: fixed !important;
             top: 6px !important;
             left: 21.5rem !important;
@@ -1654,188 +1651,87 @@ if len(abas_nav) > 1:
             align-items: flex-end !important;
             gap: 4px !important;
             z-index: 999998 !important;
-            pointer-events: auto !important;
+            background: transparent !important;
             flex-wrap: nowrap !important;
-            overflow-x: auto !important;
         }
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stButtonGroup"],
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div [data-testid="stPills"],
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             left: 4.5rem !important;
             max-width: calc(100vw - 18rem) !important;
         }
-        /* Aba Inativa (Limpa e discreta como no Chrome) */
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button,
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button {
+        div[class*="st-key-nav_guia_"],
+        div[class*="st-key-x_guia_"] {
+            width: auto !important;
+            min-width: unset !important;
+            flex: 0 0 auto !important;
+        }
+        div[class*="st-key-nav_guia_"] button {
             background-color: transparent !important;
             border: none !important;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 4px 14px !important;
+            border-radius: 10px 0 0 0 !important;
+            padding: 4px 8px 4px 14px !important;
             min-height: 36px !important;
             height: 36px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            white-space: nowrap !important;
             color: #2D382E !important;
             box-shadow: none !important;
-            transition: background-color 0.15s ease !important;
+            white-space: nowrap !important;
         }
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button:hover,
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button:hover {
-            background-color: rgba(236, 233, 225, 0.55) !important;
-            color: #143618 !important;
+        div[class*="st-key-nav_guia_inicio"] button {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 4px 14px !important;
         }
-        /* Aba Ativa (Fusão contínua com a página, estilo Google Chrome) */
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-checked="true"],
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-checked="true"],
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-pressed="true"],
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-pressed="true"],
-        [data-testid="stAppViewContainer"] [data-testid="stBaseButton-pillsActive"],
-        [data-testid="stAppViewContainer"] button[kind="pillsActive"] {
+        div[class*="st-key-x_guia_"] button {
+            background-color: transparent !important;
+            border: none !important;
+            border-radius: 0 10px 0 0 !important;
+            padding: 4px 10px 4px 4px !important;
+            min-height: 36px !important;
+            height: 36px !important;
+            color: #4A524C !important;
+            box-shadow: none !important;
+            margin-left: -4px !important;
+        }
+        div[class*="st-key-x_guia_"] button:hover {
+            color: #B71C1C !important;
+            background-color: rgba(183, 28, 28, 0.14) !important;
+        }
+        div[class*="st-key-nav_guia_"] button[kind="primary"],
+        div[class*="st-key-x_guia_"] button[kind="primary"] {
             background-color: #ECE9E1 !important;
             color: #143618 !important;
             border-top: 2.5px solid #1B5E20 !important;
-            border-left: 1px solid rgba(27, 94, 32, 0.14) !important;
-            border-right: 1px solid rgba(27, 94, 32, 0.14) !important;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06) !important;
-            border-bottom: none !important;
             height: 39px !important;
+            min-height: 39px !important;
         }
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button p,
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button p {
+        div[class*="st-key-nav_guia_"] button p,
+        div[class*="st-key-x_guia_"] button p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
-            white-space: nowrap !important;
-        }
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-checked="true"] p,
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-checked="true"] p,
-        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-pressed="true"] p,
-        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-pressed="true"] p,
-        [data-testid="stAppViewContainer"] [data-testid="stBaseButton-pillsActive"] p,
-        [data-testid="stAppViewContainer"] button[kind="pillsActive"] p {
-            font-weight: 700 !important;
-            color: #143618 !important;
-        }
-        .wms-x-close {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 18px !important;
-            height: 18px !important;
-            margin-left: 7px !important;
-            padding: 0 !important;
-            border-radius: 5px !important;
-            font-size: 0.78rem !important;
-            line-height: 1 !important;
-            transition: all 0.15s ease !important;
-        }
-        .wms-x-close:hover {
-            background-color: rgba(185, 28, 28, 0.16) !important;
-            color: #B91C1C !important;
+            color: inherit !important;
         }
         </style>
-        
         """,
         unsafe_allow_html=True
     )
-    guia_fechar_direto = st.text_input("Fechar guia:", value="", key="_wms_fechar_guia_input", label_visibility="collapsed")
-    if guia_fechar_direto and guia_fechar_direto in mapa_reverso_guia:
-        mod_fechar = mapa_reverso_guia[guia_fechar_direto]
-        st.session_state["_wms_fechar_guia_input"] = ""
-        if mod_fechar != "🏠 Início" and mod_fechar in st.session_state.abas_abertas:
-            st.session_state.abas_abertas.remove(mod_fechar)
-            if st.session_state.aba_ativa == mod_fechar:
-                st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
-            st.rerun()
-
-    rotulos_opcoes = [mapa_rotulos_guia[m] for m in abas_nav]
-    st.session_state["barra_guias_topo"] = mapa_rotulos_guia.get(st.session_state.aba_ativa, "🏠 Início")
-    st.pills(
-        "Guias abertas:",
-        options=rotulos_opcoes,
-        label_visibility="collapsed",
-        key="barra_guias_topo",
-        on_change=_ao_mudar_guia
-    )
-    components.html(
-        """
-        <script>
-        const doc = window.parent.document;
-        if (!doc.getElementById('wms-x-style')) {
-            const st = doc.createElement('style');
-            st.id = 'wms-x-style';
-            st.innerHTML = `
-                div[data-testid="stTextInput"]:has(input[aria-label="Fechar guia:"]) {
-                    position: fixed !important;
-                    top: -9999px !important;
-                    left: -9999px !important;
-                    height: 0 !important;
-                    overflow: hidden !important;
-                    opacity: 0 !important;
-                    pointer-events: none !important;
-                }
-                .wms-x-close {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 18px;
-                    height: 18px;
-                    padding: 0;
-                    border-radius: 5px;
-                    margin-left: 5px;
-                    font-size: 0.78rem;
-                    line-height: 1;
-                    transition: background-color 0.15s;
-                }
-                .wms-x-close:hover {
-                    background-color: rgba(183, 28, 28, 0.22) !important;
-                }
-            `;
-            doc.head.appendChild(st);
-        }
-        function estilarXGuias() {
-            doc.querySelectorAll('[data-testid="stButtonGroup"] button:not(:first-child) p, [data-testid="stPills"] button:not(:first-child) p').forEach(p => {
-                if (!p.querySelector('.wms-x-close') && p.innerHTML.includes('✕')) {
-                    const nomeLimpo = p.textContent.trim();
-                    p.dataset.rotuloGuia = nomeLimpo;
-                    p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
-                }
-                    const xBtn = p.querySelector('.wms-x-close');
-                    if (xBtn && !xBtn.dataset.bound) {
-                        xBtn.dataset.bound = '1';
-                        const fecharEstaGuia = (ev) => {
-                            ev.preventDefault();
-                            ev.stopPropagation();
-                            ev.stopImmediatePropagation();
-                            if (ev.type === 'click') {
-                                const inp = doc.querySelector('input[aria-label="Fechar guia:"]');
-                                if (inp && p.dataset.rotuloGuia) {
-                                    inp.focus();
-                                    const proto = window.parent.HTMLInputElement ? window.parent.HTMLInputElement.prototype : window.HTMLInputElement.prototype;
-                                    const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
-                                    setter.call(inp, p.dataset.rotuloGuia);
-                                    inp.dispatchEvent(new Event('input', { bubbles: true }));
-                                    inp.dispatchEvent(new Event('change', { bubbles: true }));
-                                    inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                                    inp.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                                    inp.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                                }
-                            }
-                        };
-                        xBtn.addEventListener('pointerdown', fecharEstaGuia, true);
-                        xBtn.addEventListener('mousedown', fecharEstaGuia, true);
-                        xBtn.addEventListener('click', fecharEstaGuia, true);
-                    }
-            });
-        }
-        estilarXGuias();
-        new MutationObserver(estilarXGuias).observe(doc.body, { childList: true, subtree: true });
-        </script>
-        """,
-        height=0,
-        width=0
-    )
+    cols_guias = st.columns(1 + (len(abas_nav) - 1) * 2)
+    idx_col_g = 0
+    for idx_g, mod_g in enumerate(abas_nav):
+        eh_ativa_g = (st.session_state.aba_ativa == mod_g)
+        tipo_btn_g = "primary" if eh_ativa_g else "secondary"
+        if mod_g == "🏠 Início":
+            if cols_guias[idx_col_g].button("🏠 Início", key="nav_guia_inicio", type=tipo_btn_g):
+                st.session_state.aba_ativa = "🏠 Início"
+                st.rerun()
+            idx_col_g += 1
+        else:
+            if cols_guias[idx_col_g].button(mod_g, key=f"nav_guia_{idx_g}", type=tipo_btn_g):
+                st.session_state.aba_ativa = mod_g
+                st.rerun()
+            if cols_guias[idx_col_g + 1].button("✕", key=f"x_guia_{idx_g}", type=tipo_btn_g):
+                st.session_state.abas_abertas.remove(mod_g)
+                if st.session_state.aba_ativa == mod_g:
+                    st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+                st.rerun()
+            idx_col_g += 2
     
 aba = st.session_state.aba_ativa
 
