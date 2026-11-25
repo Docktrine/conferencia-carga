@@ -1643,7 +1643,11 @@ if len(abas_nav) > 1:
             z-index: 999995 !important;
             pointer-events: none !important;
         }
-        section[data-testid="stSidebar"][aria-expanded="true"] {
+        section[data-testid="stSidebar"] {
+            top: 2.95rem !important;
+            height: calc(100vh - 2.95rem) !important;
+        }
+        
             top: 2.95rem !important;
             height: calc(100vh - 2.95rem) !important;
         }        
