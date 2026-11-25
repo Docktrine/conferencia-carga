@@ -598,11 +598,19 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
         return st.dataframe(df_in, **kwargs)
     df_f = df_in.copy()
     cols_disponiveis = [c for c in df_f.columns if str(c).strip() != ""]
-    with st.expander("🔍 Filtrar Tabela por Coluna", expanded=False):
+    mem_w = st.session_state.setdefault("_memoria_widgets", {})
+    k_col, k_txt, k_ms, k_c = f"wms_col_{chave_unica}", f"wms_txt_{chave_unica}", f"wms_ms_{chave_unica}", f"wms_c_{chave_unica}"
+    def _salvar_mem(chave_m):
+        mem_w[chave_m] = st.session_state.get(chave_m)
+
+    aberto_mem = bool(mem_w.get(k_txt) or mem_w.get(k_ms) or mem_w.get(k_c) or (mem_w.get(k_col) and mem_w.get(k_col) != "(Todas as colunas)"))
+    with st.expander("🔍 Filtrar Tabela por Coluna", expanded=aberto_mem):
         fc1, fc2, fc3 = st.columns((1.4, 2.0, 1.2), vertical_alignment="bottom")
-        col_sel = fc1.selectbox("Coluna:", ["(Todas as colunas)"] + cols_disponiveis, key=f"wms_col_{chave_unica}")
+        opcoes_cols = ["(Todas as colunas)"] + cols_disponiveis
+        idx_col_m = opcoes_cols.index(mem_w[k_col]) if mem_w.get(k_col) in opcoes_cols else 0
+        col_sel = fc1.selectbox("Coluna:", opcoes_cols, index=idx_col_m, key=k_col, on_change=_salvar_mem, args=(k_col,))
         if col_sel == "(Todas as colunas)":
-            termo_g = fc2.text_input("Buscar em qualquer coluna:", placeholder="Digite pedido, cliente, cidade, NF, placa...", key=f"wms_txt_{chave_unica}")
+            termo_g = fc2.text_input("Buscar em qualquer coluna:", value=str(mem_w.get(k_txt, "")), placeholder="Digite pedido, cliente, cidade, NF, placa...", key=k_txt, on_change=_salvar_mem, args=(k_txt,))
             if termo_g.strip():
                 t_l = termo_g.strip().lower()
                 mask_g = df_f.apply(lambda r: r.astype(str).str.lower().str.contains(t_l, na=False).any(), axis=1)
@@ -610,22 +618,17 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
         else:
             vals_unicos = sorted([str(v).strip() for v in df_f[col_sel].dropna().unique() if str(v).strip() not in ("", "nan", "None")])
             if 0 < len(vals_unicos) <= 40:
-                    vals_salvos = [v for v in st.session_state.get("_memoria_widgets", {}).get(f"wms_ms_{chave_unica}", list()) if v in vals_unicos]
-                    vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
-                    st.session_state.setdefault("_memoria_widgets", {})[f"wms_ms_{chave_unica}"] = vals_esc
-                        
-            if 0 < len(vals_unicos) <= 40:
-                vals_salvos = [v for v in st.session_state.get("_memoria_widgets", {}).get(f"wms_ms_{chave_unica}", list()) if v in vals_unicos]
-                vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
-                st.session_state.setdefault("_memoria_widgets", {})[f"wms_ms_{chave_unica}"] = vals_esc
+                vals_salvos = [v for v in mem_w.get(k_ms, list()) if v in vals_unicos]
+                vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=k_ms, on_change=_salvar_mem, args=(k_ms,))
                 if vals_esc:
                     df_f = df_f[df_f[col_sel].astype(str).str.strip().isin(vals_esc)]
             else:
-                termo_c = fc2.text_input(f"Filtrar '{col_sel}':", placeholder="Digite para filtrar...", key=f"wms_c_{chave_unica}")
+                termo_c = fc2.text_input(f"Filtrar '{col_sel}':", value=str(mem_w.get(k_c, "")), placeholder="Digite para filtrar...", key=k_c, on_change=_salvar_mem, args=(k_c,))
                 if termo_c.strip():
                     df_f = df_f[df_f[col_sel].astype(str).str.lower().str.contains(termo_c.strip().lower(), na=False)]
         fc3.caption(f"📋 Exibindo **{len(df_f)}** de **{len(df_in)}** registro(s)")
     df_f_reset = df_f.reset_index(drop=True)
+    
     styler = df_f_reset.style.apply(
         lambda row: ["background-color: #EFF4EE; color: #111812;" if row.name % 2 == 1 else "background-color: #FAF8F5; color: #111812;" for _ in row],
         axis=1
@@ -1719,17 +1722,15 @@ if len(abas_nav) > 1:
 
 aba = st.session_state.aba_ativa
 
-PREFIXOS_MEMORIA_ABA = ("wms_col_", "wms_txt_", "wms_c_", "filtro_", "kpi_", "sel_", "in_", "q_lt_", "adm_")
-
-if "_memoria_widgets" not in st.session_state:
-    st.session_state["_memoria_widgets"] = {}
+PREFIXOS_MEMORIA_ABA = ("filtro_", "kpi_", "sel_", "in_", "q_lt_", "adm_")
+mem_global = st.session_state.setdefault("_memoria_widgets", {})
 
 for _k_w, _v_w in list(st.session_state.items()):
     if _k_w.startswith(PREFIXOS_MEMORIA_ABA):
-        st.session_state["_memoria_widgets"][_k_w] = _v_w
+        mem_global[_k_w] = _v_w
 
-for _k_m, _v_m in st.session_state["_memoria_widgets"].items():
-    if _k_m not in st.session_state:
+for _k_m, _v_m in mem_global.items():
+    if _k_m.startswith(PREFIXOS_MEMORIA_ABA) and _k_m not in st.session_state:
         st.session_state[_k_m] = _v_m
 
 if aba == "🏠 Início":
