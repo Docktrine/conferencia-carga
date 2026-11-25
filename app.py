@@ -1631,18 +1631,26 @@ if len(abas_nav) > 1:
     st.markdown(
         """
         <style>
+        div[data-testid="stDecoration"] {
+            display: none !important;
+        }
         header[data-testid="stHeader"] {
             background-color: #15241A !important;
-            border-bottom: 1px solid #0E1811 !important;
+            border-bottom: 2px solid #2E7D32 !important;
             height: 2.95rem !important;
+            left: 21rem !important;
+            width: calc(100vw - 21rem) !important;
+            z-index: 999995 !important;
             pointer-events: none !important;
         }
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div header[data-testid="stHeader"] {
+            left: 0 !important;
+            width: 100vw !important;
+        }
         header[data-testid="stHeader"] *,
-        header[data-testid="stHeader"] button,
-        header[data-testid="stHeader"] svg {
+        header[data-testid="stHeader"] button {
             pointer-events: auto !important;
             color: #E8EDE9 !important;
-            fill: currentColor !important;
         }
         div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             position: fixed !important;
