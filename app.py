@@ -1721,17 +1721,14 @@ if len(abas_nav) > 1:
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            vertical-align: middle !important;
             width: 18px !important;
             height: 18px !important;
             margin-left: 7px !important;
-            padding: 0 0 1px 0 !important;
+            padding: 0 !important;
             border-radius: 5px !important;
-            font-size: 0.68rem !important;
-            line-height: 0 !important;
+            font-size: 0.78rem !important;
+            line-height: 1 !important;
             transition: all 0.15s ease !important;
-            position: relative !important;
-            top: -2px !important;
         }
         .wms-x-close:hover {
             background-color: rgba(185, 28, 28, 0.16) !important;
@@ -1763,16 +1760,14 @@ if len(abas_nav) > 1:
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
-                    vertical-align: middle;
                     width: 18px;
                     height: 18px;
-                    padding: 0 0 1px 0;
+                    padding: 0;
                     border-radius: 5px;
-                    margin-left: 4px;
-                    line-height: 0;
+                    margin-left: 5px;
+                    font-size: 0.78rem;
+                    line-height: 1;
                     transition: background-color 0.15s;
-                    position: relative;
-                    top: -2px;
                 }
                 .wms-x-close:hover {
                     background-color: rgba(183, 28, 28, 0.22) !important;
