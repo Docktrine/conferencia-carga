@@ -3181,20 +3181,7 @@ elif aba == "📊 Análise de Pedidos":
             """,
             height=240
         )
-                    <!-- Mãozinhas Digitando -->
-                    <circle class="mao-esq" cx="114" cy="113" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.4"/>
-                    <circle class="mao-dir" cx="132" cy="113" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.4"/>
-
-                    <!-- Tampo da Mesa -->
-                    <line x1="34" y1="122" x2="206" y2="122" stroke="#141A16" stroke-width="2.2" stroke-linecap="round"/>
-                </svg>
-                <div style="font-size: 0.85rem; font-weight: 700; color: #141A16; margin-top: 2px;">Aguardando planilha para análise</div>
-                <div style="font-size: 0.75rem; color: #5A635C; margin-top: 3px;">Abra um dos painéis acima para importar dados do <b>Portal Trizy</b> ou do <b>BI</b>.</div>
-            </div>
-            """,
-            height=210
-        )
-
+     
 elif aba == "🚚 Planejamento Logística":
     st.title("📡 Monitoramento e Indicadores de Pedidos")
     st.caption("Controle de programação, frota e andamento operacional dos carregamentos.")
