@@ -677,7 +677,8 @@ def salvar_dados(df, aba):
 def limpar_cache_operacional():
     for _aba_op in ("planejamento", "cargas", "bipes", "usuarios"):
         _ler_planilha_com_cache.clear(_aba_op)
-    montar_html_usuarios_online.clear()                
+    if "montar_html_usuarios_online" in globals():
+        montar_html_usuarios_online.clear()             
 
 def verificar_carga_100_concluida(df_carga_especifica):
     if df_carga_especifica.empty:
