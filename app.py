@@ -1721,12 +1721,14 @@ if len(abas_nav) > 1:
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            width: 17px !important;
-            height: 17px !important;
+            vertical-align: middle !important;
+            width: 18px !important;
+            height: 18px !important;
             margin-left: 7px !important;
+            padding: 0 0 1px 0 !important;
             border-radius: 5px !important;
             font-size: 0.68rem !important;
-            line-height: 1 !important;
+            line-height: 0 !important;
             transition: all 0.15s ease !important;
         }
         .wms-x-close:hover {
@@ -1759,10 +1761,13 @@ if len(abas_nav) > 1:
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
+                    vertical-align: middle;
                     width: 18px;
                     height: 18px;
+                    padding: 0 0 1px 0;
                     border-radius: 5px;
-                    margin-left: 3px;
+                    margin-left: 4px;
+                    line-height: 0;
                     transition: background-color 0.15s;
                 }
                 .wms-x-close:hover {
