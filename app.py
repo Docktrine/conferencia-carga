@@ -1632,13 +1632,17 @@ if len(abas_nav) > 1:
         """
         <style>
         header[data-testid="stHeader"] {
-            background-color: #C4C0B5 !important;
-            border-bottom: 1px solid rgba(27, 94, 32, 0.18) !important;
+            background-color: #15241A !important;
+            border-bottom: 1px solid #0E1811 !important;
             height: 2.95rem !important;
             pointer-events: none !important;
         }
-        header[data-testid="stHeader"] * {
+        header[data-testid="stHeader"] *,
+        header[data-testid="stHeader"] button,
+        header[data-testid="stHeader"] svg {
             pointer-events: auto !important;
+            color: #E8EDE9 !important;
+            fill: currentColor !important;
         }
         div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             position: fixed !important;
@@ -1745,7 +1749,7 @@ if len(abas_nav) > 1:
         div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]):hover + div[data-testid="stColumn"],
         div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]):hover),
         div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]):hover {
-            background-color: #DCD8CE !important;
+            background-color: rgba(255, 255, 255, 0.12) !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover,
@@ -1766,7 +1770,7 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
-            color: #2D382E !important;
+            color: #DCE3DD !important;
             line-height: 1 !important;
             padding: 0 !important;
             margin: 0 !important;
