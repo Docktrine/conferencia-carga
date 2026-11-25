@@ -3072,114 +3072,152 @@ elif aba == "📊 Análise de Pedidos":
             body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
             @keyframes digitarEsq {
                 0%, 100% { transform: translateY(0px) rotate(0deg); }
-                50% { transform: translateY(-3px) rotate(-8deg); }
+                50% { transform: translateY(-3px) rotate(-7deg); }
             }
             @keyframes digitarDir {
-                0%, 100% { transform: translateY(-3px) rotate(8deg); }
+                0%, 100% { transform: translateY(-3px) rotate(7deg); }
                 50% { transform: translateY(0px) rotate(0deg); }
             }
             @keyframes cabecaAnalisa {
-                0%, 100% { transform: rotate(0deg); }
-                50% { transform: rotate(2.5deg); }
+                0%, 100% { transform: rotate(0deg) translateY(0px); }
+                50% { transform: rotate(2.5deg) translateY(-1.5px); }
             }
             @keyframes barraSobe {
-                0%, 100% { transform: scaleY(0.85); }
-                50% { transform: scaleY(1.12); }
+                0%, 100% { transform: scaleY(0.8); }
+                50% { transform: scaleY(1.15); }
             }
             @keyframes vaporCafe {
                 0% { transform: translateY(0px); opacity: 0; }
-                50% { opacity: 0.7; }
-                100% { transform: translateY(-10px); opacity: 0; }
+                50% { opacity: 0.75; }
+                100% { transform: translateY(-11px); opacity: 0; }
+            }
+            @keyframes dadoFlutua1 {
+                0%, 100% { transform: translateY(0px) scale(0.95); opacity: 0.65; }
+                50% { transform: translateY(-7px) scale(1.05); opacity: 1; }
+            }
+            @keyframes dadoFlutua2 {
+                0%, 100% { transform: translateY(-5px) scale(1.05); opacity: 1; }
+                50% { transform: translateY(2px) scale(0.95); opacity: 0.65; }
             }
             .analista-wrap {
                 width: 100%;
-                max-width: 460px;
-                margin: 24px auto 0 auto;
+                max-width: 480px;
+                margin: 22px auto 0 auto;
                 text-align: center;
                 font-family: sans-serif;
             }
-            .cabeca-nerd { transform-box: fill-box; transform-origin: bottom center; animation: cabecaAnalisa 2.6s ease-in-out infinite; }
-            .braco-esq { transform-box: fill-box; transform-origin: top left; animation: digitarEsq 0.42s ease-in-out infinite; }
-            .braco-dir { transform-box: fill-box; transform-origin: top left; animation: digitarDir 0.42s ease-in-out infinite; }
-            .barra-g { transform-box: fill-box; transform-origin: bottom center; animation: barraSobe 1.6s ease-in-out infinite; }
-            .fumaca-cafe { animation: vaporCafe 2.2s ease-in-out infinite; }
+            .cabeca-nerd { transform-box: fill-box; transform-origin: bottom center; animation: cabecaAnalisa 2.5s ease-in-out infinite; }
+            .braco-esq { transform-box: fill-box; transform-origin: top left; animation: digitarEsq 0.4s ease-in-out infinite; }
+            .braco-dir { transform-box: fill-box; transform-origin: top left; animation: digitarDir 0.4s ease-in-out infinite; }
+            .barra-g { transform-box: fill-box; transform-origin: bottom center; animation: barraSobe 1.5s ease-in-out infinite; }
+            .fumaca-cafe { animation: vaporCafe 2.1s ease-in-out infinite; }
+            .flut-1 { animation: dadoFlutua1 2.8s ease-in-out infinite; }
+            .flut-2 { animation: dadoFlutua2 3.1s ease-in-out infinite; }
             </style>
             <div class="analista-wrap">
-                <svg width="280" height="158" viewBox="0 0 280 158" fill="none">
+                <svg width="310" height="168" viewBox="0 0 310 168" fill="none">
                     <!-- Sombra da Mesa -->
-                    <ellipse cx="140" cy="142" rx="108" ry="4.5" fill="#141A16" opacity="0.14"/>
+                    <ellipse cx="155" cy="150" rx="122" ry="4.5" fill="#141A16" opacity="0.15"/>
+
+                    <!-- Ícones Flutuantes de Análise acima da Tela -->
+                    <g class="flut-1">
+                        <rect x="182" y="34" width="22" height="16" rx="4" fill="#E8F5E9" stroke="#1B5E20" stroke-width="1.5"/>
+                        <path d="M188 42 L191.5 45.5 L198 38.5" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                    <g class="flut-2">
+                        <circle cx="222" cy="48" r="10" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.5"/>
+                        <text x="222" y="51.5" text-anchor="middle" font-family="sans-serif" font-size="9.5" font-weight="800" fill="#143618">BI</text>
+                    </g>
 
                     <!-- Caneca de Café Grano + Vapor -->
                     <g>
-                        <path class="fumaca-cafe" d="M44 109 Q42 104 45 100 M50 109 Q48 104 51 100" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
-                        <rect x="40" y="114" width="16" height="22" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
-                        <path d="M56 119 H60 C63 119 63 130 60 130 H56" stroke="#141A16" stroke-width="1.8"/>
-                        <rect x="43.5" y="120" width="9" height="9" rx="1.5" fill="#1B5E20"/>
+                        <path class="fumaca-cafe" d="M44 116 Q42 110 45 105 M50 116 Q48 110 51 105" stroke="#1B5E20" stroke-width="1.4" stroke-linecap="round"/>
+                        <rect x="39" y="121" width="17" height="23" rx="2.5" fill="#EAE7E0" stroke="#141A16" stroke-width="1.8"/>
+                        <path d="M56 126 H60 C63.5 126 63.5 138 60 138 H56" stroke="#141A16" stroke-width="1.8"/>
+                        <rect x="43" y="127.5" width="9" height="9" rx="1.5" fill="#1B5E20"/>
                     </g>
 
-                    <!-- Brócolis Nerd Analista (De perfil olhando para o notebook) -->
+                    <!-- Brócolis Nerd Analista (Com volume 3D e textura detalhada) -->
                     <g>
-                        <!-- Corpo / Caule sentado -->
-                        <path d="M84 82 L88 136 H118 L114 82 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.9" stroke-linejoin="round"/>
-                        <!-- Gravatinha Borboleta Nerd Verde -->
-                        <polygon points="109,94 116,90 116,98" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                        <polygon points="122,94 115,90 115,98" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                        <circle cx="115.5" cy="94" r="1.8" fill="#A5D6A7"/>
+                        <!-- Corpo / Caule com sombra lateral -->
+                        <path d="M88 86 L92 144 H126 L122 86 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.9" stroke-linejoin="round"/>
+                        <path d="M88 86 L92 144 H101 L98 86 Z" fill="#D5D0C5"/>
 
-                        <!-- Cabeça e Copa do Brócolis -->
+                        <!-- Gravatinha Borboleta Nerd -->
+                        <polygon points="116,102 123,98 123,106" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                        <polygon points="129,102 122,98 122,106" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                        <circle cx="122.5" cy="102" r="1.8" fill="#A5D6A7"/>
+
+                        <!-- Cabeça e Copa do Brócolis Detalhada -->
                         <g class="cabeca-nerd">
-                            <circle cx="76" cy="64" r="15" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/>
-                            <circle cx="122" cy="62" r="14" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/>
-                            <circle cx="99" cy="48" r="18" fill="#C8E6C9" stroke="#1B5E20" stroke-width="1.8"/>
-                            <path d="M70 78 C61 72 64 54 76 54 C80 41 95 37 103 44 C112 37 125 43 125 56 C135 60 134 75 124 79 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/>
+                            <!-- Camada traseira da copa (mais escura para profundidade) -->
+                            <circle cx="78" cy="68" r="16" fill="#81C784" stroke="#1B5E20" stroke-width="1.8"/>
+                            <circle cx="128" cy="66" r="15" fill="#81C784" stroke="#1B5E20" stroke-width="1.8"/>
+                            <circle cx="104" cy="50" r="19" fill="#A5D6A7" stroke="#1B5E20" stroke-width="1.8"/>
+
+                            <!-- Camada frontal da copa -->
+                            <path d="M72 82 C62 76 66 57 79 57 C83 43 99 39 108 46 C118 39 132 45 132 59 C142 63 141 79 130 83 Z" fill="#E8F5E9" stroke="#1B5E20" stroke-width="2" stroke-linejoin="round"/>
+
+                            <!-- Cachos internos de textura de brócolis -->
+                            <path d="M82 66 C86 61 93 61 96 66" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M106 60 C110 55 117 55 120 60" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M93 74 C97 70 103 70 106 74" stroke="#4CAF50" stroke-width="1.4" stroke-linecap="round"/>
+                            <circle cx="86" cy="53" r="1.4" fill="#2E7D32"/>
+                            <circle cx="115" cy="49" r="1.4" fill="#2E7D32"/>
+                            <circle cx="123" cy="69" r="1.4" fill="#2E7D32"/>
 
                             <!-- Óculos de Nerd Quadrado com Aro Grosso + Reflexo -->
-                            <rect x="93" y="81" width="12" height="10" rx="2" fill="#FFFFFF" stroke="#141A16" stroke-width="2.2"/>
-                            <rect x="108" y="81" width="12" height="10" rx="2" fill="#FFFFFF" stroke="#141A16" stroke-width="2.2"/>
-                            <line x1="105" y1="85.5" x2="108" y2="85.5" stroke="#141A16" stroke-width="2.2"/>
-                            <line x1="86" y1="84" x2="93" y2="85" stroke="#141A16" stroke-width="2"/>
-                            <!-- Pupilas olhando para a direita (para a tela do notebook) -->
-                            <circle cx="101" cy="86" r="2.1" fill="#141A16"/>
-                            <circle cx="116" cy="86" r="2.1" fill="#141A16"/>
-                            <!-- Reflexo na lente -->
-                            <line x1="95.5" y1="83.5" x2="98" y2="88.5" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
-                            <line x1="110.5" y1="83.5" x2="113" y2="88.5" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+                            <rect x="99" y="86" width="12.5" height="10.5" rx="2.2" fill="#FFFFFF" stroke="#141A16" stroke-width="2.2"/>
+                            <rect x="114.5" y="86" width="12.5" height="10.5" rx="2.2" fill="#FFFFFF" stroke="#141A16" stroke-width="2.2"/>
+                            <line x1="111.5" y1="91" x2="114.5" y2="91" stroke="#141A16" stroke-width="2.2"/>
+                            <line x1="91" y1="89" x2="99" y2="90" stroke="#141A16" stroke-width="2"/>
+                            <!-- Pupilas olhando para a tela -->
+                            <circle cx="107.5" cy="91.2" r="2.1" fill="#141A16"/>
+                            <circle cx="123" cy="91.2" r="2.1" fill="#141A16"/>
+                            <!-- Brilho nas lentes -->
+                            <line x1="101.5" y1="88.5" x2="104.5" y2="94" stroke="#81C784" stroke-width="1.3" stroke-linecap="round"/>
+                            <line x1="117" y1="88.5" x2="120" y2="94" stroke="#81C784" stroke-width="1.3" stroke-linecap="round"/>
                             <!-- Sorriso concentrado -->
-                            <path d="M104 97 Q109 100 113 96" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M110 103 Q115 106 120 102" stroke="#141A16" stroke-width="1.6" stroke-linecap="round"/>
                         </g>
 
-                        <!-- Bracinhos Digitando no Teclado do Notebook -->
-                        <path class="braco-esq" d="M111 106 L132 124 L146 127" stroke="#141A16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle class="braco-esq" cx="147" cy="127" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5"/>
+                        <!-- Bracinhos Digitando no Teclado -->
+                        <path class="braco-esq" d="M118 114 L139 132 L154 135" stroke="#141A16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle class="braco-esq" cx="155" cy="135" r="3.6" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5"/>
 
-                        <path class="braco-dir" d="M113 112 L134 129 L152 131" stroke="#141A16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle class="braco-dir" cx="153" cy="131" r="3.5" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5"/>
+                        <path class="braco-dir" d="M120 120 L141 137 L160 139" stroke="#141A16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle class="braco-dir" cx="161" cy="139" r="3.6" fill="#A5D6A7" stroke="#141A16" stroke-width="1.5"/>
                     </g>
 
-                    <!-- Notebook Aberto na Mesa (De frente para o Brócolis) -->
+                    <!-- Notebook Aberto na Mesa -->
                     <g>
-                        <!-- Tampa / Tela inclinada -->
-                        <polygon points="168,78 218,72 212,126 162,126" fill="#1F2922" stroke="#141A16" stroke-width="2" stroke-linejoin="round"/>
-                        <polygon points="172,82 213,77 208,121 167,121" fill="#E8F5E9"/>
-                        <!-- Gráficos e Linhas de Planilha na Tela -->
-                        <rect class="barra-g" x="174" y="104" width="6" height="13" rx="1" fill="#81C784"/>
-                        <rect class="barra-g" x="183" y="96" width="6" height="21" rx="1" fill="#2E7D32"/>
-                        <rect class="barra-g" x="192" y="88" width="6" height="29" rx="1" fill="#1B5E20"/>
-                        <line x1="201" y1="90" x2="208" y2="89" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
-                        <line x1="201" y1="97" x2="207" y2="96" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round"/>
-                        <line x1="200" y1="104" x2="206" y2="103" stroke="#81C784" stroke-width="1.8" stroke-linecap="round"/>
-                        <!-- Base / Teclado na mesa -->
-                        <polygon points="134,126 212,126 220,136 128,136" fill="#D5D0C5" stroke="#141A16" stroke-width="1.9" stroke-linejoin="round"/>
+                        <polygon points="176,84 228,78 222,134 170,134" fill="#1F2922" stroke="#141A16" stroke-width="2" stroke-linejoin="round"/>
+                        <polygon points="180,88 223,83 218,129 175,129" fill="#E8F5E9"/>
+                        <!-- Gráficos Animados na Tela -->
+                        <rect class="barra-g" x="182" y="111" width="6" height="14" rx="1" fill="#81C784"/>
+                        <rect class="barra-g" x="191" y="102" width="6" height="23" rx="1" fill="#2E7D32"/>
+                        <rect class="barra-g" x="200" y="94" width="6" height="31" rx="1" fill="#1B5E20"/>
+                        <line x1="209" y1="96" x2="217" y2="95" stroke="#1B5E20" stroke-width="1.8" stroke-linecap="round"/>
+                        <line x1="209" y1="103" x2="216" y2="102" stroke="#2E7D32" stroke-width="1.8" stroke-linecap="round"/>
+                        <line x1="208" y1="110" x2="215" y2="109" stroke="#81C784" stroke-width="1.8" stroke-linecap="round"/>
+                        <!-- Base / Teclado -->
+                        <polygon points="142,134 222,134 230,144 136,144" fill="#D5D0C5" stroke="#141A16" stroke-width="1.9" stroke-linejoin="round"/>
+                    </g>
+
+                    <!-- Pilha de Relatórios / Prancheta à Direita -->
+                    <g>
+                        <rect x="242" y="139" width="28" height="5" rx="1" fill="#EAE7E0" stroke="#141A16" stroke-width="1.5"/>
+                        <rect x="244" y="134" width="24" height="5" rx="1" fill="#C8E6C9" stroke="#141A16" stroke-width="1.5"/>
                     </g>
 
                     <!-- Tampo da Mesa -->
-                    <line x1="24" y1="137" x2="256" y2="137" stroke="#141A16" stroke-width="2.4" stroke-linecap="round"/>
+                    <line x1="22" y1="145" x2="288" y2="145" stroke="#141A16" stroke-width="2.4" stroke-linecap="round"/>
                 </svg>
                 <div style="font-size: 0.9rem; font-weight: 700; color: #141A16; margin-top: 4px;">Aguardando planilha para análise</div>
                 <div style="font-size: 0.77rem; color: #5A635C; margin-top: 4px;">Abra um dos painéis acima para importar dados do <b>Portal Trizy</b> ou do <b>BI</b>.</div>
             </div>
             """,
-            height=240
+            height=248
         )
      
 elif aba == "🚚 Planejamento Logística":
