@@ -1753,6 +1753,7 @@ if len(abas_nav) > 1:
             font-weight: 600 !important;
             color: #2D382E !important;
             line-height: 1 !important;
+            padding-bottom: 3px !important;
             margin: 0 !important;
             white-space: nowrap !important;
             overflow: visible !important;
