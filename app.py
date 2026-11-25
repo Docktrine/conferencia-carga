@@ -1635,7 +1635,7 @@ if len(abas_nav) > 1:
             display: none !important;
         }
         header[data-testid="stHeader"] {
-            background-color: #15241A !important;
+            background-color: #141A16 !important;
             border-bottom: none !important;
             height: 2.95rem !important;
             left: 0 !important;
