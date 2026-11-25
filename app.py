@@ -1725,16 +1725,19 @@ if len(abas_nav) > 1:
             border-top: 2.5px solid transparent !important;
             transition: background-color 0.15s ease !important;
         }
-        /* Hover unificado nas colunas (1 camada única, sem divisão) */
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button:hover),
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button:hover) + div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]),
-        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"] button:hover),
-        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button:hover) {
-            background-color: rgba(236, 233, 225, 0.55) !important;
+        /* Hover unificado sem sobreposição */
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]):hover,
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]):hover + div[data-testid="stColumn"],
+        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]):hover),
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]):hover {
+            background-color: #DCD8CE !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover {
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:focus,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:focus {
             background-color: transparent !important;
+            background: transparent !important;
         }
         /* Aba Ativa aplicada direto nas colunas (100% nivelada e sem degrau!) */
         div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]),
