@@ -1667,9 +1667,11 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             background-color: transparent !important;
             border: none !important;
+            border-top: 2.5px solid transparent !important;
+            box-sizing: border-box !important;
             box-shadow: none !important;
-            min-height: 36px !important;
-            height: 36px !important;
+            min-height: 39px !important;
+            height: 39px !important;
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
@@ -1677,7 +1679,7 @@ if len(abas_nav) > 1:
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             border-radius: 10px 0 0 0 !important;
-            padding: 4px 6px 4px 14px !important;
+            padding: 4px 10px 4px 14px !important;
             white-space: nowrap !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
@@ -1687,7 +1689,7 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             border-radius: 0 10px 0 0 !important;
             padding: 4px 10px 4px 4px !important;
-            margin-left: -4px !important;
+            margin-left: -16px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover {
