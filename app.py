@@ -1637,15 +1637,11 @@ if len(abas_nav) > 1:
         header[data-testid="stHeader"] {
             background-color: #15241A !important;
             border-bottom: 2px solid #2E7D32 !important;
-            left: 16.5rem !important;
-            width: calc(100vw - 16.5rem) !important;
-            width: calc(100vw - 21rem) !important;
-            z-index: 999995 !important;
-            pointer-events: none !important;
-        }
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div header[data-testid="stHeader"] {
+            height: 2.95rem !important;
             left: 0 !important;
             width: 100vw !important;
+            z-index: 999995 !important;
+            pointer-events: none !important;
         }
         header[data-testid="stHeader"] *,
         header[data-testid="stHeader"] button {
