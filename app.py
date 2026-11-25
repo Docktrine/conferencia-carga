@@ -1671,15 +1671,20 @@ if len(abas_nav) > 1:
             padding: 0 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button,
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"],
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"]:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"]:hover {
             background-color: transparent !important;
             border: none !important;
-            border-top: 2.5px solid transparent !important;
-            box-sizing: border-box !important;
+            outline: none !important;
             box-shadow: none !important;
-            height: 39px !important;
-            min-height: 39px !important;
-            max-height: 39px !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            max-height: 38px !important;
             margin: 0 !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
@@ -1689,45 +1694,51 @@ if len(abas_nav) > 1:
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
-            transition: background-color 0.15s ease !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
-            border-radius: 10px 0 0 0 !important;
             padding-left: 14px !important;
             padding-right: 6px !important;
-            margin-left: 4px !important;
             white-space: nowrap !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
-            border-radius: 10px 10px 0 0 !important;
             padding-left: 14px !important;
             padding-right: 14px !important;
-            margin-left: 0px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
-            border-radius: 0 10px 0 0 !important;
             padding-left: 2px !important;
             padding-right: 10px !important;
         }
-        /* Hover unificado nas abas inativas (sem borda verde) */
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) button[kind="secondary"],
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) + div[data-testid="stColumn"] button[kind="secondary"],
-        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"]:hover) button[kind="secondary"],
-        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]:hover) button[kind="secondary"] {
-            background-color: rgba(236, 233, 225, 0.55) !important;
+        /* Container da aba (espaçamento entre guias) */
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) > div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:not([class*="inicio"])) {
+            margin-left: 4px !important;
+            border-radius: 10px 0 0 0 !important;
             border-top: 2.5px solid transparent !important;
+            transition: background-color 0.15s ease !important;
         }
-        /* Aba Ativa (Fusão contínua e reta) */
-        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"],
-        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"]:hover,
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"]:hover {
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) > div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]) {
+            border-radius: 0 10px 0 0 !important;
+            border-top: 2.5px solid transparent !important;
+            transition: background-color 0.15s ease !important;
+        }
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) > div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_inicio"]) {
+            border-radius: 10px 10px 0 0 !important;
+            border-top: 2.5px solid transparent !important;
+            transition: background-color 0.15s ease !important;
+        }
+        /* Hover unificado nas colunas */
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover),
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) + div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]),
+        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"]:hover),
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]:hover) {
+            background-color: rgba(236, 233, 225, 0.55) !important;
+        }
+        /* Aba Ativa aplicada direto nas colunas (100% nivelada e sem degrau!) */
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]),
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button[kind="primary"]),
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]):hover,
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button[kind="primary"]):hover {
             background-color: #ECE9E1 !important;
-            border: none !important;
             border-top: 2.5px solid #1B5E20 !important;
-            height: 39px !important;
-            min-height: 39px !important;
-            max-height: 39px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button p,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
