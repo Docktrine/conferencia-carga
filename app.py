@@ -2457,14 +2457,13 @@ if aba == "🏠 Início":
                     </linearGradient>
                 </defs>
 
-                <!-- Feixes de Holofote Cênico no Palco -->
+                <!-- Feixes de Holofote Cênico Alinhados com cada Músico -->
                 <g class="holofote-feixe">
-                    <polygon points="210,8 145,134 275,134" fill="url(#feixeLuzShow)"/>
-                    <polygon points="390,8 325,134 455,134" fill="url(#feixeLuzShow)"/>
-                    <polygon points="565,8 500,134 630,134" fill="url(#feixeLuzShow)"/>
-                    <polygon points="735,8 670,134 800,134" fill="url(#feixeLuzShow)"/>
-                </g>
-
+                    <polygon points="185,8 122,134 248,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="365,8 302,134 428,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="550,8 485,134 615,134" fill="url(#feixeLuzShow)"/>
+                    <polygon points="725,8 662,134 788,134" fill="url(#feixeLuzShow)"/>
+                </g>    
                 <!-- Equalizador Gráfico Sutil no Fundo do Palco -->
                 <g opacity="0.28" fill="#1B5E20">
                     <rect class="eq-1" x="285" y="108" width="5" height="24" rx="1.5"/>
