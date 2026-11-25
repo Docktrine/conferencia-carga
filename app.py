@@ -1645,11 +1645,11 @@ if len(abas_nav) > 1:
         div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
         div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
             position: fixed !important;
-            top: 8px !important;
+            top: 6px !important;
             left: 21.5rem !important;
             width: auto !important;
             max-width: calc(100vw - 34rem) !important;
-            height: calc(2.95rem - 8px) !important;
+            height: calc(2.95rem - 5px) !important;
             display: flex !important;
             align-items: flex-end !important;
             gap: 4px !important;
@@ -1699,6 +1699,8 @@ if len(abas_nav) > 1:
             border-left: 1px solid rgba(27, 94, 32, 0.14) !important;
             border-right: 1px solid rgba(27, 94, 32, 0.14) !important;
             box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06) !important;
+            border-bottom: none !important;
+            height: 39px !important;
         }
         [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button p,
         [data-testid="stAppViewContainer"] [data-testid="stPills"] button p {
