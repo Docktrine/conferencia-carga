@@ -1688,22 +1688,46 @@ if len(abas_nav) > 1:
         }
         /* Estilo Aba Ativa (Fusão contínua com a página, estilo Chrome) */
         [data-testid="stButtonGroup"] button[aria-pressed="true"],
-        [data-testid="stPills"] button[aria-pressed="true"] {
+        [data-testid="stPills"] button[aria-pressed="true"],
+        [data-testid="stBaseButton-pillsActive"],
+        button[kind="pillsActive"] {
             background-color: #ECE9E1 !important;
             color: #143618 !important;
             border-top: 2.5px solid #1B5E20 !important;
+            border-left: 1px solid rgba(27, 94, 32, 0.14) !important;
+            border-right: 1px solid rgba(27, 94, 32, 0.14) !important;
             box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         [data-testid="stButtonGroup"] button p,
-        [data-testid="stPills"] button p {
+        [data-testid="stPills"] button p,
+        [data-testid="stBaseButton-pills"] p,
+        [data-testid="stBaseButton-pillsActive"] p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
             white-space: nowrap !important;
         }
         [data-testid="stButtonGroup"] button[aria-pressed="true"] p,
-        [data-testid="stPills"] button[aria-pressed="true"] p {
+        [data-testid="stPills"] button[aria-pressed="true"] p,
+        [data-testid="stBaseButton-pillsActive"] p,
+        button[kind="pillsActive"] p {
             font-weight: 700 !important;
             color: #143618 !important;
+        }
+        .wms-x-close {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 17px !important;
+            height: 17px !important;
+            margin-left: 7px !important;
+            border-radius: 50% !important;
+            font-size: 0.68rem !important;
+            line-height: 1 !important;
+            transition: all 0.15s ease !important;
+        }
+        .wms-x-close:hover {
+            background-color: rgba(185, 28, 28, 0.16) !important;
+            color: #B91C1C !important;
         }
         </style>
         
