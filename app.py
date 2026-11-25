@@ -1719,8 +1719,6 @@ if len(abas_nav) > 1:
 
 aba = st.session_state.aba_ativa
 
-if aba == "🏠 Início":
-    
 PREFIXOS_MEMORIA_ABA = ("wms_col_", "wms_txt_", "wms_c_", "filtro_", "kpi_", "sel_", "in_", "q_lt_", "adm_")
 
 if "_memoria_widgets" not in st.session_state:
