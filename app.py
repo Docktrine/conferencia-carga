@@ -1724,7 +1724,7 @@ if len(abas_nav) > 1:
             width: 17px !important;
             height: 17px !important;
             margin-left: 7px !important;
-            border-radius: 50% !important;
+            border-radius: 5px !important;
             font-size: 0.68rem !important;
             line-height: 1 !important;
             transition: all 0.15s ease !important;
@@ -1761,7 +1761,7 @@ if len(abas_nav) > 1:
                     justify-content: center;
                     width: 18px;
                     height: 18px;
-                    border-radius: 50%;
+                    border-radius: 5px;
                     margin-left: 3px;
                     transition: background-color 0.15s;
                 }
