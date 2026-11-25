@@ -1666,12 +1666,14 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             background-color: transparent !important;
-            border: none !important;
+            border: 0px solid transparent !important;
             border-top: 2.5px solid transparent !important;
             box-sizing: border-box !important;
             box-shadow: none !important;
             min-height: 39px !important;
             height: 39px !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
@@ -1679,7 +1681,7 @@ if len(abas_nav) > 1:
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             border-radius: 10px 0 0 0 !important;
-            padding: 4px 10px 4px 14px !important;
+            padding: 4px 14px 4px 14px !important;
             white-space: nowrap !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
@@ -1689,17 +1691,19 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             border-radius: 0 10px 0 0 !important;
             padding: 4px 10px 4px 4px !important;
-            margin-left: -16px !important;
+            margin-left: -12px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover {
             background-color: rgba(236, 233, 225, 0.55) !important;
+            border: 0px solid transparent !important;
+            border-top: 2.5px solid transparent !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"] {
             background-color: #ECE9E1 !important;
+            border: 0px solid transparent !important;
             border-top: 2.5px solid #1B5E20 !important;
-            border-bottom: none !important;
             height: 39px !important;
             min-height: 39px !important;
         }
