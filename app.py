@@ -3272,10 +3272,10 @@ elif aba == "📊 Análise de Pedidos":
                         <path d="M88 86 L92 144 H126 L122 86 Z" fill="#EAE7E0" stroke="#141A16" stroke-width="1.9" stroke-linejoin="round"/>
                         <path d="M88 86 L92 144 H101 L98 86 Z" fill="#D5D0C5"/>
 
-                        <!-- Gravatinha Borboleta Nerd -->
-                        <polygon points="116,102 123,98 123,106" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                        <polygon points="129,102 122,98 122,106" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
-                        <circle cx="122.5" cy="102" r="1.8" fill="#A5D6A7"/>
+                        <!-- Gravatinha Borboleta Nerd no Peito -->
+                        <polygon points="116,112 123,108 123,116" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                        <polygon points="129,112 122,108 122,116" fill="#1B5E20" stroke="#141A16" stroke-width="1.2"/>
+                        <circle cx="122.5" cy="112" r="1.8" fill="#A5D6A7"/>
 
                         <!-- Cabeça e Copa do Brócolis Detalhada -->
                         <g class="cabeca-nerd">
