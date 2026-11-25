@@ -1786,6 +1786,7 @@ if len(abas_nav) > 1:
             height: 18px !important;
             border-radius: 5px !important;
             font-size: 0.75rem !important;
+            margin-top: 4px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover p {
             background-color: rgba(183, 28, 28, 0.18) !important;
