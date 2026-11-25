@@ -610,7 +610,10 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
         else:
             vals_unicos = sorted([str(v).strip() for v in df_f[col_sel].dropna().unique() if str(v).strip() not in ("", "nan", "None")])
             if 0 < len(vals_unicos) <= 40:
-                vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=list(), placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
+                    vals_salvos = [v for v in st.session_state.get("_memoria_widgets", {}).get(f"wms_ms_{chave_unica}", list()) if v in vals_unicos]
+                    vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
+                    st.session_state.setdefault("_memoria_widgets", {})[f"wms_ms_{chave_unica}"] = vals_esc
+                        
                 if vals_esc:
                     df_f = df_f[df_f[col_sel].astype(str).str.strip().isin(vals_esc)]
             else:
@@ -1713,6 +1716,18 @@ if len(abas_nav) > 1:
 aba = st.session_state.aba_ativa
 
 if aba == "🏠 Início":
+PREFIXOS_MEMORIA_ABA = ("wms_col_", "wms_txt_", "wms_c_", "filtro_", "kpi_", "sel_", "in_", "q_lt_", "adm_")
+
+if "_memoria_widgets" not in st.session_state:
+    st.session_state["_memoria_widgets"] = {}
+
+for _k_w, _v_w in list(st.session_state.items()):
+    if _k_w.startswith(PREFIXOS_MEMORIA_ABA):
+        st.session_state["_memoria_widgets"][_k_w] = _v_w
+
+for _k_m, _v_m in st.session_state["_memoria_widgets"].items():
+    if _k_m not in st.session_state:
+        st.session_state[_k_m] = _v_m    
 
     st.markdown("<style>[data-stale='true'] { display: none !important; }</style>", unsafe_allow_html=True)    
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
