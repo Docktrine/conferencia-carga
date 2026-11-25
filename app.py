@@ -286,7 +286,6 @@ def contar_dias_uteis_entre(dt_inicio, dt_fim, feriados_set):
     return uteis * sinal
 
 @st.cache_data(ttl=43200, show_spinner=False)
-@st.cache_data(ttl=43200, show_spinner=False)
 def obter_mapa_lead_time():
     df_lt = carregar_dados("lead time")
     mapa = {}
@@ -483,7 +482,7 @@ def tem_permissao(nome_permissao):
     return nome_permissao in st.session_state.get("permissoes_usuario", list())
 
 def carregar_usuarios_sistema():
-    limpar_cache_operacional()
+    _ler_planilha_com_cache.clear("usuarios")
     df_u = carregar_dados("usuarios")
     if df_u.empty or "login" not in df_u.columns:
         df_init = pd.DataFrame([{
@@ -2818,26 +2817,28 @@ elif aba == "📊 Análise de Pedidos":
                                     df_plan_tz[col_req_tz] = ""
 
                             matches_tz = list()
+                            matches_tz = list()
                             for idx_ptz, row_ptz in df_plan_tz.iterrows():
                                 obs_txt_tz = str(row_ptz.get("Observação", "")).strip()
                                 if not obs_txt_tz or obs_txt_tz.lower() in ("nan", "none", "null"):
                                     continue
-                                for id_tz_k, nova_dt_tz in mapa_trizy.items():
-                                    if re.search(rf"(?<!\d){re.escape(id_tz_k)}(?!\d)", obs_txt_tz):
-                                        ent_atual_tz = formatar_data_br_str(row_ptz.get("Data da entrega", ""))
-                                        precisa_atualizar = (ent_atual_tz != nova_dt_tz)
-                                        matches_tz.append({
-                                            "_idx": idx_ptz,
-                                            "Ordem": str(row_ptz.get("Ordem de Carregamento", "")).strip(),
-                                            "Pedido": str(row_ptz.get("Nº Pedido", "")).strip(),
-                                            "Cliente": str(row_ptz.get("Cliente", "")).strip(),
-                                            "ID / Demanda Trizy": id_tz_k,
-                                            "Entrega Atual": ent_atual_tz if ent_atual_tz else "—",
-                                            "Nova Data Trizy": nova_dt_tz,
-                                            "Situação": "🔄 Atualizar Data" if precisa_atualizar else "✅ Já Atualizada",
-                                            "_alterar": precisa_atualizar
-                                        })
-                                        break
+                                nums_obs = re.findall(r"\d+", obs_txt_tz)
+                                id_encontrado = next((n for n in nums_obs if n in mapa_trizy), None)
+                                if id_encontrado:
+                                    nova_dt_tz = mapa_trizy[id_encontrado]
+                                    ent_atual_tz = formatar_data_br_str(row_ptz.get("Data da entrega", ""))
+                                    precisa_atualizar = (ent_atual_tz != nova_dt_tz)
+                                    matches_tz.append({
+                                        "_idx": idx_ptz,
+                                        "Ordem": str(row_ptz.get("Ordem de Carregamento", "")).strip(),
+                                        "Pedido": str(row_ptz.get("Nº Pedido", "")).strip(),
+                                        "Cliente": str(row_ptz.get("Cliente", "")).strip(),
+                                        "ID / Demanda Trizy": id_encontrado,
+                                        "Entrega Atual": ent_atual_tz if ent_atual_tz else "—",
+                                        "Nova Data Trizy": nova_dt_tz,
+                                        "Situação": "🔄 Atualizar Data" if precisa_atualizar else "✅ Já Atualizada",
+                                        "_alterar": precisa_atualizar
+                                    })
 
                             if not matches_tz:
                                 st.warning(f"Foram lidos {len(mapa_trizy)} registro(s) do Trizy, mas nenhum ID/Demanda foi encontrado na coluna 'Observação' dos pedidos do planejamento.")
@@ -3036,7 +3037,6 @@ elif aba == "📊 Análise de Pedidos":
                         "Tempo Parado": obs_criacao,
                         "Entrega": dt_e.strftime("%d/%m/%Y") if pd.notna(dt_e) else "-",
                         "LT Total (Rota)": rota_str,
-                        "Dias Úteis p/ Carregar": janela_exp,
                         "Dias Úteis p/ Carregar": janela_exp,
                         "Sugestão Carregamento": dt_lim_str,
                         "Veículo Sugerido": veic_sug,
@@ -5343,7 +5343,7 @@ elif aba == "✅ Auditoria e Ajustes":
 
         if btn_validar_clicado:
             df_plan_salvar = carregar_dados("planejamento")
-            agora_val = datetime.fromtimestamp(datetime.now().timestamp() - 3*3600).strftime("%d/%m/%Y %H:%M")
+            agora_val = datetime.now(FUSO_BR).strftime("%d/%m/%Y %H:%M")
             carimbo_val = f"Validado por {st.session_state.nome_usuario} ({agora_val})"
 
             if df_plan_salvar.empty or "id_carga" not in df_plan_salvar.columns:
