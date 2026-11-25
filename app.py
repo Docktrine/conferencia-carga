@@ -2830,7 +2830,7 @@ elif aba == "📊 Análise de Pedidos":
                         if novos_plan:
                             df_p_final = pd.concat([df_p_atual[COLUNAS_PLANEJAMENTO], pd.DataFrame(novos_plan)], ignore_index=True)
                             salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
-                           limpar_cache_operacional()
+                            limpar_cache_operacional()
                             st.success(f"🎉 {len(novos_plan)} pedido(s) adicionado(s) ao Planejamento sem alterar os existentes!")
                             st.rerun()
 
