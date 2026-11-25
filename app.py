@@ -2729,7 +2729,7 @@ elif aba == "📊 Análise de Pedidos":
                                         qtd_alt += 1
                                 if qtd_alt > 0:
                                     salvar_dados(df_p_alt[COLUNAS_PLANEJAMENTO], "planejamento")
-                                   limpar_cache_operacional()
+                                    limpar_cache_operacional()
                                     st.success(f"🔔 {qtd_alt} pedido(s) atualizados no Planejamento e notificação disparada para toda a equipe!")
                                     st.rerun()
 
