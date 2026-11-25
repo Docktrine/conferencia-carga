@@ -1637,8 +1637,8 @@ if len(abas_nav) > 1:
         header[data-testid="stHeader"] {
             background-color: #15241A !important;
             border-bottom: 2px solid #2E7D32 !important;
-            height: 2.95rem !important;
-            left: 21rem !important;
+            left: 16.5rem !important;
+            width: calc(100vw - 16.5rem) !important;
             width: calc(100vw - 21rem) !important;
             z-index: 999995 !important;
             pointer-events: none !important;
