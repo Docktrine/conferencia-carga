@@ -1640,12 +1640,13 @@ if len(abas_nav) > 1:
             height: 2.95rem !important;
             left: 0 !important;
             width: 100vw !important;
-            z-index: 999995 !important;
+            z-index: 999997 !important;
             pointer-events: none !important;
         }
         section[data-testid="stSidebar"] {
-            top: 2.95rem !important;
-            height: calc(100vh - 2.95rem) !important;
+            top: 0 !important;
+            height: 100vh !important;
+            z-index: 999996 !important;
         }
         
             top: 2.95rem !important;
