@@ -1643,12 +1643,21 @@ if len(abas_nav) > 1:
             z-index: 999997 !important;
             pointer-events: none !important;
         }
-        section[data-testid="stSidebar"] {
+        /* Tampa apenas o filete verde que sobe até o topo, mantendo a curva do L */
+        header[data-testid="stHeader"]::after {
+            content: "" !important;
+            position: fixed !important;
             top: 0 !important;
-            height: 100vh !important;
-            z-index: 999996 !important;
+            left: 0 !important;
+            width: 21rem !important;
+            height: calc(2.95rem - 2px) !important;
+            background-color: #15241A !important;
+            z-index: 999999 !important;
+            pointer-events: none !important;
         }
-        
+        section[data-testid="stSidebar"][aria-expanded="false"] ~ div header[data-testid="stHeader"]::after {
+            display: none !important;
+        }        
             top: 2.95rem !important;
             height: calc(100vh - 2.95rem) !important;
         }        
