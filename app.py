@@ -1643,6 +1643,10 @@ if len(abas_nav) > 1:
             z-index: 999995 !important;
             pointer-events: none !important;
         }
+        section[data-testid="stSidebar"][aria-expanded="true"] {
+            top: 2.95rem !important;
+            height: calc(100vh - 2.95rem) !important;
+        }        
         header[data-testid="stHeader"] *,
         header[data-testid="stHeader"] button {
             pointer-events: auto !important;
