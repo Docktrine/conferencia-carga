@@ -1666,14 +1666,16 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             background-color: transparent !important;
-            border: 0px solid transparent !important;
+            border: none !important;
             border-top: 2.5px solid transparent !important;
             box-sizing: border-box !important;
             box-shadow: none !important;
             min-height: 39px !important;
             height: 39px !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
+            margin: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            vertical-align: top !important;
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
@@ -1681,30 +1683,33 @@ if len(abas_nav) > 1:
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             border-radius: 10px 0 0 0 !important;
-            padding: 4px 14px 4px 14px !important;
+            padding-left: 14px !important;
+            padding-right: 14px !important;
             white-space: nowrap !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
             border-radius: 10px 10px 0 0 !important;
-            padding: 4px 14px !important;
+            padding-left: 14px !important;
+            padding-right: 14px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             border-radius: 0 10px 0 0 !important;
-            padding: 4px 10px 4px 4px !important;
+            padding-left: 4px !important;
+            padding-right: 10px !important;
             margin-left: -12px !important;
         }
-        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover {
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) button,
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) + div[data-testid="stColumn"] button,
+        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"]:hover) button,
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]:hover) button {
             background-color: rgba(236, 233, 225, 0.55) !important;
-            border: 0px solid transparent !important;
-            border-top: 2.5px solid transparent !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"],
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"]:hover,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"]:hover {
             background-color: #ECE9E1 !important;
-            border: 0px solid transparent !important;
+            border: none !important;
             border-top: 2.5px solid #1B5E20 !important;
             height: 39px !important;
             min-height: 39px !important;
