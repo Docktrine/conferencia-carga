@@ -1700,7 +1700,9 @@ if len(abas_nav) > 1:
             border-top: 2.5px solid transparent !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
-        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"] {
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"],
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"]:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"]:hover {
             background-color: #ECE9E1 !important;
             border: 0px solid transparent !important;
             border-top: 2.5px solid #1B5E20 !important;
