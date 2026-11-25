@@ -1642,11 +1642,11 @@ if len(abas_nav) > 1:
         }
         div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             position: fixed !important;
-            top: 6px !important;
+            top: 13px !important;
             left: 21.5rem !important;
             width: max-content !important;
             max-width: calc(100vw - 34rem) !important;
-            height: 39px !important;
+            height: 32px !important;
             display: flex !important;
             align-items: stretch !important;
             gap: 0px !important;
@@ -1682,12 +1682,12 @@ if len(abas_nav) > 1:
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
-            height: 38px !important;
-            min-height: 38px !important;
-            max-height: 38px !important;
+            height: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
             margin: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 5px !important;
+            padding-bottom: 0px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
