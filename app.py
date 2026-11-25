@@ -1731,7 +1731,9 @@ for _k_w, _v_w in list(st.session_state.items()):
 
 for _k_m, _v_m in st.session_state["_memoria_widgets"].items():
     if _k_m not in st.session_state:
-        st.session_state[_k_m] = _v_m    
+        st.session_state[_k_m] = _v_m
+
+if aba == "🏠 Início":
 
     st.markdown("<style>[data-stale='true'] { display: none !important; }</style>", unsafe_allow_html=True)    
     hoje_str_ini = datetime.now(FUSO_BR).strftime("%d/%m/%Y")
