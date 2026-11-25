@@ -1646,10 +1646,10 @@ if len(abas_nav) > 1:
             left: 21.5rem !important;
             width: max-content !important;
             max-width: calc(100vw - 34rem) !important;
-            height: calc(2.95rem - 5px) !important;
+            height: 39px !important;
             display: flex !important;
-            align-items: flex-end !important;
-            gap: 4px !important;
+            align-items: stretch !important;
+            gap: 0px !important;
             z-index: 999998 !important;
             background: transparent !important;
             flex-wrap: nowrap !important;
@@ -1662,6 +1662,13 @@ if len(abas_nav) > 1:
             width: auto !important;
             min-width: unset !important;
             flex: 0 0 auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        div[class*="st-key-nav_guia_"],
+        div[class*="st-key-x_guia_"] {
+            margin: 0 !important;
+            padding: 0 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
@@ -1670,12 +1677,15 @@ if len(abas_nav) > 1:
             border-top: 2.5px solid transparent !important;
             box-sizing: border-box !important;
             box-shadow: none !important;
-            min-height: 39px !important;
             height: 39px !important;
+            min-height: 39px !important;
+            max-height: 39px !important;
             margin: 0 !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
-            vertical-align: top !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
@@ -1684,26 +1694,30 @@ if len(abas_nav) > 1:
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             border-radius: 10px 0 0 0 !important;
             padding-left: 14px !important;
-            padding-right: 14px !important;
+            padding-right: 6px !important;
+            margin-left: 4px !important;
             white-space: nowrap !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
             border-radius: 10px 10px 0 0 !important;
             padding-left: 14px !important;
             padding-right: 14px !important;
+            margin-left: 0px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             border-radius: 0 10px 0 0 !important;
-            padding-left: 4px !important;
+            padding-left: 2px !important;
             padding-right: 10px !important;
-            margin-left: -12px !important;
         }
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) button,
-        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) + div[data-testid="stColumn"] button,
-        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"]:hover) button,
-        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]:hover) button {
+        /* Hover unificado nas abas inativas (sem borda verde) */
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) button[kind="secondary"],
+        div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"]:hover) + div[data-testid="stColumn"] button[kind="secondary"],
+        div[data-testid="stColumn"]:has(+ div[data-testid="stColumn"] div[class*="st-key-x_guia_"]:hover) button[kind="secondary"],
+        div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"]:hover) button[kind="secondary"] {
             background-color: rgba(236, 233, 225, 0.55) !important;
+            border-top: 2.5px solid transparent !important;
         }
+        /* Aba Ativa (Fusão contínua e reta) */
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"],
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"]:hover,
@@ -1713,12 +1727,15 @@ if len(abas_nav) > 1:
             border-top: 2.5px solid #1B5E20 !important;
             height: 39px !important;
             min-height: 39px !important;
+            max-height: 39px !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button p,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
             color: #2D382E !important;
+            line-height: 1 !important;
+            margin: 0 !important;
             white-space: nowrap !important;
             overflow: visible !important;
         }
@@ -1735,7 +1752,6 @@ if len(abas_nav) > 1:
             height: 18px !important;
             border-radius: 5px !important;
             font-size: 0.75rem !important;
-            line-height: 1 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover p {
             background-color: rgba(183, 28, 28, 0.18) !important;
