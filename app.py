@@ -1631,9 +1631,9 @@ if len(abas_nav) > 1:
         """
         <style>
         header[data-testid="stHeader"] {
-            background-color: #C9C5BA !important;
-            border-bottom: 1px solid rgba(27, 94, 32, 0.16) !important;
-            height: 3.35rem !important;
+            background-color: #C4C0B5 !important;
+            border-bottom: 1px solid rgba(27, 94, 32, 0.18) !important;
+            height: 2.95rem !important;
             pointer-events: none !important;
         }
         header[data-testid="stHeader"] * {
@@ -1644,10 +1644,14 @@ if len(abas_nav) > 1:
         div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stButtonGroup"]),
         div[data-testid="stMainBlockContainer"] div:has(> [data-testid="stPills"]) {
             position: fixed !important;
-            top: 10px !important;
+            top: 8px !important;
             left: 21.5rem !important;
             width: auto !important;
             max-width: calc(100vw - 34rem) !important;
+            height: calc(2.95rem - 8px) !important;
+            display: flex !important;
+            align-items: flex-end !important;
+            gap: 4px !important;
             z-index: 999998 !important;
             pointer-events: auto !important;
             flex-wrap: nowrap !important;
@@ -1660,21 +1664,48 @@ if len(abas_nav) > 1:
             left: 4.5rem !important;
             max-width: calc(100vw - 18rem) !important;
         }
+        /* Estilo Aba Inativa (Limpa e discreta como no Chrome) */
         [data-testid="stButtonGroup"] button,
         [data-testid="stPills"] button {
-            padding: 2px 13px !important;
-            min-height: 29px !important;
-            height: 29px !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 4px 14px !important;
+            min-height: 36px !important;
+            height: 36px !important;
+            display: inline-flex !important;
+            align-items: center !important;
             white-space: nowrap !important;
-            position: relative !important;
-            transition: all 0.18s ease !important;
+            color: #2D382E !important;
+            box-shadow: none !important;
+            transition: background-color 0.15s ease !important;
+        }
+        [data-testid="stButtonGroup"] button:hover,
+        [data-testid="stPills"] button:hover {
+            background-color: rgba(236, 233, 225, 0.55) !important;
+            color: #143618 !important;
+        }
+        /* Estilo Aba Ativa (Fusão contínua com a página, estilo Chrome) */
+        [data-testid="stButtonGroup"] button[aria-pressed="true"],
+        [data-testid="stPills"] button[aria-pressed="true"] {
+            background-color: #ECE9E1 !important;
+            color: #143618 !important;
+            border-top: 2.5px solid #1B5E20 !important;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06) !important;
         }
         [data-testid="stButtonGroup"] button p,
         [data-testid="stPills"] button p {
-            font-size: 0.75rem !important;
+            font-size: 0.77rem !important;
+            font-weight: 600 !important;
             white-space: nowrap !important;
         }
+        [data-testid="stButtonGroup"] button[aria-pressed="true"] p,
+        [data-testid="stPills"] button[aria-pressed="true"] p {
+            font-weight: 700 !important;
+            color: #143618 !important;
+        }
         </style>
+        
         """,
         unsafe_allow_html=True
     )
