@@ -1644,7 +1644,7 @@ if len(abas_nav) > 1:
             position: fixed !important;
             top: 6px !important;
             left: 21.5rem !important;
-            width: auto !important;
+            width: max-content !important;
             max-width: calc(100vw - 34rem) !important;
             height: calc(2.95rem - 5px) !important;
             display: flex !important;
@@ -1658,55 +1658,75 @@ if len(abas_nav) > 1:
             left: 4.5rem !important;
             max-width: calc(100vw - 18rem) !important;
         }
-        div[class*="st-key-nav_guia_"],
-        div[class*="st-key-x_guia_"] {
+        div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) > div[data-testid="stColumn"] {
             width: auto !important;
             min-width: unset !important;
             flex: 0 0 auto !important;
         }
-        div[class*="st-key-nav_guia_"] button {
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             background-color: transparent !important;
             border: none !important;
-            border-radius: 10px 0 0 0 !important;
-            padding: 4px 8px 4px 14px !important;
+            box-shadow: none !important;
             min-height: 36px !important;
             height: 36px !important;
-            color: #2D382E !important;
-            box-shadow: none !important;
+            width: auto !important;
+            min-width: unset !important;
+            transform: none !important;
+            transition: background-color 0.15s ease !important;
+        }
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
+            border-radius: 10px 0 0 0 !important;
+            padding: 4px 6px 4px 14px !important;
             white-space: nowrap !important;
         }
-        div[class*="st-key-nav_guia_inicio"] button {
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_inicio"] button {
             border-radius: 10px 10px 0 0 !important;
             padding: 4px 14px !important;
         }
-        div[class*="st-key-x_guia_"] button {
-            background-color: transparent !important;
-            border: none !important;
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button {
             border-radius: 0 10px 0 0 !important;
             padding: 4px 10px 4px 4px !important;
-            min-height: 36px !important;
-            height: 36px !important;
-            color: #4A524C !important;
-            box-shadow: none !important;
             margin-left: -4px !important;
         }
-        div[class*="st-key-x_guia_"] button:hover {
-            color: #B71C1C !important;
-            background-color: rgba(183, 28, 28, 0.14) !important;
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button:hover,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover {
+            background-color: rgba(236, 233, 225, 0.55) !important;
         }
-        div[class*="st-key-nav_guia_"] button[kind="primary"],
-        div[class*="st-key-x_guia_"] button[kind="primary"] {
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"],
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"] {
             background-color: #ECE9E1 !important;
-            color: #143618 !important;
             border-top: 2.5px solid #1B5E20 !important;
+            border-bottom: none !important;
             height: 39px !important;
             min-height: 39px !important;
         }
-        div[class*="st-key-nav_guia_"] button p,
-        div[class*="st-key-x_guia_"] button p {
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button p,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
-            color: inherit !important;
+            color: #2D382E !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+        }
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button[kind="primary"] p,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button[kind="primary"] p {
+            font-weight: 700 !important;
+            color: #143618 !important;
+        }
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 18px !important;
+            height: 18px !important;
+            border-radius: 5px !important;
+            font-size: 0.75rem !important;
+            line-height: 1 !important;
+        }
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button:hover p {
+            background-color: rgba(183, 28, 28, 0.18) !important;
+            color: #B71C1C !important;
         }
         </style>
         """,
