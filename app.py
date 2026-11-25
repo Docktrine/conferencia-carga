@@ -1642,13 +1642,13 @@ if len(abas_nav) > 1:
         }
         div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
             position: fixed !important;
-            top: 13px !important;
+            top: 15px !important;
             left: 21.5rem !important;
             width: max-content !important;
             max-width: calc(100vw - 34rem) !important;
             height: 32px !important;
             display: flex !important;
-            align-items: stretch !important;
+            align-items: center !important;
             gap: 0px !important;
             z-index: 999998 !important;
             background: transparent !important;
@@ -1662,13 +1662,19 @@ if len(abas_nav) > 1:
             width: auto !important;
             min-width: unset !important;
             flex: 0 0 auto !important;
+            height: 32px !important;
             padding: 0 !important;
             margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
         }
         div[class*="st-key-nav_guia_"],
         div[class*="st-key-x_guia_"] {
             margin: 0 !important;
             padding: 0 !important;
+            height: 32px !important;
+            display: flex !important;
+            align-items: center !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button,
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button,
@@ -1687,13 +1693,22 @@ if len(abas_nav) > 1:
             max-height: 32px !important;
             margin: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 0px !important;
+            padding-bottom: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             width: auto !important;
             min-width: unset !important;
             transform: none !important;
+        }
+        [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button > div,
+        [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button > div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             padding-left: 14px !important;
@@ -1739,7 +1754,7 @@ if len(abas_nav) > 1:
             background-color: transparent !important;
             background: transparent !important;
         }
-        /* Aba Ativa aplicada direto nas colunas (100% nivelada e sem degrau!) */
+        /* Aba Ativa */
         div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]),
         div[data-testid="stColumn"]:has(div[class*="st-key-x_guia_"] button[kind="primary"]),
         div[data-testid="stColumn"]:has(div[class*="st-key-nav_guia_"] button[kind="primary"]):hover,
@@ -1753,8 +1768,10 @@ if len(abas_nav) > 1:
             font-weight: 600 !important;
             color: #2D382E !important;
             line-height: 1 !important;
-            padding-bottom: 3px !important;
+            padding: 0 !important;
             margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
             white-space: nowrap !important;
             overflow: visible !important;
         }
@@ -1764,8 +1781,6 @@ if len(abas_nav) > 1:
             color: #143618 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-x_guia_"] button p {
-            display: inline-flex !important;
-            align-items: center !important;
             justify-content: center !important;
             width: 18px !important;
             height: 18px !important;
@@ -1777,6 +1792,7 @@ if len(abas_nav) > 1:
             color: #B71C1C !important;
         }
         </style>
+
         """,
         unsafe_allow_html=True
     )
