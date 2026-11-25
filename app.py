@@ -1730,6 +1730,8 @@ if len(abas_nav) > 1:
             font-size: 0.68rem !important;
             line-height: 0 !important;
             transition: all 0.15s ease !important;
+            position: relative !important;
+            top: -2px !important;
         }
         .wms-x-close:hover {
             background-color: rgba(185, 28, 28, 0.16) !important;
@@ -1769,6 +1771,8 @@ if len(abas_nav) > 1:
                     margin-left: 4px;
                     line-height: 0;
                     transition: background-color 0.15s;
+                    position: relative;
+                    top: -2px;
                 }
                 .wms-x-close:hover {
                     background-color: rgba(183, 28, 28, 0.22) !important;
