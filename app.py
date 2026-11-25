@@ -1640,55 +1640,17 @@ if len(abas_nav) > 1:
             height: 2.95rem !important;
             left: 0 !important;
             width: 100vw !important;
-            z-index: 999997 !important;
+            z-index: 999995 !important;
             pointer-events: none !important;
         }
-        /* Tampa apenas o filete verde que sobe até o topo, mantendo a curva do L */
-        header[data-testid="stHeader"]::after {
-            content: "" !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 21rem !important;
-            height: 2.95rem !important;
-            background-color: #15241A !important;
-            z-index: 999999 !important;
-            pointer-events: none !important;
-        }
-        section[data-testid="stSidebar"][aria-expanded="false"] ~ div header[data-testid="stHeader"]::after {
-            display: none !important;
+        section[data-testid="stSidebar"][aria-expanded="true"] {
+            top: 2.95rem !important;
+            height: calc(100vh - 2.95rem) !important;
         }
         header[data-testid="stHeader"] *,
         header[data-testid="stHeader"] button {
             pointer-events: auto !important;
             color: #E8EDE9 !important;
-        }
-        /* Botões de recolher/expandir barra lateral (<< e >>) sempre visíveis */
-        div[data-testid="stSidebarCollapseButton"],
-        div[data-testid="collapsedControl"],
-        button[data-testid="stBaseButton-headerNoPadding"] {
-            z-index: 1000000 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-        div[data-testid="stSidebarCollapseButton"] button,
-        div[data-testid="collapsedControl"] button,
-        button[data-testid="stBaseButton-headerNoPadding"] {
-            background-color: rgba(255, 255, 255, 0.14) !important;
-            border: 1px solid rgba(255, 255, 255, 0.25) !important;
-            border-radius: 8px !important;
-            color: #FFFFFF !important;
-        }
-        div[data-testid="stSidebarCollapseButton"] button:hover,
-        div[data-testid="collapsedControl"] button:hover,
-        button[data-testid="stBaseButton-headerNoPadding"]:hover {
-            background-color: rgba(255, 255, 255, 0.26) !important;
-        }
-        div[data-testid="stSidebarCollapseButton"] svg,
-        div[data-testid="collapsedControl"] svg,
-        button[data-testid="stBaseButton-headerNoPadding"] svg {
-            color: #FFFFFF !important;
-            stroke: #FFFFFF !important;
         }
 
         div[data-testid="stMainBlockContainer"] div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-nav_guia_"]) {
