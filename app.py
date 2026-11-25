@@ -1665,9 +1665,9 @@ if len(abas_nav) > 1:
             left: 4.5rem !important;
             max-width: calc(100vw - 18rem) !important;
         }
-        /* Estilo Aba Inativa (Limpa e discreta como no Chrome) */
-        [data-testid="stButtonGroup"] button,
-        [data-testid="stPills"] button {
+        /* Aba Inativa (Limpa e discreta como no Chrome) */
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button,
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button {
             background-color: transparent !important;
             border: none !important;
             border-radius: 10px 10px 0 0 !important;
@@ -1681,16 +1681,18 @@ if len(abas_nav) > 1:
             box-shadow: none !important;
             transition: background-color 0.15s ease !important;
         }
-        [data-testid="stButtonGroup"] button:hover,
-        [data-testid="stPills"] button:hover {
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button:hover,
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button:hover {
             background-color: rgba(236, 233, 225, 0.55) !important;
             color: #143618 !important;
         }
-        /* Estilo Aba Ativa (Fusão contínua com a página, estilo Chrome) */
-        [data-testid="stButtonGroup"] button[aria-pressed="true"],
-        [data-testid="stPills"] button[aria-pressed="true"],
-        [data-testid="stBaseButton-pillsActive"],
-        button[kind="pillsActive"] {
+        /* Aba Ativa (Fusão contínua com a página, estilo Google Chrome) */
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-checked="true"],
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-checked="true"],
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-pressed="true"],
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-pressed="true"],
+        [data-testid="stAppViewContainer"] [data-testid="stBaseButton-pillsActive"],
+        [data-testid="stAppViewContainer"] button[kind="pillsActive"] {
             background-color: #ECE9E1 !important;
             color: #143618 !important;
             border-top: 2.5px solid #1B5E20 !important;
@@ -1698,18 +1700,18 @@ if len(abas_nav) > 1:
             border-right: 1px solid rgba(27, 94, 32, 0.14) !important;
             box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06) !important;
         }
-        [data-testid="stButtonGroup"] button p,
-        [data-testid="stPills"] button p,
-        [data-testid="stBaseButton-pills"] p,
-        [data-testid="stBaseButton-pillsActive"] p {
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button p,
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button p {
             font-size: 0.77rem !important;
             font-weight: 600 !important;
             white-space: nowrap !important;
         }
-        [data-testid="stButtonGroup"] button[aria-pressed="true"] p,
-        [data-testid="stPills"] button[aria-pressed="true"] p,
-        [data-testid="stBaseButton-pillsActive"] p,
-        button[kind="pillsActive"] p {
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-checked="true"] p,
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-checked="true"] p,
+        [data-testid="stAppViewContainer"] [data-testid="stButtonGroup"] button[aria-pressed="true"] p,
+        [data-testid="stAppViewContainer"] [data-testid="stPills"] button[aria-pressed="true"] p,
+        [data-testid="stAppViewContainer"] [data-testid="stBaseButton-pillsActive"] p,
+        [data-testid="stAppViewContainer"] button[kind="pillsActive"] p {
             font-weight: 700 !important;
             color: #143618 !important;
         }
@@ -1777,7 +1779,7 @@ if len(abas_nav) > 1:
                     xBtn.dataset.bound = '1';
                     xBtn.addEventListener('click', (ev) => {
                         const btnPai = xBtn.closest('button');
-                        if (btnPai && btnPai.getAttribute('aria-pressed') !== 'true') {
+                        if (btnPai && btnPai.getAttribute('aria-checked') !== 'true' && btnPai.getAttribute('aria-pressed') !== 'true') {
                             setTimeout(() => { btnPai.click(); }, 120);
                         }
                     });
