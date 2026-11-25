@@ -1609,19 +1609,21 @@ mapa_reverso_guia = {v: k for k, v in mapa_rotulos_guia.items()}
 
 def _ao_mudar_guia():
     sel_rotulo = st.session_state.get("barra_guias_topo")
-    if not sel_rotulo:
-        # Clicou novamente na aba ativa (no ✕): fecha se não for Início
-        atual = st.session_state.aba_ativa
-        if atual != "🏠 Início" and atual in st.session_state.abas_abertas:
-            st.session_state.abas_abertas.remove(atual)
-            st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
-        return
-    mod_escolhido = mapa_reverso_guia.get(sel_rotulo)
+    agora_ms = time.time()
+    def _destino():
+        orig = st.session_state.get("_aba_origem_antes_x")
+        if orig and orig in st.session_state.abas_abertas and (agora_ms - st.session_state.get("_ts_origem_x", 0)) < 1.5:
+            return orig
+        return st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+
+    mod_escolhido = mapa_reverso_guia.get(sel_rotulo) if sel_rotulo else st.session_state.aba_ativa
     if mod_escolhido and mod_escolhido in st.session_state.abas_abertas:
-        if mod_escolhido == st.session_state.aba_ativa and mod_escolhido != "🏠 Início":
+        if (not sel_rotulo or mod_escolhido == st.session_state.aba_ativa) and mod_escolhido != "🏠 Início":
             st.session_state.abas_abertas.remove(mod_escolhido)
-            st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
-        else:
+            st.session_state.aba_ativa = _destino()
+        elif sel_rotulo:
+            st.session_state["_aba_origem_antes_x"] = st.session_state.aba_ativa
+            st.session_state["_ts_origem_x"] = agora_ms
             st.session_state.aba_ativa = mod_escolhido
 
 if len(abas_nav) > 1:
