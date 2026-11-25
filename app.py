@@ -1708,7 +1708,7 @@ if len(abas_nav) > 1:
             justify-content: center !important;
             height: 100% !important;
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 0 0 4px 0 !important;
         }
         [data-testid="stAppViewContainer"] div[class*="st-key-nav_guia_"] button {
             padding-left: 14px !important;
