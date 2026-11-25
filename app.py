@@ -614,6 +614,10 @@ def renderizar_tabela_wms(df_in, chave_unica, **kwargs):
                     vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
                     st.session_state.setdefault("_memoria_widgets", {})[f"wms_ms_{chave_unica}"] = vals_esc
                         
+            if 0 < len(vals_unicos) <= 40:
+                vals_salvos = [v for v in st.session_state.get("_memoria_widgets", {}).get(f"wms_ms_{chave_unica}", list()) if v in vals_unicos]
+                vals_esc = fc2.multiselect(f"Valores de '{col_sel}':", options=vals_unicos, default=vals_salvos, placeholder="Selecione um ou mais...", key=f"wms_ms_{chave_unica}")
+                st.session_state.setdefault("_memoria_widgets", {})[f"wms_ms_{chave_unica}"] = vals_esc
                 if vals_esc:
                     df_f = df_f[df_f[col_sel].astype(str).str.strip().isin(vals_esc)]
             else:
