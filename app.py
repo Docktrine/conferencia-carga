@@ -1636,7 +1636,7 @@ if len(abas_nav) > 1:
         }
         header[data-testid="stHeader"] {
             background-color: #15241A !important;
-            border-bottom: 2px solid #2E7D32 !important;
+            border-bottom: none !important;
             height: 2.95rem !important;
             left: 0 !important;
             width: 100vw !important;
@@ -1647,6 +1647,10 @@ if len(abas_nav) > 1:
             top: 2.95rem !important;
             height: calc(100vh - 2.95rem) !important;
         }
+        section[data-testid="stSidebar"],
+        section[data-testid="stSidebar"] > div {
+            border-right: none !important;
+        }        
         header[data-testid="stHeader"] *,
         header[data-testid="stHeader"] button {
             pointer-events: auto !important;
