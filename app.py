@@ -2623,7 +2623,123 @@ elif aba == "📊 Análise de Pedidos":
             return True
         padrao = r"(?<!\d)" + re.escape(p_limpo) + r"(?!\d)"
         return bool(re.search(padrao, c_limpo))
+    with st.expander("🚚 Importar Agendamentos do Portal Trizy (Excel .xls / .xlsx)", expanded=False):
+        st.caption("Suba a planilha exportada do Trizy, escolha a aba e as colunas correspondentes. O sistema cruza o ID/Demanda com a coluna Observação do planejamento e atualiza a Data da entrega.")
+        arq_trizy = st.file_uploader("📂 Planilha do Portal Trizy (.xls ou .xlsx):", type=("xls", "xlsx"), key="up_trizy_analise")
+        if arq_trizy is not None:
+            try:
+                xl_trizy = pd.ExcelFile(arq_trizy)
+                abas_trizy = xl_trizy.sheet_names
+                idx_aba_tz = next(
+                    (i for i, nm in enumerate(abas_trizy) if "DEMANDA" in limpar_texto(nm) or "AGEND" in limpar_texto(nm)),
+                    0
+                )
+                aba_trizy_sel = st.selectbox(
+                    "📑 Selecione a aba da planilha Trizy:",
+                    options=abas_trizy,
+                    index=idx_aba_tz,
+                    key="sel_aba_trizy"
+                )
+                df_tz_raw = xl_trizy.parse(aba_trizy_sel, dtype=str).dropna(how="all").fillna("")
+                if df_tz_raw.empty:
+                    st.warning("A aba selecionada está vazia.")
+                else:
+                    cols_tz = list(df_tz_raw.columns)
+                    col_id_sug = achar_col_bi(cols_tz, ("ID AGENDAMENTO", "ID", "DEMANDA", "PEDIDO", "CODIGO"))
+                    idx_id_tz = cols_tz.index(col_id_sug) if col_id_sug in cols_tz else 0
 
+                    cols_tz_rest = [c for c in cols_tz if c != cols_tz[idx_id_tz]] or cols_tz
+                    col_dt_sug = achar_col_bi(cols_tz_rest, ("DATA DO AGENDAMENTO", "DATA AGENDAMENTO", "AGENDAMENTO", "DATA ENTREGA", "ENTREGA", "DATA"))
+                    idx_dt_tz = cols_tz.index(col_dt_sug) if col_dt_sug in cols_tz else min(1, len(cols_tz) - 1)
+
+                    tz_c1, tz_c2 = st.columns(2)
+                    col_id_tz = tz_c1.selectbox("🔢 Coluna do ID / Demanda (para buscar na Observação):", options=cols_tz, index=idx_id_tz, key="map_col_id_tz")
+                    col_dt_tz = tz_c2.selectbox("📅 Coluna da Data do Agendamento:", options=cols_tz, index=idx_dt_tz, key="map_col_dt_tz")
+
+                    mapa_trizy = {}
+                    for _, r_tz in df_tz_raw.iterrows():
+                        id_val = str(r_tz.get(col_id_tz, "")).strip()
+                        if not id_val or id_val.lower() in ("nan", "none", "null", "-"):
+                            continue
+                        if id_val.endswith(".0"):
+                            id_val = id_val[:-2]
+
+                        dt_raw_tz = str(r_tz.get(col_dt_tz, "")).strip()
+                        if not dt_raw_tz or dt_raw_tz.lower() in ("nan", "none", "null", "nat", "-"):
+                            continue
+
+                        dt_parsed_tz = pd.to_datetime(dt_raw_tz, dayfirst=True, errors="coerce")
+                        if pd.notna(dt_parsed_tz):
+                            dt_fmt_tz = dt_parsed_tz.strftime("%d/%m/%Y")
+                        else:
+                            dt_fmt_tz = formatar_data_br_str(dt_raw_tz)
+
+                        if id_val and dt_fmt_tz and "/" in dt_fmt_tz:
+                            mapa_trizy[id_val] = dt_fmt_tz
+
+                    if not mapa_trizy:
+                        st.info("Nenhuma linha válida com ID/Demanda e Data do Agendamento encontrada nas colunas selecionadas.")
+                    else:
+                        df_plan_tz = carregar_dados("planejamento")
+                        if df_plan_tz.empty:
+                            st.warning("Nenhum pedido cadastrado no Planejamento Logística para cruzar.")
+                        else:
+                            for col_req_tz in COLUNAS_PLANEJAMENTO:
+                                if col_req_tz not in df_plan_tz.columns:
+                                    df_plan_tz[col_req_tz] = ""
+
+                            matches_tz = list()
+                            for idx_ptz, row_ptz in df_plan_tz.iterrows():
+                                obs_txt_tz = str(row_ptz.get("Observação", "")).strip()
+                                if not obs_txt_tz or obs_txt_tz.lower() in ("nan", "none", "null"):
+                                    continue
+                                for id_tz_k, nova_dt_tz in mapa_trizy.items():
+                                    if re.search(rf"(?<!\d){re.escape(id_tz_k)}(?!\d)", obs_txt_tz):
+                                        ent_atual_tz = formatar_data_br_str(row_ptz.get("Data da entrega", ""))
+                                        precisa_atualizar = (ent_atual_tz != nova_dt_tz)
+                                        matches_tz.append({
+                                            "_idx": idx_ptz,
+                                            "Ordem": str(row_ptz.get("Ordem de Carregamento", "")).strip(),
+                                            "Pedido": str(row_ptz.get("Nº Pedido", "")).strip(),
+                                            "Cliente": str(row_ptz.get("Cliente", "")).strip(),
+                                            "ID / Demanda Trizy": id_tz_k,
+                                            "Entrega Atual": ent_atual_tz if ent_atual_tz else "—",
+                                            "Nova Data Trizy": nova_dt_tz,
+                                            "Situação": "🔄 Atualizar Data" if precisa_atualizar else "✅ Já Atualizada",
+                                            "_alterar": precisa_atualizar
+                                        })
+                                        break
+
+                            if not matches_tz:
+                                st.warning(f"Foram lidos {len(mapa_trizy)} registro(s) do Trizy, mas nenhum ID/Demanda foi encontrado na coluna 'Observação' dos pedidos do planejamento.")
+                            else:
+                                df_prev_tz = pd.DataFrame(matches_tz)
+                                qtd_upd_tz = int(df_prev_tz["_alterar"].sum())
+                                st.success(f"✅ {len(df_prev_tz)} pedido(s) localizado(s) pela Observação ({qtd_upd_tz} com data diferente para atualizar).")
+                                st.dataframe(
+                                    df_prev_tz[["Ordem", "Pedido", "Cliente", "ID / Demanda Trizy", "Entrega Atual", "Nova Data Trizy", "Situação"]],
+                                    use_container_width=True,
+                                    hide_index=True
+                                )
+                                if qtd_upd_tz > 0:
+                                    if st.button(f"💾 Confirmar e Atualizar {qtd_upd_tz} Data(s) de Entrega no Planejamento", type="primary", key="btn_confirmar_trizy"):
+                                        with st.spinner("Gravando datas de agendamento do Trizy no Planejamento..."):
+                                            limpar_cache_operacional()
+                                            df_plan_gravar = carregar_dados("planejamento")
+                                            for c_pl_tz in COLUNAS_PLANEJAMENTO:
+                                                if c_pl_tz not in df_plan_gravar.columns:
+                                                    df_plan_gravar[c_pl_tz] = ""
+                                            df_plan_gravar["Data da entrega"] = df_plan_gravar["Data da entrega"].astype(object)
+                                            for item_tz in matches_tz:
+                                                if item_tz["_alterar"] and item_tz["_idx"] in df_plan_gravar.index:
+                                                    df_plan_gravar.at[item_tz["_idx"], "Data da entrega"] = item_tz["Nova Data Trizy"]
+                                            salvar_dados(df_plan_gravar[COLUNAS_PLANEJAMENTO], "planejamento")
+                                            limpar_cache_operacional()
+                                        st.success(f"🎉 {qtd_upd_tz} pedido(s) atualizado(s) com a Data do Agendamento do Trizy!")
+                                        st.rerun()
+            except Exception as e_tz:
+                st.error(f"Erro ao processar a planilha do Trizy: {e_tz}")
+        
     feriados_sys = obter_feriados_sistema()
     mapa_lt = obter_mapa_lead_time()
 
