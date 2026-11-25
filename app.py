@@ -1739,93 +1739,93 @@ if len(abas_nav) > 1:
         """,
         unsafe_allow_html=True
     )
-        guia_fechar_direto = st.text_input("Fechar guia:", value="", key="_wms_fechar_guia_input", label_visibility="collapsed")
-        if guia_fechar_direto and guia_fechar_direto in mapa_reverso_guia:
-            mod_fechar = mapa_reverso_guia[guia_fechar_direto]
-            st.session_state["_wms_fechar_guia_input"] = ""
-            if mod_fechar != "🏠 Início" and mod_fechar in st.session_state.abas_abertas:
-                st.session_state.abas_abertas.remove(mod_fechar)
-                if st.session_state.aba_ativa == mod_fechar:
-                    st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
-                st.rerun()
+    guia_fechar_direto = st.text_input("Fechar guia:", value="", key="_wms_fechar_guia_input", label_visibility="collapsed")
+    if guia_fechar_direto and guia_fechar_direto in mapa_reverso_guia:
+        mod_fechar = mapa_reverso_guia[guia_fechar_direto]
+        st.session_state["_wms_fechar_guia_input"] = ""
+        if mod_fechar != "🏠 Início" and mod_fechar in st.session_state.abas_abertas:
+            st.session_state.abas_abertas.remove(mod_fechar)
+            if st.session_state.aba_ativa == mod_fechar:
+                st.session_state.aba_ativa = st.session_state.abas_abertas[-1] if st.session_state.abas_abertas else "🏠 Início"
+            st.rerun()
 
-        rotulos_opcoes = [mapa_rotulos_guia[m] for m in abas_nav]
-        st.session_state["barra_guias_topo"] = mapa_rotulos_guia.get(st.session_state.aba_ativa, "🏠 Início")
-        st.pills(
-            "Guias abertas:",
-            options=rotulos_opcoes,
-            label_visibility="collapsed",
-            key="barra_guias_topo",
-            on_change=_ao_mudar_guia
-        )
-        components.html(
-            """
-            <script>
-            const doc = window.parent.document;
-            if (!doc.getElementById('wms-x-style')) {
-                const st = doc.createElement('style');
-                st.id = 'wms-x-style';
-                st.innerHTML = `
-                    div[data-testid="stTextInput"]:has(input[aria-label="Fechar guia:"]) {
-                        position: fixed !important;
-                        top: -9999px !important;
-                        left: -9999px !important;
-                        height: 0 !important;
-                        overflow: hidden !important;
-                        opacity: 0 !important;
-                        pointer-events: none !important;
-                    }
-                    .wms-x-close {
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 18px;
-                        height: 18px;
-                        padding: 0;
-                        border-radius: 5px;
-                        margin-left: 5px;
-                        font-size: 0.78rem;
-                        line-height: 1;
-                        transition: background-color 0.15s;
-                    }
-                    .wms-x-close:hover {
-                        background-color: rgba(183, 28, 28, 0.22) !important;
-                    }
-                `;
-                doc.head.appendChild(st);
-            }
-            function estilarXGuias() {
-                doc.querySelectorAll('[data-testid="stButtonGroup"] button:not(:first-child) p, [data-testid="stPills"] button:not(:first-child) p').forEach(p => {
-                    if (!p.querySelector('.wms-x-close') && p.innerHTML.includes('✕')) {
-                        const nomeLimpo = p.textContent.trim();
-                        p.dataset.rotuloGuia = nomeLimpo;
-                        p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
-                    }
-                    const xBtn = p.querySelector('.wms-x-close');
-                    if (xBtn && !xBtn.dataset.bound) {
-                        xBtn.dataset.bound = '1';
-                        xBtn.addEventListener('pointerdown', (ev) => {
-                            ev.preventDefault();
-                            ev.stopPropagation();
-                            const inp = doc.querySelector('input[aria-label="Fechar guia:"]');
-                            if (inp && p.dataset.rotuloGuia) {
-                                const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-                                setter.call(inp, p.dataset.rotuloGuia);
-                                inp.dispatchEvent(new Event('input', { bubbles: true }));
-                                inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
-                            }
-                        }, true);
-                    }
-                });
-            }
-            estilarXGuias();
-            new MutationObserver(estilarXGuias).observe(doc.body, { childList: true, subtree: true });
-            </script>
-            """,
-            height=0,
-            width=0
-        )    
-
+    rotulos_opcoes = [mapa_rotulos_guia[m] for m in abas_nav]
+    st.session_state["barra_guias_topo"] = mapa_rotulos_guia.get(st.session_state.aba_ativa, "🏠 Início")
+    st.pills(
+        "Guias abertas:",
+        options=rotulos_opcoes,
+        label_visibility="collapsed",
+        key="barra_guias_topo",
+        on_change=_ao_mudar_guia
+    )
+    components.html(
+        """
+        <script>
+        const doc = window.parent.document;
+        if (!doc.getElementById('wms-x-style')) {
+            const st = doc.createElement('style');
+            st.id = 'wms-x-style';
+            st.innerHTML = `
+                div[data-testid="stTextInput"]:has(input[aria-label="Fechar guia:"]) {
+                    position: fixed !important;
+                    top: -9999px !important;
+                    left: -9999px !important;
+                    height: 0 !important;
+                    overflow: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+                .wms-x-close {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 18px;
+                    height: 18px;
+                    padding: 0;
+                    border-radius: 5px;
+                    margin-left: 5px;
+                    font-size: 0.78rem;
+                    line-height: 1;
+                    transition: background-color 0.15s;
+                }
+                .wms-x-close:hover {
+                    background-color: rgba(183, 28, 28, 0.22) !important;
+                }
+            `;
+            doc.head.appendChild(st);
+        }
+        function estilarXGuias() {
+            doc.querySelectorAll('[data-testid="stButtonGroup"] button:not(:first-child) p, [data-testid="stPills"] button:not(:first-child) p').forEach(p => {
+                if (!p.querySelector('.wms-x-close') && p.innerHTML.includes('✕')) {
+                    const nomeLimpo = p.textContent.trim();
+                    p.dataset.rotuloGuia = nomeLimpo;
+                    p.innerHTML = p.innerHTML.replace('✕', '<span class="wms-x-close">✕</span>');
+                }
+                const xBtn = p.querySelector('.wms-x-close');
+                if (xBtn && !xBtn.dataset.bound) {
+                    xBtn.dataset.bound = '1';
+                    xBtn.addEventListener('pointerdown', (ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        const inp = doc.querySelector('input[aria-label="Fechar guia:"]');
+                        if (inp && p.dataset.rotuloGuia) {
+                            const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                            setter.call(inp, p.dataset.rotuloGuia);
+                            inp.dispatchEvent(new Event('input', { bubbles: true }));
+                            inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+                        }
+                    }, true);
+                }
+            });
+        }
+        estilarXGuias();
+        new MutationObserver(estilarXGuias).observe(doc.body, { childList: true, subtree: true });
+        </script>
+        """,
+        height=0,
+        width=0
+    )
+    
 aba = st.session_state.aba_ativa
 
 PREFIXOS_MEMORIA_ABA = ("filtro_", "kpi_", "sel_", "in_", "q_lt_", "adm_")
