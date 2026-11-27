@@ -2873,8 +2873,34 @@ elif aba == "📊 Análise de Pedidos":
     feriados_sys = obter_feriados_sistema()
     mapa_lt = obter_mapa_lead_time()
 
+    def _parse_data_bi_segura(val_raw):
+        if val_raw is None or pd.isna(val_raw):
+            return pd.NaT
+        if isinstance(val_raw, (datetime, pd.Timestamp)):
+            return pd.Timestamp(val_raw.year, val_raw.month, val_raw.day)
+        s = str(val_raw).strip()
+        if not s or s.upper() in ("NAN", "NONE", "NAT", "<NA>", "-"):
+            return pd.NaT
+        parte_dt = s.split()[0]
+        m_iso = re.match(r"^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$", parte_dt)
+        if m_iso:
+            try:
+                return pd.Timestamp(int(m_iso.group(1)), int(m_iso.group(2)), int(m_iso.group(3)))
+            except Exception:
+                return pd.NaT
+        m_br = re.match(r"^(\d{1,2})[/\-](\d{1,2})[/\-](\d{2,4})$", parte_dt)
+        if m_br:
+            dia_i, mes_i, ano_i = int(m_br.group(1)), int(m_br.group(2)), int(m_br.group(3))
+            if ano_i < 100:
+                ano_i += 2000
+            try:
+                return pd.Timestamp(ano_i, mes_i, dia_i)
+            except Exception:
+                return pd.NaT
+        return pd.to_datetime(s, dayfirst=True, errors="coerce")
+
     with st.expander("📂 Importar Planilha de Pedidos do BI (Excel .xls / .xlsx / .csv)", expanded=False):
-        st.caption("Suba a carteira exportada do BI para cruzar com o Lead Time, calcular a sugestão de carregamento e enviar pedidos ao Planejamento.")
+        st.caption("Suba a carteira exportada do BI para compilar os SKUs por pedido, cruzar com o Lead Time e flagar os pedidos para o Planejamento.")
         c_up_bi, c_cfg_bi = st.columns((3, 1))
         with c_up_bi:
             arquivo_bi = st.file_uploader("📂 Planilha de Pedidos do BI (.xls, .xlsx, .csv):", type=("xls", "xlsx", "csv"), key="up_bi_analise")
@@ -2899,66 +2925,121 @@ elif aba == "📊 Análise de Pedidos":
                 st.warning("O arquivo enviado está vazio.")
             else:
                 cols_bi = list(df_bi.columns)
-                def achar_idx_bi(termos):
-                    c_enc = achar_col_bi(cols_bi, termos)
-                    return cols_bi.index(c_enc) if c_enc in cols_bi else 0
 
                 with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
                     def _opcoes_bi(termos):
                         enc = achar_col_bi(cols_bi, termos)
                         return ["(Nenhum)"] + cols_bi, (cols_bi.index(enc) + 1) if enc in cols_bi else 0
 
-                    m1, m2, m3, m4 = st.columns(4)
+                    m1, m2, m3, m4, m5 = st.columns(5)
                     op_ped, idx_ped = _opcoes_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"))
                     col_ped_bi = m1.selectbox("Número do Pedido / Carga:", op_ped, index=idx_ped)
+                    op_fil, idx_fil = _opcoes_bi(("FILIAL", "UNIDADE", "LOCAL", "CD", "DEPOSITO", "EMPRESA"))
+                    col_filial_bi = m2.selectbox("Filial (Local Carreg.):", op_fil, index=idx_fil)
                     op_cli, idx_cli = _opcoes_bi(("CLIENTE", "DESTINATARIO", "RAZAO"))
-                    col_cli_bi = m2.selectbox("Cliente (Opcional):", op_cli, index=idx_cli)
+                    col_cli_bi = m3.selectbox("Cliente (Opcional):", op_cli, index=idx_cli)
                     op_uf, idx_uf = _opcoes_bi(("UF", "ESTADO"))
-                    col_uf_bi = m3.selectbox("Estado (UF):", op_uf, index=idx_uf)
+                    col_uf_bi = m4.selectbox("Estado (UF):", op_uf, index=idx_uf)
                     op_cid, idx_cid = _opcoes_bi(("CIDADE", "MUNICIPIO"))
-                    col_cid_bi = m4.selectbox("Cidade:", op_cid, index=idx_cid)
+                    col_cid_bi = m5.selectbox("Cidade:", op_cid, index=idx_cid)
 
-                    m5, m6, m7, m8 = st.columns(4)
+                    m6, m7, m8, m9, m10 = st.columns(5)
                     op_dc, idx_dc = _opcoes_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA"))
-                    col_dt_cria = m5.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
+                    col_dt_cria = m6.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
                     op_de, idx_de = _opcoes_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"))
-                    col_dt_ent = m6.selectbox("Data de Entrega:", op_de, index=idx_de)
+                    col_dt_ent = m7.selectbox("Data de Entrega:", op_de, index=idx_de)
                     op_val, idx_val = _opcoes_bi(("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
-                    col_val_bi = m7.selectbox("Valor do Pedido (R$):", op_val, index=idx_val)
+                    col_val_bi = m8.selectbox("Valor do Pedido (R$):", op_val, index=idx_val)
                     op_vol, idx_vol = _opcoes_bi(("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
-                    col_vol_bi = m8.selectbox("Qtd de Volumes:", op_vol, index=idx_vol)
-
+                    col_vol_bi = m9.selectbox("Qtd de Volumes:", op_vol, index=idx_vol)
                     op_nf, idx_nf = _opcoes_bi(("NOTA FISCAL", "NF", "NFE", "NOTA", "DANFE"))
-                    col_nf_bi = st.selectbox("Nota Fiscal de Venda (Opcional — para vincular pedidos faturados):", op_nf, index=idx_nf)
+                    col_nf_bi = m10.selectbox("Nota Fiscal (Opcional):", op_nf, index=idx_nf)
 
-                df_plan_exist = carregar_dados("planejamento")
-                lista_peds_plan = list()
-                if not df_plan_exist.empty and "Nº Pedido" in df_plan_exist.columns:
-                    lista_peds_plan = df_plan_exist["Nº Pedido"].astype(str).tolist()
-
-                hoje_dt = pd.Timestamp(datetime.now().date())
-                linhas_analise = list()
-                cidades_sem_lt = set()
-                alteracoes_entrega = list()
+                pedidos_compilados = {}
+                ordem_pedidos_bi = list()
 
                 for idx_bi, r_bi in df_bi.iterrows():
-                    ped_val = str(r_bi[col_ped_bi]).strip() if col_ped_bi != "(Nenhum)" else f"LINHA-{idx_bi + 1}"
-                    if not ped_val:
+                    ped_raw = str(r_bi[col_ped_bi]).strip() if col_ped_bi != "(Nenhum)" else f"LINHA-{idx_bi + 1}"
+                    if ped_raw.endswith(".0"):
+                        ped_raw = ped_raw[:-2]
+                    if not ped_raw or ped_raw.lower() in ("nan", "none", "null"):
                         continue
+
+                    ped_chave = limpar_texto(ped_raw)
+                    fil_val = str(r_bi[col_filial_bi]).strip() if col_filial_bi != "(Nenhum)" else ""
                     cli_val = str(r_bi[col_cli_bi]).strip() if col_cli_bi != "(Nenhum)" else ""
                     uf_val = limpar_texto(r_bi[col_uf_bi]) if col_uf_bi != "(Nenhum)" else ""
                     cid_val = limpar_texto(r_bi[col_cid_bi]) if col_cid_bi != "(Nenhum)" else ""
                     valor_num = limpar_numero_bi(r_bi[col_val_bi]) if col_val_bi != "(Nenhum)" else 0.0
                     vol_num = int(round(limpar_numero_bi(r_bi[col_vol_bi]))) if col_vol_bi != "(Nenhum)" else 0
+
                     nf_raw = str(r_bi[col_nf_bi]).strip() if col_nf_bi != "(Nenhum)" else ""
                     if nf_raw.lower() in ("nan", "none", "null", "-"):
                         nf_raw = ""
                     elif nf_raw.endswith(".0"):
                         nf_raw = nf_raw[:-2]
 
-                    dt_c = pd.to_datetime(str(r_bi[col_dt_cria]).strip(), dayfirst=True, errors="coerce") if col_dt_cria != "(Nenhum)" else pd.NaT
-                    dt_e = pd.to_datetime(str(r_bi[col_dt_ent]).strip(), dayfirst=True, errors="coerce") if col_dt_ent != "(Nenhum)" else pd.NaT
+                    dt_c = _parse_data_bi_segura(r_bi[col_dt_cria]) if col_dt_cria != "(Nenhum)" else pd.NaT
+                    dt_e = _parse_data_bi_segura(r_bi[col_dt_ent]) if col_dt_ent != "(Nenhum)" else pd.NaT
 
+                    if ped_chave not in pedidos_compilados:
+                        ordem_pedidos_bi.append(ped_chave)
+                        pedidos_compilados[ped_chave] = {
+                            "ped_exib": ped_raw,
+                            "filial": fil_val,
+                            "cliente": cli_val,
+                            "uf": uf_val,
+                            "cidade": cid_val,
+                            "valor_num": valor_num,
+                            "vol_num": vol_num,
+                            "qtd_itens": 1,
+                            "nfs": [nf_raw] if nf_raw else list(),
+                            "dt_c": dt_c,
+                            "dt_e": dt_e
+                        }
+                    else:
+                        item_c = pedidos_compilados[ped_chave]
+                        item_c["valor_num"] += valor_num
+                        item_c["vol_num"] += vol_num
+                        item_c["qtd_itens"] += 1
+                        if not item_c["filial"] and fil_val:
+                            item_c["filial"] = fil_val
+                        if not item_c["cliente"] and cli_val:
+                            item_c["cliente"] = cli_val
+                        if not item_c["uf"] and uf_val:
+                            item_c["uf"] = uf_val
+                        if not item_c["cidade"] and cid_val:
+                            item_c["cidade"] = cid_val
+                        if nf_raw and nf_raw not in item_c["nfs"]:
+                            item_c["nfs"].append(nf_raw)
+                        if pd.isna(item_c["dt_c"]) and pd.notna(dt_c):
+                            item_c["dt_c"] = dt_c
+                        if pd.isna(item_c["dt_e"]) and pd.notna(dt_e):
+                            item_c["dt_e"] = dt_e
+
+                df_plan_exist = carregar_dados("planejamento")
+                lista_peds_plan = list()
+                if not df_plan_exist.empty and "Nº Pedido" in df_plan_exist.columns:
+                    lista_peds_plan = df_plan_exist["Nº Pedido"].astype(str).tolist()
+
+                hoje_dt = pd.Timestamp(datetime.now(FUSO_BR).date())
+                linhas_analise = list()
+                cidades_sem_lt = set()
+                alteracoes_entrega = list()
+
+                for ped_k in ordem_pedidos_bi:
+                    comp = pedidos_compilados[ped_k]
+                    ped_val = comp["ped_exib"]
+                    fil_val = comp["filial"]
+                    cli_val = comp["cliente"]
+                    uf_val = comp["uf"]
+                    cid_val = comp["cidade"]
+                    valor_num = comp["valor_num"]
+                    vol_num = comp["vol_num"]
+                    qtd_skus_ped = comp["qtd_itens"]
+                    nf_raw = " | ".join(comp["nfs"])
+                    dt_c = comp["dt_c"]
+                    dt_e = comp["dt_e"]
 
                     lt_info = mapa_lt.get((uf_val, cid_val))
                     if lt_info is None and (uf_val or cid_val):
@@ -3022,9 +3103,12 @@ elif aba == "📊 Análise de Pedidos":
                                     })
 
                     linhas_analise.append({
+                        "Programar": False,
                         "Prioridade": ordem_prio,
                         "Status SLA": status_sla,
+                        "Filial": fil_val if fil_val else "-",
                         "Pedido": ped_val,
+                        "SKUs": qtd_skus_ped,
                         "Nota Fiscal": nf_raw if nf_raw else "-",
                         "NF_Raw": nf_raw,
                         "Cliente": cli_val,
@@ -3042,12 +3126,15 @@ elif aba == "📊 Análise de Pedidos":
                         "Veículo Sugerido": veic_sug,
                         "Frete Tabela": frete_sug_fmt,
                         "Situação WMS": ja_wms
-
                     })
 
                 df_res_bi = pd.DataFrame(linhas_analise)
+
                 if not df_res_bi.empty:
-                    df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Dias Úteis p/ Carregar"], ascending=[True, True], na_position="last")
+                    df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Dias Úteis p/ Carregar"], ascending=[True, True], na_position="last").reset_index(drop=True)
+
+                    if len(df_bi) > len(df_res_bi):
+                        st.info(f"🧩 **Compilação automática:** {len(df_bi)} linhas de itens do BI foram consolidadas em **{len(df_res_bi)} pedido(s) único(s)** com valores e volumes somados.")
 
                     if alteracoes_entrega:
                         with st.container(border=True):
@@ -3084,7 +3171,7 @@ elif aba == "📊 Análise de Pedidos":
                         st.warning(f"⚠️ **{len(cidades_sem_lt)} cidade(s)** não encontrada(s) na aba `lead time`: {', '.join(sorted(list(cidades_sem_lt))[:10])}")
 
                     k1, k2, k3, k4, k5, k6 = st.columns(6)
-                    k1.metric("📦 Total Pedidos", len(df_res_bi))
+                    k1.metric("📦 Pedidos Únicos", len(df_res_bi))
                     k2.metric("🔴/🟠 Críticos/Hoje", int(df_res_bi["Prioridade"].isin((1, 2)).sum()))
                     k3.metric("🟡 Atenção", int((df_res_bi["Prioridade"] == 3).sum()))
                     k4.metric("🟢 No Prazo", int((df_res_bi["Prioridade"] == 4).sum()))
@@ -3092,14 +3179,127 @@ elif aba == "📊 Análise de Pedidos":
                     k5.metric("💰 Valor Carteira", tot_val_str)
                     k6.metric("🧊 Total Volumes", f"{int(df_res_bi['Volumes'].sum()):,}".replace(",", "."))
 
-                    filtro_sla = st.multiselect(
+                    f_bi1, f_bi2 = st.columns(2)
+                    filtro_sla = f_bi1.multiselect(
                         "Filtrar por Indicador de Prazo:",
                         options=df_res_bi["Status SLA"].unique().tolist(),
                         default=df_res_bi["Status SLA"].unique().tolist()
                     )
-                    df_exib_bi = df_res_bi[df_res_bi["Status SLA"].isin(filtro_sla)].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"])
+                    filtro_wms_bi = f_bi2.multiselect(
+                        "Filtrar por Situação WMS:",
+                        options=df_res_bi["Situação WMS"].unique().tolist(),
+                        default=df_res_bi["Situação WMS"].unique().tolist()
+                    )
 
-                    renderizar_tabela_wms(df_exib_bi, "analise_bi", use_container_width=True, hide_index=True)
+                    df_exib_bi = df_res_bi[
+                        (df_res_bi["Status SLA"].isin(filtro_sla)) &
+                        (df_res_bi["Situação WMS"].isin(filtro_wms_bi))
+                    ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()
+
+                    st.caption("☑️ **Marque a caixinha `Programar` na primeira coluna** nos pedidos que deseja enviar ao Planejamento Logística:")
+                    cols_readonly_bi = [c for c in df_exib_bi.columns if c != "Programar"]
+                    df_editado_bi = st.data_editor(
+                        df_exib_bi,
+                        key="editor_flags_analise_bi",
+                        use_container_width=True,
+                        hide_index=True,
+                        disabled=cols_readonly_bi,
+                        column_config={
+                            "Programar": st.column_config.CheckboxColumn("☑️ Programar", help="Marque para enviar este pedido ao Planejamento Logística", default=False, width="small"),
+                            "Status SLA": st.column_config.TextColumn("🚦 Status SLA", width="medium"),
+                            "Filial": st.column_config.TextColumn("🏭 Filial", width="small"),
+                            "Pedido": st.column_config.TextColumn("📦 Pedido", width="small"),
+                            "SKUs": st.column_config.NumberColumn("🏷️ SKUs", width="small"),
+                            "Nota Fiscal": st.column_config.TextColumn("🧾 NF", width="small"),
+                            "Cliente": st.column_config.TextColumn("🏢 Cliente", width="medium"),
+                            "Cidade": st.column_config.TextColumn("📍 Cidade", width="medium"),
+                            "UF": st.column_config.TextColumn("🗺️ UF", width="small"),
+                            "Valor (R$)": st.column_config.TextColumn("💰 Valor Total", width="small"),
+                            "Volumes": st.column_config.NumberColumn("🧊 Volumes", width="small"),
+                            "Criação": st.column_config.TextColumn("📅 Criação", width="small"),
+                            "Tempo Parado": st.column_config.TextColumn("⏳ Tempo Parado", width="medium"),
+                            "Entrega": st.column_config.TextColumn("🏁 Entrega", width="small"),
+                            "LT Total (Rota)": st.column_config.TextColumn("⏱️ Lead Time", width="small"),
+                            "Dias Úteis p/ Carregar": st.column_config.NumberColumn("📆 Dias Úteis", width="small"),
+                            "Sugestão Carregamento": st.column_config.TextColumn("🎯 Sugestão Carreg.", width="small"),
+                            "Veículo Sugerido": st.column_config.TextColumn("🚛 Veículo", width="small"),
+                            "Frete Tabela": st.column_config.TextColumn("💵 Frete Tabela", width="small"),
+                            "Situação WMS": st.column_config.TextColumn("📋 Situação WMS", width="medium"),
+                        }
+                    )
+
+                    df_flagados_novos = df_editado_bi[
+                        (df_editado_bi["Programar"] == True) &
+                        (df_editado_bi["Situação WMS"] == "🆕 Novo (Fora do WMS)")
+                    ]
+                    df_flagados_ja_wms = df_editado_bi[
+                        (df_editado_bi["Programar"] == True) &
+                        (df_editado_bi["Situação WMS"] != "🆕 Novo (Fora do WMS)")
+                    ]
+
+                    if not df_flagados_ja_wms.empty:
+                        st.warning(f"⚠️ {len(df_flagados_ja_wms)} pedido(s) flagado(s) já estão no Planejamento Logística e serão ignorados para evitar duplicidade.")
+
+                    c_act1, c_act2 = st.columns((2, 1.5), vertical_alignment="center")
+                    with c_act1:
+                        qtd_flag_ok = len(df_flagados_novos)
+                        if st.button(f"🚚 Imputar {qtd_flag_ok} Pedido(s) Flagado(s) no Planejamento Logística", type="primary", disabled=(qtd_flag_ok == 0), use_container_width=True):
+                            limpar_cache_operacional()
+                            df_p_atual = carregar_dados("planejamento")
+                            if df_p_atual is None:
+                                st.error("⚠️ Falha temporária ao ler a aba 'planejamento' no Google Sheets. Tente clicar novamente em 3 segundos.")
+                                st.stop()
+
+                            for c_p in COLUNAS_PLANEJAMENTO:
+                                if c_p not in df_p_atual.columns:
+                                    df_p_atual[c_p] = ""
+
+                            df_p_atual = df_p_atual.dropna(how="all").fillna("")
+                            peds_existentes_agora = df_p_atual["Nº Pedido"].astype(str).tolist()
+                            novos_plan = list()
+
+                            for p_esc in df_flagados_novos["Pedido"].tolist():
+                                if any(pedido_contido_no_planejamento(p_esc, p_ex) for p_ex in peds_existentes_agora):
+                                    continue
+                                linhas_match = df_res_bi[df_res_bi["Pedido"] == p_esc].to_dict(orient="records")
+                                if not linhas_match:
+                                    continue
+                                r_esc = linhas_match.pop(0)
+                                nova_l = {c_p: "" for c_p in COLUNAS_PLANEJAMENTO}
+                                nova_l["Data"] = r_esc["Sugestão Carregamento"] if r_esc["Sugestão Carregamento"] != "-" else ""
+                                nova_l["Local de Carregamento"] = r_esc["Filial"] if r_esc.get("Filial", "-") != "-" else ""
+                                nova_l["Nº Pedido"] = r_esc["Pedido"]
+                                nova_l["Valor Pedido"] = r_esc["Valor (R$)"]
+                                nova_l["Cliente"] = r_esc["Cliente"]
+                                nova_l["UF"] = r_esc["UF"]
+                                nova_l["Cidade"] = r_esc["Cidade"]
+                                nova_l["Data da entrega"] = formatar_data_br_str(r_esc["Entrega"]) if r_esc["Entrega"] != "-" else ""
+                                nova_l["Observação"] = f"SLA BI | {r_esc['SKUs']} SKUs | {r_esc['Volumes']} vol | LT: {r_esc['LT Total (Rota)']} | {r_esc['Tempo Parado']}"
+                                nova_l["Status"] = "⏳ Aguardando Veículo"
+                                nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
+                                nova_l["Tipo de Veículo"] = r_esc.get("Veículo Sugerido", "")
+                                nova_l["Valor de Frete"] = r_esc.get("Frete Tabela", "") if r_esc.get("Frete Tabela", "-") != "-" else ""
+                                novos_plan.append(nova_l)
+
+                            if novos_plan:
+                                df_p_final = pd.concat([df_p_atual[COLUNAS_PLANEJAMENTO], pd.DataFrame(novos_plan)], ignore_index=True)
+                                salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
+                                limpar_cache_operacional()
+                                st.session_state.pop("editor_flags_analise_bi", None)
+                                st.success(f"🎉 {len(novos_plan)} pedido(s) consolidado(s) adicionado(s) ao Planejamento sem duplicidade!")
+                                st.rerun()
+
+                    with c_act2:
+                        buf_bi = io.BytesIO()
+                        with pd.ExcelWriter(buf_bi, engine="openpyxl") as writer:
+                            df_exib_bi.drop(columns=["Programar"], errors="ignore").to_excel(writer, index=False, sheet_name="Analise_Lead_Time")
+                        st.download_button(
+                            "📥 Baixar Análise Consolidada (.xlsx)",
+                            data=buf_bi.getvalue(),
+                            file_name=f"Analise_Pedidos_LeadTime_{datetime.now(FUSO_BR).strftime('%d%m%Y')}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
 
                     df_com_nf = df_res_bi[(df_res_bi["NF_Raw"] != "") & (df_res_bi["Situação WMS"] == "🚚 Já no Planejamento")]
                     if not df_com_nf.empty:
@@ -3132,64 +3332,6 @@ elif aba == "📊 Análise de Pedidos":
                                 st.rerun()
                             else:
                                 st.warning("Todas essas Notas Fiscais já estavam vinculadas no Planejamento.")
-
-                    st.divider()
-                    st.subheader("🚚 Enviar Pedidos Pertinentes para o Planejamento Logística")
-                    st.caption("Selecione abaixo apenas os pedidos que você decidiu assumir para enviá-los direto à fila do Planejamento.")
-
-                    opcoes_envio = df_exib_bi[df_exib_bi["Situação WMS"] == "🆕 Novo (Fora do WMS)"]["Pedido"].tolist()
-                    pedidos_escolhidos = st.multiselect("Pedidos selecionados para programar:", options=opcoes_envio)
-
-                    if st.button("🚚 Imputar Selecionados no Planejamento Logística", type="primary", disabled=(len(pedidos_escolhidos) == 0)):
-                        limpar_cache_operacional()
-                        df_p_atual = carregar_dados("planejamento")
-                        if df_p_atual is None:
-                            st.error("⚠️ Falha temporária ao ler a aba 'planejamento' no Google Sheets. Tente clicar novamente em 3 segundos (nenhum dado foi alterado).")
-                            st.stop()
-
-                        for c_p in COLUNAS_PLANEJAMENTO:
-                            if c_p not in df_p_atual.columns:
-                                df_p_atual[c_p] = ""
-
-                        df_p_atual = df_p_atual.dropna(how="all").fillna("")
-                        novos_plan = list()
-                        for p_esc in pedidos_escolhidos:
-                            linhas_match = df_res_bi[df_res_bi["Pedido"] == p_esc].to_dict(orient="records")
-                            if not linhas_match:
-                                continue
-                            r_esc = linhas_match.pop(0)
-                            nova_l = {c_p: "" for c_p in COLUNAS_PLANEJAMENTO}
-                            nova_l["Data"] = r_esc["Sugestão Carregamento"] if r_esc["Sugestão Carregamento"] != "-" else ""
-                            nova_l["Nº Pedido"] = r_esc["Pedido"]
-                            nova_l["Valor Pedido"] = r_esc["Valor (R$)"]
-                            nova_l["Cliente"] = r_esc["Cliente"]
-                            nova_l["UF"] = r_esc["UF"]
-                            nova_l["Cidade"] = r_esc["Cidade"]
-                            nova_l["Data da entrega"] = r_esc["Entrega"] if r_esc["Entrega"] != "-" else ""
-                            nova_l["Observação"] = f"SLA BI | {r_esc['Volumes']} vol | LT: {r_esc['LT Total (Rota)']} | {r_esc['Tempo Parado']}"
-                            nova_l["Status"] = "⏳ Aguardando Veículo"
-                            nova_l["Nota Fiscal"] = f"NF {r_esc['NF_Raw']}" if r_esc.get("NF_Raw") else ""
-                            nova_l["Tipo de Veículo"] = r_esc.get("Veículo Sugerido", "")
-                            nova_l["Valor de Frete"] = r_esc.get("Frete Tabela", "") if r_esc.get("Frete Tabela", "-") != "-" else ""
-                            
-                            novos_plan.append(nova_l)
-
-                        if novos_plan:
-                            df_p_final = pd.concat([df_p_atual[COLUNAS_PLANEJAMENTO], pd.DataFrame(novos_plan)], ignore_index=True)
-                            salvar_dados(df_p_final[COLUNAS_PLANEJAMENTO], "planejamento")
-                            limpar_cache_operacional()
-                            st.success(f"🎉 {len(novos_plan)} pedido(s) adicionado(s) ao Planejamento sem alterar os existentes!")
-                            st.rerun()
-
-                    buf_bi = io.BytesIO()
-                    with pd.ExcelWriter(buf_bi, engine="openpyxl") as writer:
-                        df_exib_bi.to_excel(writer, index=False, sheet_name="Analise_Lead_Time")
-                    st.download_button(
-                        "📥 Baixar Análise Completa em Excel (.xlsx)",
-                        data=buf_bi.getvalue(),
-                        file_name=f"Analise_Pedidos_LeadTime_{datetime.now().strftime('%d%m%Y')}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
 
         except Exception as e_bi:
             st.error(f"Erro ao ler a planilha do BI: {e_bi}")
@@ -3790,6 +3932,158 @@ elif aba == "🚚 Planejamento Logística":
                                 st.rerun()
                             else:
                                 st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+        with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
+            st.caption("Selecione a **Filial de Origem**, o **Tipo de Veículo** e adicione cada parada até o destino final. Você pode editar KM ou valores de desvio diretamente na tabela.")
+
+            @st.cache_data(ttl=43200, show_spinner=False)
+            def carregar_tabela_frete_oficial():
+                df_tf = conn.read(worksheet="tabela frete", ttl=0).dropna(how="all").fillna("")
+                if df_tf is None or df_tf.empty:
+                    return {},
+                c_fil, c_uf, c_cid, c_km, c_fc, c_ft = None, None, None, None, None, None
+                for col_t in df_tf.columns:
+                    cl = limpar_texto(col_t)
+                    if not c_fil and "FILIAL" in cl:
+                        c_fil = col_t
+                    elif not c_uf and cl in ("ESTADO", "UF"):
+                        c_uf = col_t
+                    elif not c_cid and ("CIDADE" in cl or "MUNICIPIO" in cl):
+                        c_cid = col_t
+                    elif not c_km and "DISTANCIA" in cl:
+                        c_km = col_t
+                    elif not c_fc and "CARRETA" in cl:
+                        c_fc = col_t
+                    elif not c_ft and "TRUCK" in cl:
+                        c_ft = col_t
+
+                mapa_tf = {}
+                filiais_set = set()
+                if c_fil and c_cid and (c_fc or c_ft):
+                    for _, rt in df_tf.iterrows():
+                        fil_n = str(rt[c_fil]).strip()
+                        fil_k = limpar_texto(fil_n)
+                        cid_k = limpar_texto(rt[c_cid])
+                        uf_k = limpar_texto(rt[c_uf]) if c_uf else ""
+                        if not fil_k or not cid_k:
+                            continue
+                        filiais_set.add(fil_n)
+                        dest_lbl = f"{cid_k}/{uf_k}" if uf_k else cid_k
+                        km_v = converter_moeda_para_float(rt[c_km]) if c_km else 0.0
+                        fc_v = converter_moeda_para_float(rt[c_fc]) if c_fc else 0.0
+                        ft_v = converter_moeda_para_float(rt[c_ft]) if c_ft else 0.0
+                        mapa_tf[(fil_k, dest_lbl)] = {
+                            "km": km_v,
+                            "frete_carreta": fc_v,
+                            "frete_truck": ft_v
+                        }
+                return mapa_tf, sorted(list(filiais_set))
+
+            try:
+                mapa_frete_of, lista_filiais_of = carregar_tabela_frete_oficial()
+            except Exception as e_tf:
+                mapa_frete_of, lista_filiais_of = {},
+                st.error(f"Erro ao ler aba 'tabela frete': {e_tf}")
+
+            if not mapa_frete_of:
+                st.warning("⚠️ Nenhuma rota encontrada na aba `'tabela frete'`.")
+            else:
+                if "roteiro_frete_paradas" not in st.session_state:
+                    st.session_state.roteiro_frete_paradas = list()
+
+                cf1, cf2, cf3, cf4 = st.columns((1.3, 1.4, 2.0, 1.0), vertical_alignment="bottom")
+                filial_sel_fr = cf1.selectbox("🏭 Filial de Origem:", options=lista_filiais_of, key="calc_fr_filial")
+                veic_calc_fr = cf2.selectbox("🚛 Tipo de Veículo:", options=["CARRETA", "TRUCK / BI-TRUCK"], key="calc_fr_veic")
+
+                filial_k_sel = limpar_texto(filial_sel_fr)
+                destinos_da_filial = sorted([dest for (fk, dest) in mapa_frete_of.keys() if fk == filial_k_sel])
+
+                prox_parada_fr = cf3.selectbox("📍 Próxima Parada (Coleta ou Entrega):", options=destinos_da_filial, key="calc_fr_prox")
+                if cf4.button("➕ Adicionar", type="primary", use_container_width=True, key="btn_add_parada_fr"):
+                    st.session_state.roteiro_frete_paradas.append(prox_parada_fr)
+                    st.rerun()
+
+                if st.session_state.roteiro_frete_paradas:
+                    paradas_atuais = st.session_state.roteiro_frete_paradas
+                    eh_carreta = (veic_calc_fr == "CARRETA")
+                    linhas_trechos = list()
+
+                    ponto_ant = f"Filial {filial_sel_fr}"
+                    km_ant = 0.0
+                    tar_ant = 0.0
+
+                    for seq_p, parada_dest in enumerate(paradas_atuais, start=1):
+                        d_dest = mapa_frete_of.get((filial_k_sel, parada_dest), {"km": 0.0, "frete_carreta": 0.0, "frete_truck": 0.0})
+                        km_dest = d_dest["km"]
+                        tar_dest = d_dest["frete_carreta"] if eh_carreta else d_dest["frete_truck"]
+
+                        if seq_p == 1:
+                            km_tr = round(km_dest, 1)
+                            val_tr = round(tar_dest, 2)
+                        else:
+                            km_tr = round(abs(km_dest - km_ant), 1)
+                            val_tr = round(abs(tar_dest - tar_ant), 2)
+
+                        linhas_trechos.append({
+                            "Etapa": f"Trecho {seq_p}",
+                            "De (Saída/Parada)": ponto_ant,
+                            "Para (Parada/Destino)": parada_dest,
+                            "KM Trecho": km_tr,
+                            "Valor Trecho (R$)": val_tr
+                        })
+                        ponto_ant = parada_dest
+                        km_ant = km_dest
+                        tar_ant = tar_dest
+
+                    st.markdown(f"**🗺️ Roteiro:** `🏭 {filial_sel_fr}` ➡️ " + " ➡️ ".join([f"`📍 {p}`" for p in paradas_atuais]))
+                    st.caption("💡 Você pode clicar e editar diretamente o **KM Trecho** ou o **Valor Trecho (R$)** na tabela abaixo caso haja desvio de rota:")
+
+                    df_trechos_edit = st.data_editor(
+                        pd.DataFrame(linhas_trechos),
+                        key="editor_trechos_frete",
+                        use_container_width=True,
+                        hide_index=True,
+                        disabled=["Etapa", "De (Saída/Parada)", "Para (Parada/Destino)"],
+                        column_config={
+                            "Etapa": st.column_config.TextColumn("Etapa", width="small"),
+                            "De (Saída/Parada)": st.column_config.TextColumn("🚩 De", width="medium"),
+                            "Para (Parada/Destino)": st.column_config.TextColumn("📍 Para", width="medium"),
+                            "KM Trecho": st.column_config.NumberColumn("🛣️ KM Trecho", min_value=0.0, step=1.0, format="%.1f km"),
+                            "Valor Trecho (R$)": st.column_config.NumberColumn("💰 Valor Trecho (R$)", min_value=0.0, step=10.0, format="R$ %.2f"),
+                        }
+                    )
+
+                    total_frete_rota = float(pd.to_numeric(df_trechos_edit["Valor Trecho (R$)"], errors="coerce").fillna(0.0).sum())
+                    total_km_rota = float(pd.to_numeric(df_trechos_edit["KM Trecho"], errors="coerce").fillna(0.0).sum())
+                    tot_fr_fmt = f"R$ {total_frete_rota:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                    c_res_f1, c_res_f2, c_res_f3 = st.columns((1.5, 1.5, 1.2), vertical_alignment="center")
+                    c_res_f1.metric("💰 Frete Total do Roteiro", tot_fr_fmt)
+                    c_res_f2.metric("🛣️ Distância Somada", f"{int(round(total_km_rota))} km")
+                    with c_res_f3:
+                        if st.button("↩️ Desfazer Última", use_container_width=True, key="btn_undo_parada_fr"):
+                            st.session_state.roteiro_frete_paradas.pop()
+                            st.rerun()
+                        if st.button("🗑️ Limpar Roteiro", use_container_width=True, key="btn_limpar_parada_fr"):
+                            st.session_state.roteiro_frete_paradas = list()
+                            st.rerun()
+
+                    if opcoes_rapidas and total_frete_rota > 0:
+                        st.markdown("---")
+                        ca_p1, ca_p2 = st.columns((3, 1.2), vertical_alignment="bottom")
+                        ped_aplicar_fr = ca_p1.selectbox("Lançar este frete calculado em qual pedido?", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
+                        if ca_p2.button("💾 Gravar no Pedido", type="primary", use_container_width=True, key="btn_gravar_frete_ped"):
+                            idx_fr_alvo = opcoes_rapidas[ped_aplicar_fr]
+                            df_plan["Valor de Frete"] = df_plan["Valor de Frete"].astype(object)
+                            df_plan["Veículo compartilhado"] = df_plan["Veículo compartilhado"].astype(object)
+                            df_plan.at[idx_fr_alvo, "Valor de Frete"] = formatar_moeda_br_str(f"{total_frete_rota:.2f}")
+                            if len(paradas_atuais) > 1:
+                                df_plan.at[idx_fr_alvo, "Veículo compartilhado"] = "SIM"
+                            salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                            st.toast(f"💰 Frete {tot_fr_fmt} gravado no pedido {df_plan.at[idx_fr_alvo, 'Nº Pedido']}!", icon="💰")
+                            st.rerun()
+                else:
+                    st.info("Selecione a **Filial de Origem**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")
+    
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
