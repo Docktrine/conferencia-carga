@@ -484,23 +484,10 @@ def tem_permissao(nome_permissao):
     return nome_permissao in st.session_state.get("permissoes_usuario", list())
 
 def carregar_usuarios_sistema():
-    _ler_planilha_com_cache.clear("usuarios")
     df_u = carregar_dados("usuarios")
-    if df_u.empty or "login" not in df_u.columns:
-        df_init = pd.DataFrame([{
-            "login": "ADMIN",
-            "nome": "ADMINISTRADOR MASTER",
-            "senha": gerar_hash_senha("grano2026"),
-            "perfil": "ADMIN",
-            "modulos_liberados": " | ".join(TODOS_MODULOS_SISTEMA),
-            "permissoes": " | ".join(TODAS_PERMISSOES_CRITICAS),
-            "ativo": "SIM",
-            "foto_b64": "",
-            "ultimo_acesso": ""
-        }])
-        
-        salvar_dados(df_init, "usuarios")
-        return df_init
+    if df_u is None or df_u.empty or "login" not in df_u.columns:
+        st.error("⚠️ Falha temporária ao carregar usuários do Google Sheets. Aguarde 5 segundos e tente novamente.")
+        st.stop()
     for col in COLUNAS_USUARIOS:
         if col not in df_u.columns:
             df_u[col] = ""
@@ -661,13 +648,16 @@ def salvar_dados(df, aba):
     if df is None or df.empty:
         st.warning(f"⚠️ Operação de gravação bloqueada na aba '{aba}' para proteger os dados existentes contra sobrescrita vazia.")
         return
+    if aba == "usuarios" and len(df) < 2:
+        st.error("🚫 Gravação bloqueada na aba 'usuarios' para impedir perda de cadastros.")
+        return
     df_padronizado = padronizar_df_maiusculo(df)
     if df_padronizado.empty:
         return
     for tentativa in range(4):
         try:
             conn.update(worksheet=aba, data=df_padronizado)
-            _ler_planilha_com_cache.clear(aba)
+            _ler_planilha_com_cache.clear()
             return
         except Exception as e:
             if tentativa < 3:
@@ -675,11 +665,11 @@ def salvar_dados(df, aba):
                 time.sleep(espera)
             else:
                 raise e
+
 def limpar_cache_operacional():
-    for _aba_op in ("planejamento", "cargas", "bipes", "usuarios"):
-        _ler_planilha_com_cache.clear(_aba_op)
+    _ler_planilha_com_cache.clear()
     if "montar_html_usuarios_online" in globals():
-        montar_html_usuarios_online.clear()             
+        montar_html_usuarios_online.clear()
 
 def verificar_carga_100_concluida(df_carga_especifica):
     if df_carga_especifica.empty:
@@ -1571,21 +1561,24 @@ with st.sidebar:
         st.session_state.usuario_autenticado = False
         st.rerun()
     st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
-agora_ping = datetime.now()
-ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
-if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 600:
-    _ler_planilha_com_cache.clear("usuarios")
-    df_u_ping = carregar_dados("usuarios")
-    if not df_u_ping.empty and len(df_u_ping) >= 1 and "login" in df_u_ping.columns:
-        if "ultimo_acesso" not in df_u_ping.columns:
-            df_u_ping["ultimo_acesso"] = ""
-        df_u_ping["ultimo_acesso"] = df_u_ping["ultimo_acesso"].astype(object)
-        mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
-        if mask_ping.any():
-            df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
-            conn.update(worksheet="usuarios", data=padronizar_df_maiusculo(df_u_ping))
-            _ler_planilha_com_cache.clear("usuarios")
-    st.session_state.ultimo_ping_ts = agora_ping
+        agora_ping = datetime.now()
+        ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
+        if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 600:
+            try:
+                _ler_planilha_com_cache.clear()
+                df_u_ping = carregar_dados("usuarios")
+                if df_u_ping is not None and len(df_u_ping) >= 2 and "login" in df_u_ping.columns:
+                    if "ultimo_acesso" not in df_u_ping.columns:
+                        df_u_ping["ultimo_acesso"] = ""
+                    df_u_ping["ultimo_acesso"] = df_u_ping["ultimo_acesso"].astype(object)
+                    mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
+                    if mask_ping.any():
+                        df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
+                        conn.update(worksheet="usuarios", data=padronizar_df_maiusculo(df_u_ping))
+                        _ler_planilha_com_cache.clear()
+            except Exception:
+                pass
+            st.session_state.ultimo_ping_ts = agora_ping
     
 @st.cache_data(ttl=60, show_spinner=False)
 def montar_html_usuarios_online():
