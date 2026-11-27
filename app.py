@@ -3835,22 +3835,20 @@ elif aba == "🚚 Planejamento Logística":
 
         def _card_status_exp(icone, titulo, valor, bg, borda, cor_tit, cor_val):
             return (
-                f"<div style='background:{bg}; border:1px solid {borda}55; border-left:5px solid {borda}; "
-                f"border-radius:11px; padding:10px 14px; margin-bottom:8px; box-shadow:0 2px 5px rgba(0,0,0,0.03);'>"
-                f"<div style='font-size:0.74rem; font-weight:700; color:{cor_tit};'>{icone} {titulo}</div>"
-                f"<div style='font-size:1.55rem; font-weight:800; color:{cor_val}; margin-top:2px;'>{valor}</div>"
+                f"<div style='background:{bg}; border:1px solid {borda}55; border-left:4px solid {borda}; "
+                f"border-radius:10px; padding:8px 10px; margin-bottom:8px; box-shadow:0 2px 5px rgba(0,0,0,0.03);'>"
+                f"<div style='font-size:0.68rem; font-weight:700; color:{cor_tit}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>{icone} {titulo}</div>"
+                f"<div style='font-size:1.35rem; font-weight:800; color:{cor_val}; margin-top:2px;'>{valor}</div>"
                 f"</div>"
             )
 
-        k1, k2, k3 = st.columns(3, gap="medium")
+        k1, k2, k3, k4, k5, k6 = st.columns(6, gap="small")
         k1.markdown(_card_status_exp("⏳", "Aguardando Veículo", qtd_st1, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
         k2.markdown(_card_status_exp("🚚", "Veículo no Pátio", qtd_st2, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
         k3.markdown(_card_status_exp("📦", "Em Conferência", qtd_st3, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
-
-        k4, k5, k6 = st.columns(3, gap="medium")
         k4.markdown(_card_status_exp("✅", "Carregado / Liberado", qtd_st4, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
         k5.markdown(_card_status_exp("⚠️", "Atrasado / Ocorrência", qtd_st5, "#FEF2F2", "#DC2626", "#991B1B", "#7F1D1D"), unsafe_allow_html=True)
-        k6.markdown(_card_status_exp("📝", "Contratar Transportadora", qtd_contratar, "#FFF7ED", "#EA580C", "#9A3412", "#7C2D12"), unsafe_allow_html=True)
+        k6.markdown(_card_status_exp("📝", "Contratar Transp.", qtd_contratar, "#FFF7ED", "#EA580C", "#9A3412", "#7C2D12"), unsafe_allow_html=True)
              
         feriados_plan = obter_feriados_sistema()
         mapa_lt_plan = obter_mapa_lead_time()
