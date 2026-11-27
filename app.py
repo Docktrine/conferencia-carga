@@ -5717,8 +5717,7 @@ elif aba == "📦 Conferência dos Pedidos":
             df_carga_bipes["quantidade"] = pd.to_numeric(df_carga_bipes["quantidade"], errors="coerce").fillna(0).astype(int)
 
         if st.session_state.get("perfil_usuario") == "ADMIN" and not df_carga_bipes.empty:
-            c_adm_1, c_adm_2, _ = st.columns((1.4, 1.4, 2.2), vertical_alignment="center")
-            
+            c_adm_1, _ = st.columns((1.5, 3.5), vertical_alignment="center")
             buf_etq_xlsx = io.BytesIO()
             with pd.ExcelWriter(buf_etq_xlsx, engine="openpyxl") as writer:
                 df_carga_bipes.to_excel(writer, index=False, sheet_name="Etiquetas_Bipadas")
@@ -5730,77 +5729,29 @@ elif aba == "📦 Conferência dos Pedidos":
                 use_container_width=True
             )
 
-            if c_adm_2.button("🖨️ Imprimir Relatório", use_container_width=True, key=f"btn_print_etq_{carga_selecionada}"):
-                lacre_prt = obter_lacre_carga(df_carga_selecionada_atual) or "NÃO INFORMADO"
-                tot_vol_prt = int(df_carga_bipes["quantidade"].sum())
-                tot_etq_prt = len(df_carga_bipes)
-                agora_prt = datetime.now(FUSO_BR).strftime("%d/%m/%Y %H:%M")
+        if tem_permissao("👁️ Ver Conferência Completa (Supervisão)"):
+            renderizar_tabela_wms(df_carga_bipes, "conf_bipes_sup", use_container_width=True, hide_index=True, height=385)
+        else:
+            renderizar_tabela_wms(df_carga_bipes.head(10), "conf_bipes_op", use_container_width=True, hide_index=True)
+    st.subheader("Últimas Etiquetas Conferidas")
+    df_bipes_vis = carregar_dados("bipes")
+    if not df_bipes_vis.empty and "id_carga" in df_bipes_vis.columns:
+        df_carga_bipes = df_bipes_vis[df_bipes_vis["id_carga"] == carga_selecionada].copy()
+        if "quantidade" in df_carga_bipes.columns:
+            df_carga_bipes["quantidade"] = pd.to_numeric(df_carga_bipes["quantidade"], errors="coerce").fillna(0).astype(int)
 
-                linhas_html_prt = ""
-                for _, rb in df_carga_bipes.iterrows():
-                    linhas_html_prt += (
-                        f"<tr>"
-                        f"<td>{rb.get('data_hora', '')}</td>"
-                        f"<td><b>{rb.get('etiqueta', '')}</b></td>"
-                        f"<td>{rb.get('codigo_bipado', '')}</td>"
-                        f"<td>{rb.get('codigo_vinculado', '')}</td>"
-                        f"<td>{rb.get('tipo', '')}</td>"
-                        f"<td>{rb.get('lote', '')}</td>"
-                        f"<td style='text-align:right; font-weight:bold;'>{rb.get('quantidade', 0)}</td>"
-                        f"<td>{rb.get('conferente', '')}</td>"
-                        f"</tr>"
-                    )
-
-                html_impressao = f"""
-                <script>
-                    const w = window.open('', '_blank', 'width=950,height=700');
-                    w.document.write(`
-                        <html>
-                        <head>
-                            <title>Relatório de Etiquetas - Carga {carga_selecionada}</title>
-                            <style>
-                                body {{ font-family: Arial, sans-serif; color: #141A16; padding: 20px; }}
-                                .cab {{ border-bottom: 2px solid #1B5E20; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; }}
-                                h2 {{ margin: 0; color: #1B5E20; font-size: 18px; }}
-                                .resumo {{ background: #F4F7F3; border: 1px solid #C8D6C9; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; }}
-                                table {{ width: 100%; border-collapse: collapse; font-size: 11px; }}
-                                th {{ background: #1B5E20; color: #FFFFFF; padding: 6px; text-align: left; }}
-                                td {{ border-bottom: 1px solid #DDD; padding: 5px 6px; }}
-                                tr:nth-child(even) {{ background: #F9FBF9; }}
-                            </style>
-                        </head>
-                        <body>
-                            <div class="cab">
-                                <div>
-                                    <h2>WMS Grano — Relatório de Etiquetas Bipadas</h2>
-                                    <div style="font-size:12px; color:#555;">Emissão: {agora_prt} | Emitido por: {st.session_state.nome_usuario}</div>
-                                </div>
-                                <div style="text-align:right; font-size:13px;">
-                                    <b>Carga / Pedido:</b> {carga_selecionada}<br>
-                                    <b>Lacre:</b> {lacre_prt}
-                                </div>
-                            </div>
-                            <div class="resumo">
-                                <b>Total de Etiquetas Bipadas:</b> {tot_etq_prt} &nbsp;&nbsp;|&nbsp;&nbsp;
-                                <b>Volume Total Bipado:</b> {tot_vol_prt} un.
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data/Hora</th><th>Etiqueta</th><th>SKU Bipado</th><th>SKU Vinculado</th>
-                                        <th>Tipo</th><th>Lote</th><th style="text-align:right;">Qtd</th><th>Conferente</th>
-                                    </tr>
-                                </thead>
-                                <tbody>{linhas_html_prt}</tbody>
-                            </table>
-                            <script>window.onload = function() {{ window.print(); }};<\/script>
-                        </body>
-                        </html>
-                    `);
-                    w.document.close();
-                </script>
-                """
-                components.html(html_impressao, height=0, width=0)
+        if st.session_state.get("perfil_usuario") == "ADMIN" and not df_carga_bipes.empty:
+            c_adm_1, _ = st.columns((1.5, 3.5), vertical_alignment="center")
+            buf_etq_xlsx = io.BytesIO()
+            with pd.ExcelWriter(buf_etq_xlsx, engine="openpyxl") as writer:
+                df_carga_bipes.to_excel(writer, index=False, sheet_name="Etiquetas_Bipadas")
+            c_adm_1.download_button(
+                label="📥 Baixar Excel (.xlsx)",
+                data=buf_etq_xlsx.getvalue(),
+                file_name=f"etiquetas_bipadas_{carga_selecionada}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
 
         if tem_permissao("👁️ Ver Conferência Completa (Supervisão)"):
             renderizar_tabela_wms(df_carga_bipes, "conf_bipes_sup", use_container_width=True, hide_index=True, height=385)
