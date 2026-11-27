@@ -3875,17 +3875,15 @@ elif aba == "🚚 Planejamento Logística":
         st.markdown(
             """
             <style>
-            /* Diferenciação visual dos 3 expanders do Planejamento mesmo quando recolhidos */
-            div[data-testid="stExpander"]:has(summary:contains("Calculadora de Frete")) > details > summary,
-            div[data-testid="stExpander"]:nth-of-type(1) > details > summary {
+            div[data-testid="stElementContainer"]:has(.marc-azul) + div[data-testid="stExpander"] > details > summary {
                 background: linear-gradient(90deg, #E0F2FE 0%, #F8FAFC 100%) !important;
                 border-left: 6px solid #0284C7 !important;
             }
-            div[data-testid="stExpander"]:nth-of-type(2) > details > summary {
-                background: linear-gradient(90deg, #E8F5E9 0%, #F8FAF8 100%) !important;
+            div[data-testid="stElementContainer"]:has(.marc-verde) + div[data-testid="stExpander"] > details > summary {
+                background: linear-gradient(90deg, #DCFCE7 0%, #F8FAF8 100%) !important;
                 border-left: 6px solid #2E7D32 !important;
             }
-            div[data-testid="stExpander"]:nth-of-type(3) > details > summary {
+            div[data-testid="stElementContainer"]:has(.marc-ambar) + div[data-testid="stExpander"] > details > summary {
                 background: linear-gradient(90deg, #FEF3C7 0%, #FFFBEB 100%) !important;
                 border-left: 6px solid #D97706 !important;
             }
@@ -3896,67 +3894,82 @@ elif aba == "🚚 Planejamento Logística":
             </div>
             """,
             unsafe_allow_html=True
-        )        
-        with st.container(border=True):
-            st.markdown("**⚡ Atualização Rápida de Status**")
-            st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
-            opcoes_rapidas = {
-                f"Pedido {r['Nº Pedido']} — {r['Cliente']} (Atual: {r['Status']})": idx
-                for idx, r in df_exibir_plan.iterrows()
-            }
-            if opcoes_rapidas:
-                sel_rapida = st_c1.selectbox("Selecione o Pedido:", list(opcoes_rapidas.keys()), key="sel_status_rapido")
-                idx_rapido = opcoes_rapidas[sel_rapida]
-                status_atual_item = df_plan.at[idx_rapido, "Status"]
-                idx_st_padrao = STATUS_PLANEJAMENTO.index(status_atual_item) if status_atual_item in STATUS_PLANEJAMENTO else 0
-                novo_status_rapido = st_c2.selectbox("Novo Status:", STATUS_PLANEJAMENTO, index=idx_st_padrao, key="novo_status_rapido")
-                if st_c3.button("💾 Atualizar", type="primary", use_container_width=True, key="btn_status_rapido"):
-                    df_plan["Status"] = df_plan["Status"].astype(object)
-                    df_plan.at[idx_rapido, "Status"] = novo_status_rapido
-                    salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                    st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
-                    st.rerun()
+        )
 
-        if tem_permissao("🔔 Lançar Notificações"):
+        col_op_st, col_op_nt = st.columns(2, gap="medium")
+
+        with col_op_st:
             with st.container(border=True):
-                st.markdown("**🔔 Lançar Notificação no Pedido**")
-                opcoes_notif = {
-                    f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
+                st.markdown(
+                    "<div style='border-left:4px solid #2E7D32; padding-left:10px; margin-bottom:8px;'>"
+                    "<div style='font-size:0.86rem; font-weight:800; color:#141A16;'>⚡ Atualização Rápida de Status</div>"
+                    "<div style='font-size:0.74rem; color:#5A635C;'>Altere o andamento operacional em 1 clique</div>"
+                    "</div>",
+                    unsafe_allow_html=True
+                )
+                opcoes_rapidas = {
+                    f"Pedido {r['Nº Pedido']} — {r['Cliente']} ({r['Status']})": idx
                     for idx, r in df_exibir_plan.iterrows()
                 }
-                df_users_nt = carregar_usuarios_sistema()
-                df_users_ativos_nt = df_users_nt[df_users_nt["ativo"].apply(limpar_texto) == "SIM"]
-                opcoes_destino_nt = {"👥 TODOS OS USUÁRIOS": "TODOS"}
-                for _, u_nt in df_users_ativos_nt.iterrows():
-                    opcoes_destino_nt[f"👤 {limpar_texto(u_nt['nome'])} ({limpar_texto(u_nt['login'])})"] = limpar_texto(u_nt["login"])
+                if opcoes_rapidas:
+                    sel_rapida = st.selectbox("Selecione o Pedido:", list(opcoes_rapidas.keys()), key="sel_status_rapido")
+                    idx_rapido = opcoes_rapidas[sel_rapida]
+                    status_atual_item = df_plan.at[idx_rapido, "Status"]
+                    idx_st_padrao = STATUS_PLANEJAMENTO.index(status_atual_item) if status_atual_item in STATUS_PLANEJAMENTO else 0
+                    st_b1, st_b2 = st.columns((2, 1.1), vertical_alignment="bottom")
+                    novo_status_rapido = st_b1.selectbox("Novo Status:", STATUS_PLANEJAMENTO, index=idx_st_padrao, key="novo_status_rapido")
+                    if st_b2.button("💾 Atualizar", type="primary", use_container_width=True, key="btn_status_rapido"):
+                        df_plan["Status"] = df_plan["Status"].astype(object)
+                        df_plan.at[idx_rapido, "Status"] = novo_status_rapido
+                        salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                        st.toast(f"✅ Status do pedido '{df_plan.at[idx_rapido, 'Nº Pedido']}' alterado para {novo_status_rapido}!", icon="✅")
+                        st.rerun()
 
-                if opcoes_notif:
-                    with st.form("form_lancar_notif", clear_on_submit=True):
-                        nt_c1, nt_c2, nt_c3, nt_c4 = st.columns((2, 2, 3, 1), vertical_alignment="bottom")
-                        sel_nt_ped = nt_c1.selectbox("Selecione o Pedido:", list(opcoes_notif.keys()))
-                        sel_nt_dest = nt_c2.selectbox("Para quem?", list(opcoes_destino_nt.keys()))
-                        txt_nova_notif = nt_c3.text_input(
-                            "Mensagem da Notificação:",
-                            placeholder="Ex: PRIORIDADE DE CARREGAMENTO..."
-                        )
-                        btn_enviar_notif = nt_c4.form_submit_button("🔔 Notificar", type="primary", use_container_width=True)
+        with col_op_nt:
+            if tem_permissao("🔔 Lançar Notificações"):
+                with st.container(border=True):
+                    st.markdown(
+                        "<div style='border-left:4px solid #D97706; padding-left:10px; margin-bottom:8px;'>"
+                        "<div style='font-size:0.86rem; font-weight:800; color:#141A16;'>🔔 Lançar Notificação no Pedido</div>"
+                        "<div style='font-size:0.74rem; color:#5A635C;'>Envie alertas diretos para a equipe ou usuário</div>"
+                        "</div>",
+                        unsafe_allow_html=True
+                    )
+                    opcoes_notif = {
+                        f"Pedido {r['Nº Pedido']} — {r['Cliente']}": idx
+                        for idx, r in df_exibir_plan.iterrows()
+                    }
+                    df_users_nt = carregar_usuarios_sistema()
+                    df_users_ativos_nt = df_users_nt[df_users_nt["ativo"].apply(limpar_texto) == "SIM"]
+                    opcoes_destino_nt = {"👥 TODOS OS USUÁRIOS": "TODOS"}
+                    for _, u_nt in df_users_ativos_nt.iterrows():
+                        opcoes_destino_nt[f"👤 {limpar_texto(u_nt['nome'])} ({limpar_texto(u_nt['login'])})"] = limpar_texto(u_nt["login"])
 
-                        if btn_enviar_notif:
-                            if txt_nova_notif.strip():
-                                idx_nt_alvo = opcoes_notif[sel_nt_ped]
-                                dest_codigo = opcoes_destino_nt[sel_nt_dest]
-                                df_plan["Notificação"] = df_plan["Notificação"].fillna("").astype(object)
-                                nova_msg_nt = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} (DE: {st.session_state.nome_usuario})"
-                                atual_nt = str(df_plan.at[idx_nt_alvo, "Notificação"]).strip()
-                                if atual_nt and atual_nt.lower() not in ("nan", "none", "null"):
-                                    df_plan.at[idx_nt_alvo, "Notificação"] = f"{atual_nt} || {nova_msg_nt}"
+                    if opcoes_notif:
+                        with st.form("form_lancar_notif", clear_on_submit=True):
+                            nt_c1, nt_c2 = st.columns(2)
+                            sel_nt_ped = nt_c1.selectbox("Pedido:", list(opcoes_notif.keys()))
+                            sel_nt_dest = nt_c2.selectbox("Para quem?", list(opcoes_destino_nt.keys()))
+                            nt_m1, nt_m2 = st.columns((2.3, 1.0), vertical_alignment="bottom")
+                            txt_nova_notif = nt_m1.text_input("Mensagem:", placeholder="Ex: PRIORIDADE DE CARREGAMENTO...")
+                            btn_enviar_notif = nt_m2.form_submit_button("🔔 Notificar", type="primary", use_container_width=True)
+
+                            if btn_enviar_notif:
+                                if txt_nova_notif.strip():
+                                    idx_nt_alvo = opcoes_notif[sel_nt_ped]
+                                    dest_codigo = opcoes_destino_nt[sel_nt_dest]
+                                    df_plan["Notificação"] = df_plan["Notificação"].fillna("").astype(object)
+                                    nova_msg_nt = f"[PARA: {dest_codigo}] {txt_nova_notif.strip().upper()} (DE: {st.session_state.nome_usuario})"
+                                    atual_nt = str(df_plan.at[idx_nt_alvo, "Notificação"]).strip()
+                                    if atual_nt and atual_nt.lower() not in ("nan", "none", "null"):
+                                        df_plan.at[idx_nt_alvo, "Notificação"] = f"{atual_nt} || {nova_msg_nt}"
+                                    else:
+                                        df_plan.at[idx_nt_alvo, "Notificação"] = nova_msg_nt
+                                    salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                                    st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
+                                    st.rerun()
                                 else:
-                                    df_plan.at[idx_nt_alvo, "Notificação"] = nova_msg_nt
-                                salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                                st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
-                                st.rerun()
-                            else:
-                                st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+                                    st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
         st.markdown(
             """
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
@@ -3965,7 +3978,9 @@ elif aba == "🚚 Planejamento Logística":
             </div>
             """,
             unsafe_allow_html=True
-        )                                
+        )
+        
+        st.markdown('<div class="marc-azul"></div>', unsafe_allow_html=True)
         with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
             st.markdown(
                 """
@@ -4238,7 +4253,7 @@ elif aba == "🚚 Planejamento Logística":
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
     st.divider()
-
+    st.markdown('<div class="marc-verde"></div>', unsafe_allow_html=True)
     with st.expander("➕ Incluir Pedido Manualmente"):
         st.markdown(
             """
@@ -4375,7 +4390,8 @@ elif aba == "🚚 Planejamento Logística":
                     salvar_dados(df_plan_atualizado[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
-
+                    
+    st.markdown('<div class="marc-ambar"></div>', unsafe_allow_html=True)
     with st.expander("✏️ Editar ou Excluir Pedido", expanded=False):
         st.markdown(
             """
