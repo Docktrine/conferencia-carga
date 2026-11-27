@@ -6406,8 +6406,19 @@ elif aba == "✅ Auditoria e Ajustes":
                     st.caption("Nenhuma carga auditada encontrada neste intervalo de datas.")
 
 elif aba == "👥 Central de Usuários":
-    st.title("👥 Central de Usuários e Permissões")
-    st.caption("Administração de acessos, perfis operacionais, módulos liberados e travas de segurança da equipe.")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Segurança & Acessos • Equipe WMS</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Perfis • Módulos Liberados • Permissões Críticas</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">👥 Central de Usuários e Permissões</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Administração de acessos, perfis operacionais, módulos liberados e travas de segurança da equipe.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     st.markdown(
         """
         <style>
@@ -6442,11 +6453,25 @@ elif aba == "👥 Central de Usuários":
     
     df_usuarios = carregar_usuarios_sistema()
 
-    u_m1, u_m2, u_m3, u_m4 = st.columns(4)
-    u_m1.metric("👥 Total da Equipe", len(df_usuarios))
-    u_m2.metric("🟢 Usuários Ativos", int((df_usuarios["ativo"].apply(limpar_texto) == "SIM").sum()))
-    u_m3.metric("🔴 Bloqueados / Inativos", int((df_usuarios["ativo"].apply(limpar_texto) != "SIM").sum()))
-    u_m4.metric("🛡️ Administradores", int((df_usuarios["perfil"].apply(limpar_texto) == "ADMIN").sum()))
+    def _card_kpi_users(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+        return (
+            f"<div style='background:{bg}; border:1px solid {borda}44; border-left:5px solid {borda}; "
+            f"border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 3px 8px rgba(0,0,0,0.04);'>"
+            f"<div style='font-size:0.75rem; font-weight:700; color:{cor_tit}; letter-spacing:0.02em;'>{icone} {titulo}</div>"
+            f"<div style='font-size:1.75rem; font-weight:800; color:{cor_val}; margin-top:4px; line-height:1.1;'>{valor}</div>"
+            f"</div>"
+        )
+
+    qtd_u_tot = len(df_usuarios)
+    qtd_u_atv = int((df_usuarios["ativo"].apply(limpar_texto) == "SIM").sum())
+    qtd_u_blq = int((df_usuarios["ativo"].apply(limpar_texto) != "SIM").sum())
+    qtd_u_adm = int((df_usuarios["perfil"].apply(limpar_texto) == "ADMIN").sum())
+
+    u_m1, u_m2, u_m3, u_m4 = st.columns(4, gap="medium")
+    u_m1.markdown(_card_kpi_users("👥", "Total da Equipe", qtd_u_tot, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
+    u_m2.markdown(_card_kpi_users("🟢", "Usuários Ativos", qtd_u_atv, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+    u_m3.markdown(_card_kpi_users("🔴", "Bloqueados / Inativos", qtd_u_blq, "#FEF2F2" if qtd_u_blq > 0 else "#F8FAFC", "#DC2626" if qtd_u_blq > 0 else "#64748B", "#991B1B" if qtd_u_blq > 0 else "#475569", "#7F1D1D" if qtd_u_blq > 0 else "#1E293B"), unsafe_allow_html=True)
+    u_m4.markdown(_card_kpi_users("🛡️", "Administradores", qtd_u_adm, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
 
     st.divider()
 
