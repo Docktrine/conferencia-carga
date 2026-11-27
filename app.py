@@ -276,14 +276,13 @@ def contar_dias_uteis_entre(dt_inicio, dt_fim, feriados_set):
     d2 = dt_fim.date() if hasattr(dt_fim, "date") else dt_fim
     if d1 == d2:
         return 0
-    sinal = 1 if d2 > d1 else -1
-    atual, alvo = (d1, d2) if d2 > d1 else (d2, d1)
-    uteis = 0
-    while atual < alvo:
-        atual = (pd.Timestamp(atual) + pd.Timedelta(days=1)).date()
-        if atual.weekday() < 5 and atual not in feriados_set:
-            uteis += 1
-    return uteis * sinal
+    import numpy as np
+    fer_arr = np.array(sorted(list(feriados_set)), dtype="datetime64[D]") if feriados_set else np.array([], dtype="datetime64[D]")
+    s1 = np.datetime64(d1.isoformat(), "D")
+    s2 = np.datetime64(d2.isoformat(), "D")
+    if d2 > d1:
+        return int(np.busday_count(s1, s2, holidays=fer_arr))
+    return -int(np.busday_count(s2, s1, holidays=fer_arr))
 
 @st.cache_data(ttl=43200, show_spinner=False)
 def obter_mapa_lead_time():
@@ -2980,7 +2979,7 @@ elif aba == "📊 Análise de Pedidos":
 
             chave_comp = f"{st.session_state.get('bi_assinatura_cols')}|{col_ped_bi}|{col_filial_bi}|{col_cli_bi}|{col_uf_bi}|{col_cid_bi}|{col_dt_cria}|{col_dt_ent}|{col_val_bi}|{col_vol_bi}|{col_nf_bi}"
 
-            if st.session_state.get("bi_chave_compilada") != chave_comp:
+            if st.button("🚀 Processar e Analisar Carteira do BI", type="primary", use_container_width=True, key="btn_processar_bi_agora"):
                 idx_map = {c: i for i, c in enumerate(cols_bi)}
                 mapa_cols_usar = {
                     "ped": idx_map.get(col_ped_bi, -1),
@@ -3081,57 +3080,61 @@ elif aba == "📊 Análise de Pedidos":
                 })
                 del df_raw_min
 
-                df_ag["nf"] = df_ag["nf"].where(~df_ag["nf"].str.upper().isin(["NAN", "NONE", "NULL", "-", "<NA>"]), "")
+                for col_txt_ag in ("filial", "cliente", "uf", "cidade", "dc_raw", "de_raw", "nf"):
+                    df_ag[col_txt_ag] = df_ag[col_txt_ag].where(~df_ag[col_txt_ag].str.upper().isin(["NAN", "NONE", "NULL", "-", "<NA>"]), "")
 
-                def _first_val(s):
-                    for v in s:
-                        if v and v.upper() not in ("NAN", "NONE", "NULL", "<NA>"):
-                            return v
-                    return ""
+                # Agregação 100% nativa em C (sem funções Python lentas por grupo)
+                df_somas = df_ag.groupby("ped_k", sort=False, as_index=False).agg(
+                    ped_exib=("ped_exib", "first"),
+                    filial=("filial", "max"),
+                    cliente=("cliente", "max"),
+                    uf=("uf", "max"),
+                    cidade=("cidade", "max"),
+                    dc_raw=("dc_raw", "max"),
+                    de_raw=("de_raw", "max"),
+                    val=("val", "sum"),
+                    vol=("vol", "sum"),
+                    qtd=("qtd", "sum")
+                )
+                df_nfs_grp = (
+                    df_ag[df_ag["nf"] != ""][["ped_k", "nf"]]
+                    .drop_duplicates()
+                    .groupby("ped_k", sort=False)["nf"]
+                    .apply(list)
+                    .reset_index()
+                )
+                df_grp = pd.merge(df_somas, df_nfs_grp, on="ped_k", how="left")
+                del df_ag, df_somas, df_nfs_grp
 
-                def _uniq_nfs(s):
-                    out = list()
-                    for v in s:
-                        if v and v not in out:
-                            out.append(v)
-                    return out
-
-                df_grp = df_ag.groupby("ped_k", sort=False, as_index=False).agg({
-                    "ped_exib": "first",
-                    "filial": _first_val,
-                    "cliente": _first_val,
-                    "uf": _first_val,
-                    "cidade": _first_val,
-                    "dc_raw": _first_val,
-                    "de_raw": _first_val,
-                    "val": "sum",
-                    "vol": "sum",
-                    "qtd": "sum",
-                    "nf": _uniq_nfs
-                })
-                del df_ag
+                df_grp["dt_c_vec"] = pd.to_datetime(df_grp["dc_raw"], dayfirst=True, errors="coerce")
+                df_grp["dt_e_vec"] = pd.to_datetime(df_grp["de_raw"], dayfirst=True, errors="coerce")
 
                 pedidos_compilados = {}
                 ordem_pedidos_bi = list()
-                for _, rg in df_grp.iterrows():
-                    pk = rg["ped_k"]
+                for rg in df_grp.itertuples(index=False):
+                    pk = rg.ped_k
                     ordem_pedidos_bi.append(pk)
                     pedidos_compilados[pk] = {
-                        "ped_exib": rg["ped_exib"],
-                        "filial": rg["filial"],
-                        "cliente": rg["cliente"],
-                        "uf": rg["uf"],
-                        "cidade": rg["cidade"],
-                        "valor_num": float(rg["val"]),
-                        "vol_num": int(round(float(rg["vol"]))),
-                        "qtd_itens": int(rg["qtd"]),
-                        "nfs": rg["nf"],
-                        "dt_c": _parse_data_bi_segura(rg["dc_raw"]),
-                        "dt_e": _parse_data_bi_segura(rg["de_raw"])
+                        "ped_exib": rg.ped_exib,
+                        "filial": rg.filial,
+                        "cliente": rg.cliente,
+                        "uf": rg.uf,
+                        "cidade": rg.cidade,
+                        "valor_num": float(rg.val),
+                        "vol_num": int(round(float(rg.vol))),
+                        "qtd_itens": int(rg.qtd),
+                        "nfs": rg.nf if isinstance(rg.nf, list) else list(),
+                        "dt_c": rg.dt_c_vec,
+                        "dt_e": rg.dt_e_vec
                     }
+                del df_grp
 
                 st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas_v)
                 st.session_state["bi_chave_compilada"] = chave_comp
+
+            if st.session_state.get("bi_compilado_cache") is None:
+                st.info("👆 Confirme as colunas acima e clique em **🚀 Processar e Analisar Carteira do BI**.")
+                st.stop()
 
             pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas = st.session_state["bi_compilado_cache"]
 
