@@ -2269,32 +2269,18 @@ if aba == "🏠 Início":
                     st.rerun()
 
     # 2. Pulso Rápido da Operação Hoje (4 Cartões)
-    prog_hoje, no_patio_hoje, conferindo_hoje, carreg_hoje, pend_auditoria = 0, 0, 0, 0, 0
-    cargas_validadas_ini = set()
+    prog_hoje, no_patio_hoje, conferindo_hoje, carreg_hoje, atrasados_hoje = 0, 0, 0, 0, 0
 
     if not df_plan_ini.empty:
-        if "validado" in df_plan_ini.columns:
-            for _, r_v in df_plan_ini.iterrows():
-                val_s = str(r_v.get("validado", "")).strip()
-                if val_s and val_s.lower() not in ("nan", "none", "null", "nao", "não"):
-                    for c_k in ("Nº Pedido", "id_carga"):
-                        v_k = limpar_texto(r_v.get(c_k, ""))
-                        if v_k:
-                            cargas_validadas_ini.add(v_k)
-
         df_p_ativos_ini = df_plan_ini[df_plan_ini["Nº Pedido"].astype(str).str.strip() != ""].copy()
         if not df_p_ativos_ini.empty:
             datas_ini = df_p_ativos_ini["Data"].apply(formatar_data_br_str)
             status_ini = df_p_ativos_ini["Status"].apply(limpar_texto)
             prog_hoje = int((datas_ini == hoje_str_ini).sum())
             no_patio_hoje = int((status_ini == limpar_texto("🚛 Veículo no Pátio")).sum())
-            conferindo_hoje = int((status_ini == limpar_texto("🔍 Em Conferência")).sum())
+            conferindo_hoje = int((status_ini == limpar_texto("📦 Em Conferência")).sum())
             carreg_hoje = int(((datas_ini == hoje_str_ini) & (status_ini == limpar_texto("✅ Carregado / Liberado"))).sum())
-
-    if not df_cargas_ini.empty and "id_carga" in df_cargas_ini.columns:
-        for cid_i, grp_i in df_cargas_ini.groupby("id_carga", sort=False):
-            if verificar_carga_100_concluida(grp_i) and limpar_texto(cid_i) not in cargas_validadas_ini:
-                pend_auditoria += 1
+            atrasados_hoje = int(((datas_ini == hoje_str_ini) & (status_ini == limpar_texto("⚠️ Atrasado / Ocorrência"))).sum())
 
     def _card_kpi_inicio(icone, titulo, valor, bg, borda, cor_tit, cor_val):
         return (
@@ -2308,9 +2294,9 @@ if aba == "🏠 Início":
     c_kpi1, c_kpi2, c_kpi3, c_kpi4, c_kpi5 = st.columns(5, gap="small")
     c_kpi1.markdown(_card_kpi_inicio("📅", "Programados Hoje", prog_hoje, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
     c_kpi2.markdown(_card_kpi_inicio("🚛", "No Pátio", no_patio_hoje, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
-    c_kpi3.markdown(_card_kpi_inicio("🔍", "Conferindo", conferindo_hoje, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
+    c_kpi3.markdown(_card_kpi_inicio("📦", "Conferindo", conferindo_hoje, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
     c_kpi4.markdown(_card_kpi_inicio("✅", "Carregados Hoje", carreg_hoje, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
-    c_kpi5.markdown(_card_kpi_inicio("🛡️", "Aguardando Auditoria", pend_auditoria, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
+    c_kpi5.markdown(_card_kpi_inicio("⚠️", "Atrasados", atrasados_hoje, "#FEF2F2", "#DC2626", "#991B1B", "#7F1D1D"), unsafe_allow_html=True)
 
     st.divider()
 
@@ -2906,7 +2892,6 @@ elif aba == "📊 Análise de Pedidos":
                                 if col_req_tz not in df_plan_tz.columns:
                                     df_plan_tz[col_req_tz] = ""
 
-                            matches_tz = list()
                             matches_tz = list()
                             for idx_ptz, row_ptz in df_plan_tz.iterrows():
                                 obs_txt_tz = str(row_ptz.get("Observação", "")).strip()
@@ -5877,17 +5862,6 @@ elif aba == "✅ Auditoria e Ajustes":
     st.markdown(
         """
         <style>
-        /* Cards modernos para Expanders e Uploader na Auditoria */
-        div[data-testid="stExpander"] {
-            background-color: rgba(255, 255, 255, 0.45) !important;
-            border: 1px solid rgba(20, 26, 22, 0.14) !important;
-            border-radius: 14px !important;
-            box-shadow: 0 4px 14px rgba(20, 26, 22, 0.04) !important;
-            margin-bottom: 8px !important;
-        }
-        div[data-testid="stExpander"]:hover {
-            border-color: rgba(27, 94, 32, 0.45) !important;
-        }
         section[data-testid="stFileUploaderDropzone"] {
             background-color: rgba(255, 255, 255, 0.45) !important;
             border: 1.5px dashed rgba(27, 94, 32, 0.45) !important;
