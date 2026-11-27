@@ -1561,21 +1561,26 @@ with st.sidebar:
         st.session_state.usuario_autenticado = False
         st.rerun()
     st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
-        agora_ping = datetime.now()
-        ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
-        if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 600:
-            try:
-                _ler_planilha_com_cache.clear()
-                df_u_ping = carregar_dados("usuarios")
-                if df_u_ping is not None and len(df_u_ping) >= 2 and "login" in df_u_ping.columns:
-                    if "ultimo_acesso" not in df_u_ping.columns:
-                        df_u_ping["ultimo_acesso"] = ""
-                    df_u_ping["ultimo_acesso"] = df_u_ping["ultimo_acesso"].astype(object)
-                    mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
-                    if mask_ping.any():
-                        df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
-                        conn.update(worksheet="usuarios", data=padronizar_df_maiusculo(df_u_ping))
-                        _ler_planilha_com_cache.clear()
+    st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)
+    agora_ping = datetime.now()
+    ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
+    if ultimo_ping_sessao is None or (agora_ping - ultimo_ping_sessao).total_seconds() >= 600:
+        try:
+            _ler_planilha_com_cache.clear()
+            df_u_ping = carregar_dados("usuarios")
+            if df_u_ping is not None and len(df_u_ping) >= 2 and "login" in df_u_ping.columns:
+                if "ultimo_acesso" not in df_u_ping.columns:
+                    df_u_ping["ultimo_acesso"] = ""
+                df_u_ping["ultimo_acesso"] = df_u_ping["ultimo_acesso"].astype(object)
+                mask_ping = df_u_ping["login"].apply(limpar_texto) == st.session_state.login_usuario
+                if mask_ping.any():
+                    df_u_ping.loc[mask_ping, "ultimo_acesso"] = agora_ping.strftime("%Y-%m-%d %H:%M:%S")
+                    conn.update(worksheet="usuarios", data=padronizar_df_maiusculo(df_u_ping))
+                    _ler_planilha_com_cache.clear()
+        except Exception:
+            pass
+        st.session_state.ultimo_ping_ts = agora_ping
+
             except Exception:
                 pass
             st.session_state.ultimo_ping_ts = agora_ping
@@ -5702,30 +5707,6 @@ elif aba == "📦 Conferência dos Pedidos":
                 st.warning(f"↩️ Etiqueta '{ult_etiq}' ({ult_qtd}x) foi estornada e liberada novamente!")
                 st.rerun()
 
-    st.subheader("Últimas Etiquetas Conferidas")
-    df_bipes_vis = carregar_dados("bipes")
-    if not df_bipes_vis.empty and "id_carga" in df_bipes_vis.columns:
-        df_carga_bipes = df_bipes_vis[df_bipes_vis["id_carga"] == carga_selecionada].copy()
-        if "quantidade" in df_carga_bipes.columns:
-            df_carga_bipes["quantidade"] = pd.to_numeric(df_carga_bipes["quantidade"], errors="coerce").fillna(0).astype(int)
-
-        if st.session_state.get("perfil_usuario") == "ADMIN" and not df_carga_bipes.empty:
-            c_adm_1, _ = st.columns((1.5, 3.5), vertical_alignment="center")
-            buf_etq_xlsx = io.BytesIO()
-            with pd.ExcelWriter(buf_etq_xlsx, engine="openpyxl") as writer:
-                df_carga_bipes.to_excel(writer, index=False, sheet_name="Etiquetas_Bipadas")
-            c_adm_1.download_button(
-                label="📥 Baixar Excel (.xlsx)",
-                data=buf_etq_xlsx.getvalue(),
-                file_name=f"etiquetas_bipadas_{carga_selecionada}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
-
-        if tem_permissao("👁️ Ver Conferência Completa (Supervisão)"):
-            renderizar_tabela_wms(df_carga_bipes, "conf_bipes_sup", use_container_width=True, hide_index=True, height=385)
-        else:
-            renderizar_tabela_wms(df_carga_bipes.head(10), "conf_bipes_op", use_container_width=True, hide_index=True)
     st.subheader("Últimas Etiquetas Conferidas")
     df_bipes_vis = carregar_dados("bipes")
     if not df_bipes_vis.empty and "id_carga" in df_bipes_vis.columns:
