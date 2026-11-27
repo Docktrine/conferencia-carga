@@ -4158,8 +4158,8 @@ elif aba == "🚚 Planejamento Logística":
 
                     if opcoes_rapidas and total_frete_rota > 0:
                         with st.container(border=True):
-                            ca_p1, ca_p2 = st.columns((3.2, 1.1), vertical_alignment="bottom")
-                            ped_aplicar_fr = ca_p1.selectbox("📌 Vincular e gravar este frete calculado no pedido:", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
+                            ca_p1, ca_p2, _ = st.columns((2.2, 1.0, 2.2), vertical_alignment="bottom")
+                            ped_aplicar_fr = ca_p1.selectbox("📌 Vincular e gravar este frete no pedido:", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
                             if ca_p2.button("💾 Gravar no Pedido", type="primary", use_container_width=True, key="btn_gravar_frete_ped"):
                                 idx_fr_alvo = opcoes_rapidas[ped_aplicar_fr]
                                 df_plan["Valor de Frete"] = df_plan["Valor de Frete"].astype(object)
