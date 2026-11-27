@@ -3630,27 +3630,27 @@ elif aba == "🚚 Planejamento Logística":
 
     k_top1, k_top2, k_top3 = st.columns(3, gap="medium")
     k_top1.markdown(
-        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:6px solid #1B5E20; border-radius:12px; padding:12px 18px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
-        f"<div style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#4A544D; font-weight:700;'>📋 Total Programado</div>"
-        f"<div style='font-size:1.75rem; font-weight:800; color:#141A16; margin-top:2px;'>{total_prog_kpi} <span style='font-size:0.85rem; font-weight:600; color:#5A635C;'>pedidos</span></div>"
+        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:5px solid #1B5E20; border-radius:10px; padding:8px 14px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
+        f"<div style='font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:#4A544D; font-weight:700;'>📋 Total Programado</div>"
+        f"<div style='font-size:1.38rem; font-weight:800; color:#141A16; margin-top:1px;'>{total_prog_kpi} <span style='font-size:0.78rem; font-weight:600; color:#5A635C;'>pedidos</span></div>"
         f"</div>",
         unsafe_allow_html=True
     )
     k_top2.markdown(
-        f"<div style='background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:12px 18px; box-shadow:0 4px 12px rgba(20,26,22,0.12);'>"
-        f"<div style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#A5D6A7; font-weight:700;'>💰 Valor Total dos Pedidos</div>"
-        f"<div style='font-size:1.75rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{fmt_pedidos_kpi}</div>"
+        f"<div style='background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:5px solid #4CAF50; border-radius:10px; padding:8px 14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);'>"
+        f"<div style='font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:#A5D6A7; font-weight:700;'>💰 Valor Total dos Pedidos</div>"
+        f"<div style='font-size:1.38rem; font-weight:800; color:#FFFFFF; margin-top:1px;'>{fmt_pedidos_kpi}</div>"
         f"</div>",
         unsafe_allow_html=True
     )
     perc_fr_str = f"{perc_frete_kpi:.1f}".replace(".", ",")
     k_top3.markdown(
-        f"<div style='background:#FAF8F5; border:1px solid rgba(2,132,199,0.35); border-left:6px solid #0284C7; border-radius:12px; padding:12px 18px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
+        f"<div style='background:#FAF8F5; border:1px solid rgba(2,132,199,0.35); border-left:5px solid #0284C7; border-radius:10px; padding:8px 14px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
         f"<div style='display:flex; justify-content:space-between; align-items:center;'>"
-        f"<span style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#0369A1; font-weight:700;'>🚛 Valor Total de Frete</span>"
-        f"<span style='background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:12px;'>{perc_fr_str}% s/ pedidos</span>"
+        f"<span style='font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:#0369A1; font-weight:700;'>🚛 Valor Total de Frete</span>"
+        f"<span style='background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; font-size:0.68rem; font-weight:800; padding:1px 7px; border-radius:10px;'>{perc_fr_str}% s/ pedidos</span>"
         f"</div>"
-        f"<div style='font-size:1.75rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{fmt_frete_kpi}</div>"
+        f"<div style='font-size:1.38rem; font-weight:800; color:#0C4A6E; margin-top:1px;'>{fmt_frete_kpi}</div>"
         f"</div>",
         unsafe_allow_html=True
     )
