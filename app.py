@@ -5825,8 +5825,19 @@ elif aba == "📈 Painel de Acompanhamento":
         st.dataframe(sobras[["codigo", "produto", "pedido_real", "bipado", "Qtd Excedente"]], use_container_width=True, hide_index=True)
 
 elif aba == "✅ Auditoria e Ajustes":
-    st.title("✅ Validação Final: Pedido x Bipado x Cliente x Lotes")
-    st.caption("Conferência cruzada entre pedido planejado, etiquetas bipadas, lotes e retorno do cliente.")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Auditoria & Qualidade • Fechamento de Carga</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Pedido • Bipagem • Lotes • Retorno Cliente</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">✅ Validação Final: Pedido x Bipado x Cliente x Lotes</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Conferência cruzada entre pedido planejado, etiquetas bipadas, lotes e retorno do cliente.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     st.markdown(
         """
         <style>
@@ -5946,7 +5957,7 @@ elif aba == "✅ Auditoria e Ajustes":
         st.success("🎉 Todas as cargas cadastradas já foram validadas!")
         st.stop()
 
-    col_aud_esq, col_aud_dir = st.columns([1.15, 1.35], gap="medium")
+    col_aud_esq, col_aud_dir = st.columns([1.15, 1.35], gap="medium", vertical_alignment="center")
     with col_aud_esq:
         carga_selecionada = st.selectbox("Selecione a Carga para Auditar:", cargas_disponiveis_aud)  
 
@@ -6172,15 +6183,34 @@ elif aba == "✅ Auditoria e Ajustes":
         ok_skus = len(df_res[df_res["Status Validação"].str.contains("✅")])
         erro_skus = total_skus - ok_skus
 
-        m1, m2, m3 = st.columns(3)
-        m1.metric("Total de Produtos", total_skus)
-        m2.metric("Produtos 100% Corretos", ok_skus)
-        m3.metric("Produtos com Divergência", erro_skus)
+        def _card_kpi_aud(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+            return (
+                f"<div style='background:{bg}; border:1px solid {borda}44; border-left:5px solid {borda}; "
+                f"border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 3px 8px rgba(0,0,0,0.04);'>"
+                f"<div style='font-size:0.75rem; font-weight:700; color:{cor_tit}; letter-spacing:0.02em;'>{icone} {titulo}</div>"
+                f"<div style='font-size:1.75rem; font-weight:800; color:{cor_val}; margin-top:4px; line-height:1.1;'>{valor}</div>"
+                f"</div>"
+            )
+
+        m1, m2, m3 = st.columns(3, gap="medium")
+        m1.markdown(_card_kpi_aud("📦", "Total de Produtos", total_skus, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
+        m2.markdown(_card_kpi_aud("✅", "Produtos 100% Corretos", ok_skus, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+        m3.markdown(_card_kpi_aud("🚨" if erro_skus > 0 else "🎉", "Produtos com Divergência", erro_skus, "#FEF2F2" if erro_skus > 0 else "#F8FAFC", "#DC2626" if erro_skus > 0 else "#64748B", "#991B1B" if erro_skus > 0 else "#475569", "#7F1D1D" if erro_skus > 0 else "#1E293B"), unsafe_allow_html=True)
 
         apenas_erros = st.checkbox("Mostrar apenas itens com divergência")
         df_exibir = df_res[~df_res["Status Validação"].str.contains("✅")] if apenas_erros else df_res
 
-        st.dataframe(df_exibir, use_container_width=True, hide_index=True)
+        def _cor_linha_aud(row_a):
+            st_a = str(row_a.get("Status Validação", ""))
+            if "✅" in st_a:
+                bg_a = "#DCFCE7"
+            elif "⚠️" in st_a:
+                bg_a = "#FEF9C3"
+            else:
+                bg_a = "#FEE2E2"
+            return [f"background-color: {bg_a}; color: #111827;" for _ in row_a]
+
+        st.dataframe(df_exibir.style.apply(_cor_linha_aud, axis=1), use_container_width=True, hide_index=True)
 
         df_bipes_rel = carregar_dados("bipes")
         df_bipes_carga = df_bipes_rel[df_bipes_rel["id_carga"] == carga_selecionada] if not df_bipes_rel.empty else pd.DataFrame()
