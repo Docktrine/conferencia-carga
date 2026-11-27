@@ -3326,11 +3326,30 @@ elif aba == "📊 Análise de Pedidos":
                         (df_res_bi["Status SLA"].isin(filtro_sla)) &
                         (df_res_bi["Situação WMS"].isin(filtro_wms_bi))
                     ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()
-
+   
+                 total_filtrados_bi = len(df_exib_bi)
+                 tam_pag_bi = 250
+                 if total_filtrados_bi > tam_pag_bi:
+                     qtd_pags_bi = (total_filtrados_bi + tam_pag_bi - 1) // tam_pag_bi
+                     c_pg1, c_pg2 = st.columns((1.5, 3.5), vertical_alignment="center")
+                     pag_atual_bi = c_pg1.number_input(
+                         f"Página (1 a {qtd_pags_bi}):",
+                         min_value=1,
+                         max_value=qtd_pags_bi,
+                         value=1,
+                         step=1,
+                         key="pag_bi_editor"
+                     )
+                     ini_bi = (pag_atual_bi - 1) * tam_pag_bi
+                     fim_bi = min(ini_bi + tam_pag_bi, total_filtrados_bi)
+                     c_pg2.caption(f"⚡ Exibindo pedidos **{ini_bi + 1} a {fim_bi}** de **{total_filtrados_bi}** filtrados (para manter a tabela ultrarrápida).")
+                     df_pagina_bi = df_exib_bi.iloc[ini_bi:fim_bi].copy()
+                 else:
+                     df_pagina_bi = df_exib_bi
                     st.caption("☑️ **Marque a caixinha `Programar` na primeira coluna** nos pedidos que deseja enviar ao Planejamento Logística:")
                     cols_readonly_bi = [c for c in df_exib_bi.columns if c != "Programar"]
                     df_editado_bi = st.data_editor(
-                        df_exib_bi,
+                        df_pagina_bi,
                         key="editor_flags_analise_bi",
                         use_container_width=True,
                         hide_index=True,
