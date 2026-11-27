@@ -2709,8 +2709,49 @@ if aba == "🏠 Início":
     )
     
 elif aba == "📊 Análise de Pedidos":
-    st.title("📊 Análise de Pedidos & Lead Time")
-    st.caption("Cruzamento da carteira do BI com a tabela de trânsito (aba 'lead time') para definição de janela de programação, vínculo de NF-e e envio ao Planejamento.")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Inteligência & Integração</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Portal Trizy • Carteira BI • Lead Time</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">📊 Análise de Pedidos & Lead Time</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Importe os agendamentos do Trizy ou a carteira do BI para cruzar prazos, calcular fretes e programar cargas.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    col_card_tz, col_card_bi = st.columns(2, gap="medium")
+
+    with col_card_tz:
+        st.markdown(
+            """
+            <div style="background:#FAF8F5; border:1px solid rgba(217,119,6,0.35); border-left:5px solid #D97706; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.88rem; font-weight:800; color:#78350F;">🚚 1. Portal Trizy (Agendamentos)</span>
+                    <span style="background:#FEF3C7; color:#92400E; font-size:0.65rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Atualizar Datas</span>
+                </div>
+                <div style="font-size:0.76rem; color:#5A635C; margin-top:3px;">Cruza o ID/Demanda com a Observação do Planejamento e atualiza datas de entrega.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col_card_bi:
+        st.markdown(
+            """
+            <div style="background:#FAF8F5; border:1px solid rgba(27,94,32,0.35); border-left:5px solid #1B5E20; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.88rem; font-weight:800; color:#141A16;">📊 2. Planilha de Pedidos do BI</span>
+                    <span style="background:#DCFCE7; color:#166534; font-size:0.65rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Carteira & Lead Time</span>
+                </div>
+                <div style="font-size:0.76rem; color:#5A635C; margin-top:3px;">Compila SKUs por pedido, calcula data limite de carregamento e envia ao WMS.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     def achar_col_bi(lista_cols, palavras_chave):
         for p in palavras_chave:
@@ -2750,7 +2791,7 @@ elif aba == "📊 Análise de Pedidos":
             return True
         padrao = r"(?<!\d)" + re.escape(p_limpo) + r"(?!\d)"
         return bool(re.search(padrao, c_limpo))
-    with st.expander("🚚 Importar Agendamentos do Portal Trizy (Excel .xls / .xlsx)", expanded=False):
+    with st.expander("🚚 1. Abrir Importador de Agendamentos do Portal Trizy (.xls / .xlsx)", expanded=False):
         st.caption("Suba a planilha exportada do Trizy, escolha a aba e as colunas correspondentes. O sistema cruza o ID/Demanda com a coluna Observação do planejamento e atualiza a Data da entrega.")
         arq_trizy = st.file_uploader("📂 Planilha do Portal Trizy (.xls ou .xlsx):", type=("xls", "xlsx"), key="up_trizy_analise")
         if arq_trizy is not None:
@@ -2898,7 +2939,7 @@ elif aba == "📊 Análise de Pedidos":
                 return pd.NaT
         return pd.to_datetime(s, dayfirst=True, errors="coerce")
 
-    with st.expander("📂 Importar Planilha de Pedidos do BI (Excel .xls / .xlsx / .csv)", expanded=False):
+    with st.expander("📊 2. Abrir Importador de Planilha de Pedidos do BI (.xls / .xlsx / .csv)", expanded=False):
         st.caption("Suba a carteira exportada do BI para compilar os SKUs por pedido, cruzar com o Lead Time e flagar os pedidos para o Planejamento.")
         c_up_bi, c_cfg_bi = st.columns((3, 1))
         with c_up_bi:
