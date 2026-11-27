@@ -2256,11 +2256,20 @@ if aba == "🏠 Início":
             if verificar_carga_100_concluida(grp_i) and limpar_texto(cid_i) not in cargas_validadas_ini:
                 pend_auditoria += 1
 
-    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
-    c_kpi1.metric("📅 Programados Hoje", prog_hoje)
-    c_kpi2.metric("🚚 Pátio / Conferindo", patio_conf_hoje)
-    c_kpi3.metric("✅ Carregados Hoje", carreg_hoje)
-    c_kpi4.metric("🛡️ Aguardando Auditoria", pend_auditoria)
+    def _card_kpi_inicio(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+        return (
+            f"<div style='background:{bg}; border:1px solid {borda}44; border-left:5px solid {borda}; "
+            f"border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 3px 8px rgba(0,0,0,0.04);'>"
+            f"<div style='font-size:0.75rem; font-weight:700; color:{cor_tit}; letter-spacing:0.02em;'>{icone} {titulo}</div>"
+            f"<div style='font-size:1.75rem; font-weight:800; color:{cor_val}; margin-top:4px; line-height:1.1;'>{valor}</div>"
+            f"</div>"
+        )
+
+    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4, gap="medium")
+    c_kpi1.markdown(_card_kpi_inicio("📅", "Programados Hoje", prog_hoje, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
+    c_kpi2.markdown(_card_kpi_inicio("🚚", "Pátio / Conferindo", patio_conf_hoje, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
+    c_kpi3.markdown(_card_kpi_inicio("✅", "Carregados Hoje", carreg_hoje, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+    c_kpi4.markdown(_card_kpi_inicio("🛡️", "Aguardando Auditoria", pend_auditoria, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
 
     st.divider()
 
