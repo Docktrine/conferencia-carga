@@ -3107,7 +3107,7 @@ elif aba == "📊 Análise de Pedidos":
                             idx_r += 1
                             _processar_tupla_bi(r_vals, idx_r)
 
-                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, cont_linhas)
+                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, cont_linhas[0])
                 st.session_state["bi_chave_compilada"] = chave_comp
 
             pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas = st.session_state["bi_compilado_cache"]
