@@ -3364,7 +3364,6 @@ elif aba == "📊 Análise de Pedidos":
                     cols_readonly_bi = [c for c in df_exib_bi.columns if c != "Programar"]
                     df_editado_bi = st.data_editor(
                         df_pagina_bi.style.apply(_cor_linha_sla_bi, axis=1),
-                        df_pagina_bi,
                         key="editor_flags_analise_bi",
                         use_container_width=True,
                         hide_index=True,
