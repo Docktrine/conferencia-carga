@@ -3648,7 +3648,7 @@ elif aba == "🚚 Planejamento Logística":
         f"<div style='background:#FAF8F5; border:1px solid rgba(2,132,199,0.35); border-left:6px solid #0284C7; border-radius:12px; padding:12px 18px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
         f"<div style='display:flex; justify-content:space-between; align-items:center;'>"
         f"<span style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#0369A1; font-weight:700;'>🚛 Valor Total de Frete</span>"
-        f"<span style='background:#E0F2FE; color:#0369A1; border:1px solid #7DD3FC; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:12px;'>{perc_fr_str}% s/ pedidos</span>"
+        f"<span style='background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:12px;'>{perc_fr_str}% s/ pedidos</span>"
         f"</div>"
         f"<div style='font-size:1.75rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{fmt_frete_kpi}</div>"
         f"</div>",
