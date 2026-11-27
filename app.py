@@ -3933,7 +3933,11 @@ elif aba == "🚚 Planejamento Logística":
                             else:
                                 st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
         with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
-            st.caption("Selecione a **Filial de Origem**, o **Tipo de Veículo** e adicione cada parada até o destino final. Você pode editar KM ou valores de desvio diretamente na tabela.")
+            c_cap_fr, c_ref_fr = st.columns((4.2, 1.0), vertical_alignment="center")
+            c_cap_fr.markdown(
+                "<div style='font-size:0.82rem; color:#3E4740;'>Monte o itinerário completo (ex: <b>Friozem</b> ➔ <b>Fábrica</b> ➔ <b>São Paulo/SP</b>). O sistema identifica automaticamente a filial de origem de cada trecho e permite editar desvios na tabela.</div>",
+                unsafe_allow_html=True
+            )
 
             @st.cache_data(ttl=43200, show_spinner=False)
             def carregar_tabela_frete_oficial():
@@ -3978,6 +3982,10 @@ elif aba == "🚚 Planejamento Logística":
                         }
                 return mapa_tf, sorted(list(filiais_set))
 
+            if c_ref_fr.button("🔄 Atualizar Tabela", use_container_width=True, key="btn_reload_tab_frete"):
+                carregar_tabela_frete_oficial.clear()
+                st.rerun()
+
             try:
                 mapa_frete_of, lista_filiais_of = carregar_tabela_frete_oficial()
             except Exception as e_tf:
@@ -3990,53 +3998,108 @@ elif aba == "🚚 Planejamento Logística":
                 if "roteiro_frete_paradas" not in st.session_state:
                     st.session_state.roteiro_frete_paradas = list()
 
-                cf1, cf2, cf3, cf4 = st.columns((1.3, 1.4, 2.0, 1.0), vertical_alignment="bottom")
-                filial_sel_fr = cf1.selectbox("🏭 Filial de Origem:", options=lista_filiais_of, key="calc_fr_filial")
-                veic_calc_fr = cf2.selectbox("🚛 Tipo de Veículo:", options=["CARRETA", "TRUCK / BI-TRUCK"], key="calc_fr_veic")
+                filiais_tags = [f"🏭 {f}" for f in lista_filiais_of]
+                todas_cidades_fr = sorted(list({dest for (_, dest) in mapa_frete_of.keys()}))
+                opcoes_pontos_fr = filiais_tags + todas_cidades_fr
 
-                filial_k_sel = limpar_texto(filial_sel_fr)
-                destinos_da_filial = sorted([dest for (fk, dest) in mapa_frete_of.keys() if fk == filial_k_sel])
+                sede_para_filial = {
+                    "ESTEIO/RS": "FRIOZEM",
+                    "SAPUCAIA DO SUL/RS": "FRIOZEM",
+                    "SERAFINA CORREA/RS": "FABRICA",
+                    "COLOMBO/PR": "COLOMBO",
+                    "ITUPEVA/SP": "BRASFRIGO",
+                }
+                filial_para_sede = {
+                    "FRIOZEM": "ESTEIO/RS",
+                    "FABRICA": "SERAFINA CORREA/RS",
+                    "COLOMBO": "COLOMBO/PR",
+                    "BRASFRIGO": "ITUPEVA/SP",
+                }
 
-                prox_parada_fr = cf3.selectbox("📍 Próxima Parada (Coleta ou Entrega):", options=destinos_da_filial, key="calc_fr_prox")
-                if cf4.button("➕ Adicionar", type="primary", use_container_width=True, key="btn_add_parada_fr"):
-                    st.session_state.roteiro_frete_paradas.append(prox_parada_fr)
-                    st.rerun()
+                def _resolver_filial_e_cidade(ponto_str):
+                    if ponto_str.startswith("🏭 "):
+                        fn = limpar_texto(ponto_str[2:])
+                        return fn, filial_para_sede.get(fn, "")
+                    cid_l = limpar_texto(ponto_str)
+                    return sede_para_filial.get(cid_l, ""), cid_l
+
+                with st.container(border=True):
+                    cf1, cf2, cf3, cf4 = st.columns((1.6, 1.3, 1.9, 1.0), vertical_alignment="bottom")
+                    ponto_saida_fr = cf1.selectbox("🚩 Ponto de Saída (1ª Origem):", options=opcoes_pontos_fr, index=0, key="calc_fr_saida")
+                    veic_calc_fr = cf2.selectbox("🚛 Tipo de Veículo:", options=["CARRETA", "TRUCK / BI-TRUCK"], key="calc_fr_veic")
+                    prox_parada_fr = cf3.selectbox("📍 Próxima Parada (Coleta / Entrega):", options=opcoes_pontos_fr, key="calc_fr_prox")
+                    if cf4.button("➕ Adicionar", type="primary", use_container_width=True, key="btn_add_parada_fr"):
+                        st.session_state.roteiro_frete_paradas.append(prox_parada_fr)
+                        st.rerun()
 
                 if st.session_state.roteiro_frete_paradas:
                     paradas_atuais = st.session_state.roteiro_frete_paradas
                     eh_carreta = (veic_calc_fr == "CARRETA")
                     linhas_trechos = list()
 
-                    ponto_ant = f"Filial {filial_sel_fr}"
-                    km_ant = 0.0
-                    tar_ant = 0.0
+                    ponto_ant = ponto_saida_fr
+                    filial_ativa, _ = _resolver_filial_e_cidade(ponto_saida_fr)
+                    if not filial_ativa and lista_filiais_of:
+                        filial_ativa = limpar_texto(lista_filiais_of)
 
                     for seq_p, parada_dest in enumerate(paradas_atuais, start=1):
-                        d_dest = mapa_frete_of.get((filial_k_sel, parada_dest), {"km": 0.0, "frete_carreta": 0.0, "frete_truck": 0.0})
-                        km_dest = d_dest["km"]
-                        tar_dest = d_dest["frete_carreta"] if eh_carreta else d_dest["frete_truck"]
+                        fil_orig_tr, cid_orig_tr = _resolver_filial_e_cidade(ponto_ant)
+                        fil_dest_tr, cid_dest_tr = _resolver_filial_e_cidade(parada_dest)
 
-                        if seq_p == 1:
-                            km_tr = round(km_dest, 1)
-                            val_tr = round(tar_dest, 2)
-                        else:
-                            km_tr = round(abs(km_dest - km_ant), 1)
-                            val_tr = round(abs(tar_dest - tar_ant), 2)
+                        km_tr, val_tr = 0.0, 0.0
+                        if fil_orig_tr and cid_dest_tr and (fil_orig_tr, cid_dest_tr) in mapa_frete_of:
+                            d = mapa_frete_of[(fil_orig_tr, cid_dest_tr)]
+                            km_tr = d["km"]
+                            val_tr = d["frete_carreta"] if eh_carreta else d["frete_truck"]
+                        elif fil_dest_tr and cid_orig_tr and (fil_dest_tr, cid_orig_tr) in mapa_frete_of:
+                            d = mapa_frete_of[(fil_dest_tr, cid_orig_tr)]
+                            km_tr = d["km"]
+                            val_tr = d["frete_carreta"] if eh_carreta else d["frete_truck"]
+                        elif filial_ativa and cid_orig_tr in [c for (f, c) in mapa_frete_of if f == filial_ativa] and cid_dest_tr in [c for (f, c) in mapa_frete_of if f == filial_ativa]:
+                            d1 = mapa_frete_of[(filial_ativa, cid_orig_tr)]
+                            d2 = mapa_frete_of[(filial_ativa, cid_dest_tr)]
+                            km_tr = abs(d2["km"] - d1["km"])
+                            t1 = d1["frete_carreta"] if eh_carreta else d1["frete_truck"]
+                            t2 = d2["frete_carreta"] if eh_carreta else d2["frete_truck"]
+                            val_tr = abs(t2 - t1)
 
                         linhas_trechos.append({
                             "Etapa": f"Trecho {seq_p}",
                             "De (Saída/Parada)": ponto_ant,
                             "Para (Parada/Destino)": parada_dest,
-                            "KM Trecho": km_tr,
-                            "Valor Trecho (R$)": val_tr
+                            "KM Trecho": round(km_tr, 1),
+                            "Valor Trecho (R$)": round(val_tr, 2)
                         })
                         ponto_ant = parada_dest
-                        km_ant = km_dest
-                        tar_ant = tar_dest
+                        if fil_dest_tr:
+                            filial_ativa = fil_dest_tr
 
-                    st.markdown(f"**🗺️ Roteiro:** `🏭 {filial_sel_fr}` ➡️ " + " ➡️ ".join([f"`📍 {p}`" for p in paradas_atuais]))
-                    st.caption("💡 Você pode clicar e editar diretamente o **KM Trecho** ou o **Valor Trecho (R$)** na tabela abaixo caso haja desvio de rota:")
+                    # Linha do Tempo Visual do Itinerário
+                    nos_rota_html = (
+                        f"<div style='display:inline-flex; align-items:center; gap:6px; background:#1F2922; color:#FFFFFF; "
+                        f"padding:5px 12px; border-radius:20px; font-size:0.77rem; font-weight:700; border:1px solid #4CAF50;'>"
+                        f"<span>🚩 SAÍDA</span><span style='color:#A5D6A7;'>{ponto_saida_fr.replace('🏭 ', '')}</span></div>"
+                    )
+                    for idx_no, p_no in enumerate(paradas_atuais, start=1):
+                        eh_ultimo_no = (idx_no == len(paradas_atuais))
+                        bg_no = "#E8F5E9" if eh_ultimo_no else "#FAF8F5"
+                        bd_no = "#1B5E20" if eh_ultimo_no else "rgba(27,94,32,0.45)"
+                        tag_no = "🏁 DESTINO" if eh_ultimo_no else f"📍 PARADA {idx_no}"
+                        nos_rota_html += (
+                            f"<span style='color:#1B5E20; font-weight:800; font-size:0.9rem;'>➔</span>"
+                            f"<div style='display:inline-flex; align-items:center; gap:6px; background:{bg_no}; color:#141A16; "
+                            f"padding:5px 12px; border-radius:20px; font-size:0.77rem; font-weight:700; border:1.5px solid {bd_no};'>"
+                            f"<span style='color:#1B5E20;'>{tag_no}</span><span>{p_no.replace('🏭 ', '')}</span></div>"
+                        )
 
+                    st.markdown(
+                        f"<div style='background:rgba(255,255,255,0.55); border:1px solid rgba(27,94,32,0.28); border-radius:12px; "
+                        f"padding:10px 14px; margin:8px 0 10px 0; display:flex; flex-wrap:wrap; align-items:center; gap:8px;'>"
+                        f"{nos_rota_html}</div>",
+                        unsafe_allow_html=True
+                    )
+
+                    st.caption("✏️ **Tabela Editável:** Clique sobre `KM Trecho` ou `Valor Trecho (R$)` se precisar ajustar algum desvio:")
                     df_trechos_edit = st.data_editor(
                         pd.DataFrame(linhas_trechos),
                         key="editor_trechos_frete",
@@ -4045,8 +4108,8 @@ elif aba == "🚚 Planejamento Logística":
                         disabled=["Etapa", "De (Saída/Parada)", "Para (Parada/Destino)"],
                         column_config={
                             "Etapa": st.column_config.TextColumn("Etapa", width="small"),
-                            "De (Saída/Parada)": st.column_config.TextColumn("🚩 De", width="medium"),
-                            "Para (Parada/Destino)": st.column_config.TextColumn("📍 Para", width="medium"),
+                            "De (Saída/Parada)": st.column_config.TextColumn("🚩 Origem do Trecho", width="medium"),
+                            "Para (Parada/Destino)": st.column_config.TextColumn("📍 Destino do Trecho", width="medium"),
                             "KM Trecho": st.column_config.NumberColumn("🛣️ KM Trecho", min_value=0.0, step=1.0, format="%.1f km"),
                             "Valor Trecho (R$)": st.column_config.NumberColumn("💰 Valor Trecho (R$)", min_value=0.0, step=10.0, format="R$ %.2f"),
                         }
@@ -4056,33 +4119,59 @@ elif aba == "🚚 Planejamento Logística":
                     total_km_rota = float(pd.to_numeric(df_trechos_edit["KM Trecho"], errors="coerce").fillna(0.0).sum())
                     tot_fr_fmt = f"R$ {total_frete_rota:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-                    c_res_f1, c_res_f2, c_res_f3 = st.columns((1.5, 1.5, 1.2), vertical_alignment="center")
-                    c_res_f1.metric("💰 Frete Total do Roteiro", tot_fr_fmt)
-                    c_res_f2.metric("🛣️ Distância Somada", f"{int(round(total_km_rota))} km")
-                    with c_res_f3:
-                        if st.button("↩️ Desfazer Última", use_container_width=True, key="btn_undo_parada_fr"):
+                    c_kpi_f1, c_kpi_f2, c_kpi_f3, c_btns_fr = st.columns((1.6, 1.2, 1.0, 1.5), vertical_alignment="center")
+                    with c_kpi_f1:
+                        st.markdown(
+                            f"<div style='background:linear-gradient(135deg, #1F2922 0%, #141A16 100%); border:1px solid #4CAF50; "
+                            f"border-left:5px solid #4CAF50; border-radius:12px; padding:10px 16px; box-shadow:0 3px 10px rgba(0,0,0,0.08);'>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:#A5D6A7; font-weight:700;'>💰 Frete Total Estimado</div>"
+                            f"<div style='font-size:1.45rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{tot_fr_fmt}</div>"
+                            f"</div>",
+                            unsafe_allow_html=True
+                        )
+                    with c_kpi_f2:
+                        st.markdown(
+                            f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #1B5E20; "
+                            f"border-radius:12px; padding:10px 14px;'>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>🛣️ Distância Total</div>"
+                            f"<div style='font-size:1.35rem; font-weight:800; color:#141A16; margin-top:2px;'>{int(round(total_km_rota))} km</div>"
+                            f"</div>",
+                            unsafe_allow_html=True
+                        )
+                    with c_kpi_f3:
+                        st.markdown(
+                            f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #2E7D32; "
+                            f"border-radius:12px; padding:10px 14px;'>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>📍 Paradas</div>"
+                            f"<div style='font-size:1.35rem; font-weight:800; color:#141A16; margin-top:2px;'>{len(paradas_atuais)}</div>"
+                            f"</div>",
+                            unsafe_allow_html=True
+                        )
+                    with c_btns_fr:
+                        cb_u1, cb_u2 = st.columns(2)
+                        if cb_u1.button("↩️ Desfazer", use_container_width=True, key="btn_undo_parada_fr"):
                             st.session_state.roteiro_frete_paradas.pop()
                             st.rerun()
-                        if st.button("🗑️ Limpar Roteiro", use_container_width=True, key="btn_limpar_parada_fr"):
+                        if cb_u2.button("🗑️ Limpar", use_container_width=True, key="btn_limpar_parada_fr"):
                             st.session_state.roteiro_frete_paradas = list()
                             st.rerun()
 
                     if opcoes_rapidas and total_frete_rota > 0:
-                        st.markdown("---")
-                        ca_p1, ca_p2 = st.columns((3, 1.2), vertical_alignment="bottom")
-                        ped_aplicar_fr = ca_p1.selectbox("Lançar este frete calculado em qual pedido?", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
-                        if ca_p2.button("💾 Gravar no Pedido", type="primary", use_container_width=True, key="btn_gravar_frete_ped"):
-                            idx_fr_alvo = opcoes_rapidas[ped_aplicar_fr]
-                            df_plan["Valor de Frete"] = df_plan["Valor de Frete"].astype(object)
-                            df_plan["Veículo compartilhado"] = df_plan["Veículo compartilhado"].astype(object)
-                            df_plan.at[idx_fr_alvo, "Valor de Frete"] = formatar_moeda_br_str(f"{total_frete_rota:.2f}")
-                            if len(paradas_atuais) > 1:
-                                df_plan.at[idx_fr_alvo, "Veículo compartilhado"] = "SIM"
-                            salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
-                            st.toast(f"💰 Frete {tot_fr_fmt} gravado no pedido {df_plan.at[idx_fr_alvo, 'Nº Pedido']}!", icon="💰")
-                            st.rerun()
+                        with st.container(border=True):
+                            ca_p1, ca_p2 = st.columns((3.2, 1.1), vertical_alignment="bottom")
+                            ped_aplicar_fr = ca_p1.selectbox("📌 Vincular e gravar este frete calculado no pedido:", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
+                            if ca_p2.button("💾 Gravar no Pedido", type="primary", use_container_width=True, key="btn_gravar_frete_ped"):
+                                idx_fr_alvo = opcoes_rapidas[ped_aplicar_fr]
+                                df_plan["Valor de Frete"] = df_plan["Valor de Frete"].astype(object)
+                                df_plan["Veículo compartilhado"] = df_plan["Veículo compartilhado"].astype(object)
+                                df_plan.at[idx_fr_alvo, "Valor de Frete"] = formatar_moeda_br_str(f"{total_frete_rota:.2f}")
+                                if len(paradas_atuais) > 1:
+                                    df_plan.at[idx_fr_alvo, "Veículo compartilhado"] = "SIM"
+                                salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
+                                st.toast(f"💰 Frete {tot_fr_fmt} gravado no pedido {df_plan.at[idx_fr_alvo, 'Nº Pedido']}!", icon="💰")
+                                st.rerun()
                 else:
-                    st.info("Selecione a **Filial de Origem**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")
+                    st.info("Selecione o **Ponto de Saída**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")
     
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
