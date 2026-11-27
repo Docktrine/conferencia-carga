@@ -2930,11 +2930,14 @@ elif aba == "📊 Análise de Pedidos":
                     df_cab = pd.read_excel(arquivo_bi, nrows=2, dtype=str)
                     cols_detectadas = [str(c).strip() for c in df_cab.columns]
                 else:
+                    primeira_linha_txt = arquivo_bi.readline().decode("utf-8-sig", errors="ignore")
+                    arquivo_bi.seek(0)
+                    sep_bi = ";" if primeira_linha_txt.count(";") >= primeira_linha_txt.count(",") else ","
                     try:
-                        df_cab = pd.read_csv(arquivo_bi, sep=None, engine="python", nrows=2, dtype=str, encoding="utf-8-sig")
+                        df_cab = pd.read_csv(arquivo_bi, sep=sep_bi, nrows=2, dtype=str, encoding="utf-8-sig", on_bad_lines="skip")
                     except Exception:
                         arquivo_bi.seek(0)
-                        df_cab = pd.read_csv(arquivo_bi, sep=";", nrows=2, dtype=str, encoding="latin-1")
+                        df_cab = pd.read_csv(arquivo_bi, sep=sep_bi, nrows=2, dtype=str, encoding="latin-1", on_bad_lines="skip")
                     cols_detectadas = [str(c).strip() for c in df_cab.columns]
 
                 st.session_state["bi_cols_disponiveis"] = cols_detectadas
@@ -3096,11 +3099,14 @@ elif aba == "📊 Análise de Pedidos":
                         _processar_tupla_bi(r_vals, idx_r)
                     del df_tmp
                 else:
+                    primeira_linha_b = arquivo_bi.readline().decode("utf-8-sig", errors="ignore")
+                    arquivo_bi.seek(0)
+                    sep_bi_b = ";" if primeira_linha_b.count(";") >= primeira_linha_b.count(",") else ","
                     try:
-                        chunks_csv = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str, chunksize=5000, encoding="utf-8-sig")
+                        chunks_csv = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, chunksize=5000, encoding="utf-8-sig", on_bad_lines="skip")
                     except Exception:
                         arquivo_bi.seek(0)
-                        chunks_csv = pd.read_csv(arquivo_bi, sep=";", dtype=str, chunksize=5000, encoding="latin-1")
+                        chunks_csv = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, chunksize=5000, encoding="latin-1", on_bad_lines="skip")
                     idx_r = 0
                     for ch_df in chunks_csv:
                         for r_vals in ch_df.itertuples(index=False, name=None):
