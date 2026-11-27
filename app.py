@@ -1281,12 +1281,48 @@ with st.sidebar:
         }
 
         /* 3. Caixas, Containers e Expanders */
-        [data-testid="stExpander"],
         .stMain [data-testid="stVerticalBlockBorderWrapper"] {
             background-color: #E4E0D6 !important;
             border: 1px solid rgba(27, 94, 32, 0.28) !important;
             border-radius: 12px !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        }
+        .stMain [data-testid="stExpander"] {
+            background-color: #FAF8F5 !important;
+            border: 1px solid rgba(27, 94, 32, 0.30) !important;
+            border-left: 5px solid #1B5E20 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 3px 10px rgba(20, 26, 22, 0.05) !important;
+            margin-bottom: 10px !important;
+            overflow: hidden !important;
+            transition: all 0.18s ease !important;
+        }
+        .stMain [data-testid="stExpander"]:hover {
+            border-color: rgba(27, 94, 32, 0.65) !important;
+            box-shadow: 0 5px 14px rgba(27, 94, 32, 0.10) !important;
+        }
+        .stMain [data-testid="stExpander"] details > summary {
+            background: linear-gradient(90deg, #F3F5F2 0%, #FAF8F5 100%) !important;
+            padding: 11px 16px !important;
+            transition: background 0.18s ease !important;
+        }
+        .stMain [data-testid="stExpander"] details > summary:hover {
+            background: linear-gradient(90deg, #E5EDE4 0%, #F4F7F3 100%) !important;
+        }
+        .stMain [data-testid="stExpander"] details > summary p {
+            color: #141A16 !important;
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            letter-spacing: 0.01em !important;
+        }
+        .stMain [data-testid="stExpander"] details > summary svg {
+            color: #1B5E20 !important;
+            fill: #1B5E20 !important;
+        }
+        .stMain [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+            background-color: #FAF8F5 !important;
+            border-top: 1px solid rgba(27, 94, 32, 0.14) !important;
+            padding: 14px 16px !important;
         }
 
         /* 4. Tabelas e Dataframes (Alto Contraste Corporativo Grano) */
