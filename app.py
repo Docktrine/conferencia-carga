@@ -3327,7 +3327,7 @@ elif aba == "📊 Análise de Pedidos":
                         (df_res_bi["Situação WMS"].isin(filtro_wms_bi))
                     ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()
    
-                    total_filtrados_bi = len(df_exib_bi)
+                    df_pagina_bi = df_exib_bi.head(300)
                     tam_pag_bi = 250
                   if total_filtrados_bi > tam_pag_bi:
                      qtd_pags_bi = (total_filtrados_bi + tam_pag_bi - 1) // tam_pag_bi
