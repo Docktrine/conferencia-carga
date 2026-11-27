@@ -3403,7 +3403,25 @@ elif aba == "📊 Análise de Pedidos":
                     k5.markdown(_card_kpi_bi("💰 Valor Carteira", tot_val_str, "linear-gradient(135deg, #141A16 0%, #1E3323 100%)", "#4CAF50", "#A5D6A7", "#FFFFFF"), unsafe_allow_html=True)
                     k6.markdown(_card_kpi_bi("🧊 Total Volumes", tot_vol_str, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
 
-                    f_bi1, f_bi2, f_bi3 = st.columns(3)
+                    st.markdown(
+                        """
+                        <style>
+                        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) span[data-baseweb="tag"] {
+                            font-size: 0.72rem !important;
+                            padding: 1px 6px !important;
+                            margin: 2px 3px 2px 0 !important;
+                            height: auto !important;
+                            max-width: 100% !important;
+                        }
+                        div[data-testid="stMultiSelect"]:has(input[aria-label*="Filtrar"]) span[data-baseweb="tag"] span {
+                            white-space: normal !important;
+                            line-height: 1.2 !important;
+                        }
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                    f_bi1, f_bi2, f_bi3 = st.columns((1.75, 1.15, 0.85), gap="small")
                     filtro_sla = f_bi1.multiselect(
                         "Filtrar por Indicador de Prazo:",
                         options=df_res_bi["Status SLA"].unique().tolist(),
