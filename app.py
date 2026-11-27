@@ -3628,50 +3628,93 @@ elif aba == "🚚 Planejamento Logística":
     fmt_pedidos_kpi = f"R$ {soma_pedidos_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     fmt_frete_kpi = f"R$ {soma_frete_kpi:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    k_top1, k_top2, k_top3 = st.columns(3)
-    k_top1.metric("📋 Total Programado", total_prog_kpi)
-    k_top2.metric("💰 Valor Total dos Pedidos", fmt_pedidos_kpi)
-    k_top3.metric("🚛 Valor Total de Frete", fmt_frete_kpi, delta=f"{perc_frete_kpi:.1f}% sobre pedidos".replace(".", ","), delta_color="inverse")
+    k_top1, k_top2, k_top3 = st.columns(3, gap="medium")
+    k_top1.markdown(
+        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:6px solid #1B5E20; border-radius:12px; padding:12px 18px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
+        f"<div style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#4A544D; font-weight:700;'>📋 Total Programado</div>"
+        f"<div style='font-size:1.75rem; font-weight:800; color:#141A16; margin-top:2px;'>{total_prog_kpi} <span style='font-size:0.85rem; font-weight:600; color:#5A635C;'>pedidos</span></div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+    k_top2.markdown(
+        f"<div style='background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:12px 18px; box-shadow:0 4px 12px rgba(20,26,22,0.12);'>"
+        f"<div style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#A5D6A7; font-weight:700;'>💰 Valor Total dos Pedidos</div>"
+        f"<div style='font-size:1.75rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{fmt_pedidos_kpi}</div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+    perc_fr_str = f"{perc_frete_kpi:.1f}".replace(".", ",")
+    k_top3.markdown(
+        f"<div style='background:#FAF8F5; border:1px solid rgba(2,132,199,0.35); border-left:6px solid #0284C7; border-radius:12px; padding:12px 18px; box-shadow:0 2px 6px rgba(0,0,0,0.04);'>"
+        f"<div style='display:flex; justify-content:space-between; align-items:center;'>"
+        f"<span style='font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; color:#0369A1; font-weight:700;'>🚛 Valor Total de Frete</span>"
+        f"<span style='background:#E0F2FE; color:#0369A1; border:1px solid #7DD3FC; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:12px;'>{perc_fr_str}% s/ pedidos</span>"
+        f"</div>"
+        f"<div style='font-size:1.75rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{fmt_frete_kpi}</div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
 
-    c_locais, c_top_clientes = st.columns(2)
+    st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
+
+    c_locais, c_top_clientes = st.columns(2, gap="medium")
     with c_locais:
-        with st.container(border=True):
-            st.markdown("**🏭 Quantidade por Local de Carregamento**")
-            df_loc_kpi = df_kpi_plan.copy()
-            df_loc_kpi["_loc_limpo"] = df_loc_kpi["Local de Carregamento"].astype(str).str.strip()
-            df_loc_validos = df_loc_kpi[df_loc_kpi["_loc_limpo"] != ""].copy()
+        df_loc_kpi = df_kpi_plan.copy()
+        df_loc_kpi["_loc_limpo"] = df_loc_kpi["Local de Carregamento"].astype(str).str.strip()
+        df_loc_validos = df_loc_kpi[df_loc_kpi["_loc_limpo"] != ""].copy()
 
-            if not df_loc_validos.empty:
-                df_loc_validos["_eh_transf"] = df_loc_validos["Nº Pedido"].apply(eh_pedido_transferencia)
-                linhas_locais = []
-                for loc_nome, grupo_loc in df_loc_validos.groupby("_loc_limpo", sort=False):
-                    qtd_tot_loc = len(grupo_loc)
-                    qtd_tr_loc = int(grupo_loc["_eh_transf"].sum())
-                    detalhe_tr = f" ({qtd_tr_loc} transf.)" if qtd_tr_loc > 0 else ""
-                    linhas_locais.append(f"• **{loc_nome}:** {qtd_tot_loc}{detalhe_tr}")
+        if not df_loc_validos.empty:
+            df_loc_validos["_eh_transf"] = df_loc_validos["Nº Pedido"].apply(eh_pedido_transferencia)
+            dados_loc_sort = list()
+            for loc_nome, grupo_loc in df_loc_validos.groupby("_loc_limpo", sort=False):
+                qtd_tot_loc = int(len(grupo_loc))
+                qtd_tr_loc = int(grupo_loc["_eh_transf"].sum())
+                dados_loc_sort.append((qtd_tot_loc, loc_nome, qtd_tr_loc))
+            dados_loc_sort.sort(key=lambda x: x[0], reverse=True)
 
-                linhas_locais.sort(key=lambda t: int(re.search(r":\*\*\s*(\d+)", t).group(1)), reverse=True)
-                st.markdown(" &nbsp;|&nbsp; ".join(linhas_locais))
-            else:
-                st.caption("Nenhum local de carregamento informado neste período.")
+            badges_loc_html = ""
+            for q_loc, nm_loc, q_tr in dados_loc_sort:
+                tr_tag = f" <span style='color:#1B5E20; font-size:0.72rem;'>({q_tr} transf.)</span>" if q_tr > 0 else ""
+                badges_loc_html += (
+                    f"<span style='display:inline-flex; align-items:center; gap:5px; background:#FFFFFF; border:1px solid rgba(27,94,32,0.3); "
+                    f"border-radius:8px; padding:4px 10px; font-size:0.78rem; color:#141A16;'>"
+                    f"<b>{nm_loc}</b><span style='background:#E8F5E9; color:#1B5E20; font-weight:800; padding:1px 7px; border-radius:6px;'>{q_loc}</span>{tr_tag}</span>"
+                )
+            st.markdown(
+                f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.28); border-radius:12px; padding:12px 16px; height:100%;'>"
+                f"<div style='font-size:0.8rem; font-weight:800; color:#141A16; margin-bottom:8px;'>🏭 Quantidade por Local de Carregamento</div>"
+                f"<div style='display:flex; flex-wrap:wrap; gap:6px;'>{badges_loc_html}</div></div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.info("Nenhum local de carregamento informado neste período.")
 
     with c_top_clientes:
-        with st.container(border=True):
-            st.markdown("**🏆 Top 3 Clientes Mais Atendidos**")
-            mask_nao_transf = ~df_kpi_plan["Nº Pedido"].apply(eh_pedido_transferencia)
-            clientes_series = df_kpi_plan.loc[mask_nao_transf, "Cliente"].astype(str).str.strip()
-            clientes_validos = clientes_series[clientes_series != ""]
+        mask_nao_transf = ~df_kpi_plan["Nº Pedido"].apply(eh_pedido_transferencia)
+        clientes_series = df_kpi_plan.loc[mask_nao_transf, "Cliente"].astype(str).str.strip()
+        clientes_validos = clientes_series[clientes_series != ""]
 
-            if not clientes_validos.empty:
-                top3_cli = clientes_validos.value_counts().head(3)
-                medalhas = ["🥇", "🥈", "🥉"]
-                linhas_cli = [
-                    f"{medalhas[idx]} **{cli}:** {qtd} pedido(s)"
-                    for idx, (cli, qtd) in enumerate(top3_cli.items())
-                ]
-                st.markdown(" &nbsp;|&nbsp; ".join(linhas_cli))
-            else:
-                st.caption("Nenhum cliente comercial registrado neste período.")
+        if not clientes_validos.empty:
+            top3_cli = clientes_validos.value_counts().head(3)
+            medalhas = ["🥇", "🥈", "🥉"]
+            cores_med = ["#FEF3C7", "#F1F5F9", "#FFEDD5"]
+            bordas_med = ["#F59E0B", "#94A3B8", "#F97316"]
+            badges_cli_html = ""
+            for idx_c, (cli, qtd) in enumerate(top3_cli.items()):
+                badges_cli_html += (
+                    f"<span style='display:inline-flex; align-items:center; gap:6px; background:{cores_med[idx_c]}; border:1px solid {bordas_med[idx_c]}; "
+                    f"border-radius:8px; padding:4px 10px; font-size:0.78rem; color:#141A16;'>"
+                    f"<span>{medalhas[idx_c]}</span><b>{cli}</b>"
+                    f"<span style='background:#FFFFFF; color:#141A16; font-weight:800; padding:1px 7px; border-radius:6px;'>{qtd}</span></span>"
+                )
+            st.markdown(
+                f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.28); border-radius:12px; padding:12px 16px; height:100%;'>"
+                f"<div style='font-size:0.8rem; font-weight:800; color:#141A16; margin-bottom:8px;'>🏆 Top 3 Clientes Mais Atendidos</div>"
+                f"<div style='display:flex; flex-wrap:wrap; gap:6px;'>{badges_cli_html}</div></div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.info("Nenhum cliente comercial registrado neste período.")
 
     df_plan.drop(columns=["_mes_ano_kpi"], inplace=True, errors="ignore")
 
@@ -3789,29 +3832,25 @@ elif aba == "🚚 Planejamento Logística":
         qtd_st5 = int((st_norm == limpar_texto("⚠️ Atrasado / Ocorrência")).sum())
         qtd_contratar = int(tr_norm.str.contains("CONTRATAR", na=False).sum())
 
-        st.markdown(
-            """
-            <style>
-            div[data-testid="stMetric"] {
-                padding: 8px 14px !important;
-            }
-            div[data-testid="stMetric"] [data-testid="stMetricValue"] {
-                font-size: 1.55rem !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-        k1, k2, k3 = st.columns(3, gap="large")
-        k1.metric("⏳ Aguardando Veículo", qtd_st1)
-        k2.metric("🚚 Veículo no Pátio", qtd_st2)
-        k3.metric("📦 Em Conferência", qtd_st3)
+        def _card_status_exp(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+            return (
+                f"<div style='background:{bg}; border:1px solid {borda}55; border-left:5px solid {borda}; "
+                f"border-radius:11px; padding:10px 14px; margin-bottom:8px; box-shadow:0 2px 5px rgba(0,0,0,0.03);'>"
+                f"<div style='font-size:0.74rem; font-weight:700; color:{cor_tit};'>{icone} {titulo}</div>"
+                f"<div style='font-size:1.55rem; font-weight:800; color:{cor_val}; margin-top:2px;'>{valor}</div>"
+                f"</div>"
+            )
 
-        k4, k5, k6 = st.columns(3, gap="large")
-        k4.metric("✅ Carregado / Liberado", qtd_st4)
-        k5.metric("⚠️ Atrasado / Ocorrência", qtd_st5)
-        k6.metric("📝 Contratar Transportadora", qtd_contratar)     
-        
+        k1, k2, k3 = st.columns(3, gap="medium")
+        k1.markdown(_card_status_exp("⏳", "Aguardando Veículo", qtd_st1, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
+        k2.markdown(_card_status_exp("🚚", "Veículo no Pátio", qtd_st2, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
+        k3.markdown(_card_status_exp("📦", "Em Conferência", qtd_st3, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
+
+        k4, k5, k6 = st.columns(3, gap="medium")
+        k4.markdown(_card_status_exp("✅", "Carregado / Liberado", qtd_st4, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+        k5.markdown(_card_status_exp("⚠️", "Atrasado / Ocorrência", qtd_st5, "#FEF2F2", "#DC2626", "#991B1B", "#7F1D1D"), unsafe_allow_html=True)
+        k6.markdown(_card_status_exp("📝", "Contratar Transportadora", qtd_contratar, "#FFF7ED", "#EA580C", "#9A3412", "#7C2D12"), unsafe_allow_html=True)
+             
         feriados_plan = obter_feriados_sistema()
         mapa_lt_plan = obter_mapa_lead_time()
 
@@ -3974,14 +4013,18 @@ elif aba == "🚚 Planejamento Logística":
             """
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
                 <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
-                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Clique na barra desejada para expandir a ferramenta</span>
+                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Selecione a aba da ferramenta desejada</span>
             </div>
             """,
             unsafe_allow_html=True
         )
+        tab_calc_fr, tab_inc_ped, tab_ed_ped = st.tabs([
+            "🧮 Calculadora de Frete (Roteiros)",
+            "➕ Incluir Pedido Manualmente",
+            "✏️ Editar ou Excluir Pedido"
+        ])
         
-        st.markdown('<div class="marc-azul"></div>', unsafe_allow_html=True)
-        with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
+        with tab_calc_fr:
             st.markdown(
                 """
                 <style>
@@ -4252,9 +4295,7 @@ elif aba == "🚚 Planejamento Logística":
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
-    st.divider()
-    st.markdown('<div class="marc-verde"></div>', unsafe_allow_html=True)
-    with st.expander("➕ Incluir Pedido Manualmente"):
+    with tab_inc_ped:
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
@@ -4391,8 +4432,7 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
                     
-    st.markdown('<div class="marc-ambar"></div>', unsafe_allow_html=True)
-    with st.expander("✏️ Editar ou Excluir Pedido", expanded=False):
+    with tab_ed_ped:
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
