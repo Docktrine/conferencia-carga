@@ -2966,7 +2966,7 @@ elif aba == "📊 Análise de Pedidos":
                 col_cid_bi = m5.selectbox("Cidade:", op_cid, index=idx_cid)
 
                 m6, m7, m8, m9, m10 = st.columns(5)
-                op_dc, idx_dc = _opcoes_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA"))
+                op_dc, idx_dc = _opcoes_bi(("EMISSAO", "CRIADA", "LANCAMENTO", "CRIACAO", "DATA PEDIDO", "INCLUSAO", "DATA", "FATURAMENTO"))
                 col_dt_cria = m6.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
                 op_de, idx_de = _opcoes_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"))
                 col_dt_ent = m7.selectbox("Data de Entrega:", op_de, index=idx_de)
@@ -3304,14 +3304,28 @@ elif aba == "📊 Análise de Pedidos":
                     if cidades_sem_lt:
                         st.warning(f"⚠️ **{len(cidades_sem_lt)} cidade(s)** não encontrada(s) na aba `lead time`: {', '.join(sorted(list(cidades_sem_lt))[:10])}")
 
-                    k1, k2, k3, k4, k5, k6 = st.columns(6)
-                    k1.metric("📦 Pedidos Únicos", len(df_res_bi))
-                    k2.metric("🔴/🟠 Críticos/Hoje", int(df_res_bi["Prioridade"].isin((1, 2)).sum()))
-                    k3.metric("🟡 Atenção", int((df_res_bi["Prioridade"] == 3).sum()))
-                    k4.metric("🟢 No Prazo", int((df_res_bi["Prioridade"] == 4).sum()))
+                    qtd_atrasados_bi = int(df_res_bi["Prioridade"].isin([1, 2]).sum())
+                    qtd_atencao_bi = int((df_res_bi["Prioridade"] == 3).sum())
+                    qtd_prazo_bi = int((df_res_bi["Prioridade"] == 4).sum())
                     tot_val_str = f"R$ {df_res_bi['Valor_Num'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                    k5.metric("💰 Valor Carteira", tot_val_str)
-                    k6.metric("🧊 Total Volumes", f"{int(df_res_bi['Volumes'].sum()):,}".replace(",", "."))
+                    tot_vol_str = f"{int(df_res_bi['Volumes'].sum()):,}".replace(",", ".")
+
+                    def _card_kpi_bi(titulo, valor, bg, borda, cor_tit, cor_val):
+                        return (
+                            f"<div style='background:{bg}; border:1px solid {borda}44; border-left:4px solid {borda}; "
+                            f"border-radius:10px; padding:8px 12px; margin-bottom:10px; box-shadow:0 2px 5px rgba(0,0,0,0.03);'>"
+                            f"<div style='font-size:0.67rem; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:{cor_tit}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>{titulo}</div>"
+                            f"<div style='font-size:1.28rem; font-weight:800; color:{cor_val}; margin-top:2px;'>{valor}</div>"
+                            f"</div>"
+                        )
+
+                    k1, k2, k3, k4, k5, k6 = st.columns(6, gap="small")
+                    k1.markdown(_card_kpi_bi("📦 Pedidos Únicos", f"{len(df_res_bi):,}".replace(",", "."), "#FAF8F5", "#1B5E20", "#4A544D", "#141A16"), unsafe_allow_html=True)
+                    k2.markdown(_card_kpi_bi("🔴/🟠 Críticos/Hoje", qtd_atrasados_bi, "#FEF2F2", "#DC2626", "#991B1B", "#7F1D1D"), unsafe_allow_html=True)
+                    k3.markdown(_card_kpi_bi("🟡 Atenção", qtd_atencao_bi, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
+                    k4.markdown(_card_kpi_bi("🟢 No Prazo", qtd_prazo_bi, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+                    k5.markdown(_card_kpi_bi("💰 Valor Carteira", tot_val_str, "linear-gradient(135deg, #141A16 0%, #1E3323 100%)", "#4CAF50", "#A5D6A7", "#FFFFFF"), unsafe_allow_html=True)
+                    k6.markdown(_card_kpi_bi("🧊 Total Volumes", tot_vol_str, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
 
                     f_bi1, f_bi2 = st.columns(2)
                     filtro_sla = f_bi1.multiselect(
@@ -3330,11 +3344,26 @@ elif aba == "📊 Análise de Pedidos":
                         (df_res_bi["Situação WMS"].isin(filtro_wms_bi))
                     ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()
    
-                    df_pagina_bi = df_exib_bi.head(300)
+                    df_pagina_bi = df_exib_bi.head(300).copy()
+
+                    def _cor_linha_sla_bi(row_bi):
+                        st_txt = str(row_bi.get("Status SLA", ""))
+                        if "Atrasado" in st_txt:
+                            bg = "#FEE2E2"
+                        elif "Hoje" in st_txt:
+                            bg = "#FFEDD5"
+                        elif "Atenção" in st_txt:
+                            bg = "#FEF9C3"
+                        elif "Viável" in st_txt or "Prazo" in st_txt:
+                            bg = "#DCFCE7"
+                        else:
+                            bg = "#F8FAFC"
+                        return [f"background-color: {bg}; color: #111827;" for _ in row_bi]
 
                     st.caption("☑️ **Marque a caixinha `Programar` na primeira coluna** nos pedidos que deseja enviar ao Planejamento Logística:")
                     cols_readonly_bi = [c for c in df_exib_bi.columns if c != "Programar"]
                     df_editado_bi = st.data_editor(
+                        df_pagina_bi.style.apply(_cor_linha_sla_bi, axis=1),
                         df_pagina_bi,
                         key="editor_flags_analise_bi",
                         use_container_width=True,
