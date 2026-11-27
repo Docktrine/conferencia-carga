@@ -3809,7 +3809,8 @@ elif aba == "🚚 Planejamento Logística":
                     salvar_dados(df_plan[COLUNAS_PLANEJAMENTO], "planejamento")
                     st.toast(f"✔️ Notificação do pedido {row_nt['Nº Pedido']} concluída!", icon="✔️")
                     st.rerun()
-
+                    
+    ferramenta_plan_sel = ""
     if not df_exibir_plan.empty:
         f_col1, f_col2 = st.columns(2)
         with f_col1:
@@ -4012,54 +4013,57 @@ elif aba == "🚚 Planejamento Logística":
         st.markdown(
             """
             <style>
-            div[data-testid="stTabs"] div[role="tablist"] {
+            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) > div[role="radiogroup"] {
+                display: flex !important;
+                flex-direction: row !important;
                 gap: 8px !important;
-                background-color: rgba(20, 26, 22, 0.06) !important;
+                background-color: rgba(20, 26, 22, 0.07) !important;
                 padding: 6px !important;
                 border-radius: 12px !important;
-                border-bottom: none !important;
-                margin-bottom: 10px !important;
+                margin-bottom: 12px !important;
             }
-            div[data-testid="stTabs"] button[role="tab"] {
+            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"] {
                 background-color: #FAF8F5 !important;
                 border: 1px solid rgba(27, 94, 32, 0.25) !important;
                 border-radius: 9px !important;
                 padding: 8px 18px !important;
-                color: #3E4740 !important;
-                font-weight: 600 !important;
+                margin: 0 !important;
+                cursor: pointer !important;
                 transition: all 0.15s ease !important;
             }
-            div[data-testid="stTabs"] button[role="tab"]:hover {
-                border-color: #1B5E20 !important;
-                color: #141A16 !important;
+            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"] > div:first-child {
+                display: none !important;
             }
-            div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"]:has(input:checked) {
                 background: linear-gradient(135deg, #141A16 0%, #1E3323 100%) !important;
                 border: 1.5px solid #4CAF50 !important;
-                box-shadow: 0 3px 10px rgba(20, 26, 22, 0.18) !important;
+                box-shadow: 0 3px 10px rgba(20, 26, 22, 0.2) !important;
             }
-            div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p {
+            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"]:has(input:checked) p {
                 color: #FFFFFF !important;
                 font-weight: 800 !important;
-            }
-            div[data-testid="stTabs"] div[data-baseweb="tab-highlight"] {
-                display: none !important;
             }
             </style>
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
                 <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
-                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Selecione a aba da ferramenta desejada</span>
+                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Clique na ferramenta que deseja abrir</span>
             </div>
             """,
             unsafe_allow_html=True
         )
-        tab_calc_fr, tab_inc_ped, tab_ed_ped = st.tabs([
-            "🧮 Calculadora de Frete (Roteiros)",
-            "➕ Incluir Pedido Manualmente",
-            "✏️ Editar ou Excluir Pedido"
-        ])
-        
-        with tab_calc_fr:
+        ferramenta_plan_sel = st.radio(
+            "Ferramenta:",
+            [
+                "🧮 Calculadora de Frete (Roteiros)",
+                "➕ Incluir Pedido Manualmente",
+                "✏️ Editar ou Excluir Pedido"
+            ],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="radio_ferramenta_plan"
+        )
+        if ferramenta_plan_sel == "🧮 Calculadora de Frete (Roteiros)":
+
             st.markdown(
                 """
                 <style>
@@ -4330,7 +4334,7 @@ elif aba == "🚚 Planejamento Logística":
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
-    with tab_inc_ped:
+    if ferramenta_plan_sel == "➕ Incluir Pedido Manualmente":
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
@@ -4467,7 +4471,7 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
                     
-    with tab_ed_ped:
+    if ferramenta_plan_sel == "✏️ Editar ou Excluir Pedido":
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
