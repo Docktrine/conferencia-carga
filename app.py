@@ -4342,54 +4342,68 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
 
-    with st.expander("✏️ Editar ou Excluir Pedido", expanded=False):    
+    with st.expander("✏️ Editar ou Excluir Pedido", expanded=False):
+        st.markdown(
+            """
+            <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
+                <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Manutenção de Agendamento</div>
+                <div style="color:#FFFFFF; font-size:0.86rem; font-weight:600; margin-top:2px;">Selecione o pedido na lista abaixo para alterar horários, transportadora, frete, status ou excluir o registro.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         if not df_plan.empty:
             opcoes_plan = {
                 f"Pedido: {r['Nº Pedido']} | Cliente: {r['Cliente']} | Data: {r['Data']} {r['Hora']} | Status: {r['Status']}": idx
                 for idx, r in df_plan.iterrows()
             }
-            escolha_plan = st.selectbox("Selecione o agendamento para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
-            idx_plan = opcoes_plan[escolha_plan]
-            reg_plan = df_plan.loc[idx_plan]
+            sel_label = st.selectbox("📌 Selecione o agendamento para editar:", list(opcoes_plan.keys()), key="sel_edit_plan")
+            idx_plan = opcoes_plan[sel_label]
+            row_ed = df_plan.loc[idx_plan]
 
             with st.form("form_editar_planejamento"):
+                st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin-bottom:8px;'>📦 1. Dados da Programação e Datas</div>", unsafe_allow_html=True)
                 e1c1, e1c2, e1c3, e1c4 = st.columns(4)
-                ed_data = e1c1.text_input("Data:", value=str(reg_plan["Data"]))
-                ed_hora = e1c2.text_input("Hora:", value=str(reg_plan["Hora"]))
-                ed_pedido = e1c3.text_input("Nº Pedido:", value=str(reg_plan["Nº Pedido"]))
-                ed_ordem = e1c4.text_input("Ordem de Carregamento:", value=str(reg_plan["Ordem de Carregamento"]))
+                ed_data = e1c1.text_input("Data:", value=str(row_ed["Data"]))
+                ed_hora = e1c2.text_input("Hora:", value=str(row_ed["Hora"]))
+                ed_pedido = e1c3.text_input("Nº Pedido:", value=str(row_ed["Nº Pedido"]))
+                ed_ordem = e1c4.text_input("Ordem de Carregamento:", value=str(row_ed["Ordem de Carregamento"]))
 
-                e2c1, e2c2, e2c3, e2c4 = st.columns(4)
-                ed_local = e2c1.text_input("Local de Carregamento:", value=str(reg_plan["Local de Carregamento"]))
-                ed_cliente = e2c2.text_input("Cliente:", value=str(reg_plan["Cliente"]))
-                ed_val_ped = e2c3.text_input("Valor Pedido:", value=str(reg_plan["Valor Pedido"]))
-                ed_data_ent = e2c4.text_input("Data da entrega:", value=str(reg_plan["Data da entrega"]))
+                e2c1, e2c2, e2c3 = st.columns((1.5, 1.2, 1.3))
+                ed_local = e2c1.text_input("Local de Carregamento:", value=str(row_ed["Local de Carregamento"]))
+                ed_data_ent = e2c2.text_input("Data da entrega:", value=str(row_ed["Data da entrega"]))
+                idx_st = STATUS_PLANEJAMENTO.index(row_ed["Status"]) if row_ed["Status"] in STATUS_PLANEJAMENTO else 0
+                ed_status = e2c3.selectbox("Status:", STATUS_PLANEJAMENTO, index=idx_st)
 
-                e3c1, e3c2, e3c3, e3c4 = st.columns(4)
-                ed_transp = e3c1.text_input("Transportadora:", value=str(reg_plan["Transportadora"]))
-                ed_placa = e3c2.text_input("Placa do veículo:", value=str(reg_plan["Placa do veículo"]))
-                ed_tipo_veic = e3c3.text_input("Tipo de Veículo:", value=str(reg_plan["Tipo de Veículo"]))
-                ed_val_frete = e3c4.text_input("Valor de Frete:", value=str(reg_plan["Valor de Frete"]))
+                st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin:12px 0 8px 0;'>🏢 2. Cliente, Destino e Modalidade</div>", unsafe_allow_html=True)
+                e3c1, e3c2, e3c3, e3c4 = st.columns((2.0, 1.2, 0.7, 1.5))
+                ed_cliente = e3c1.text_input("Cliente:", value=str(row_ed["Cliente"]))
+                ed_val_ped = e3c2.text_input("Valor Pedido:", value=str(row_ed["Valor Pedido"]))
+                ed_uf = e3c3.text_input("UF:", value=str(row_ed["UF"]))
+                ed_cidade = e3c4.text_input("Cidade:", value=str(row_ed["Cidade"]))
 
+                st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin:12px 0 8px 0;'>🚛 3. Transporte, Frete e Observações</div>", unsafe_allow_html=True)
                 e4c1, e4c2, e4c3, e4c4 = st.columns(4)
-                ed_uf = e4c1.text_input("UF:", value=str(reg_plan["UF"]))
-                ed_cidade = e4c2.text_input("Cidade:", value=str(reg_plan["Cidade"]))
-                ed_cif_fob = e4c3.text_input("CIF/FOB:", value=str(reg_plan["CIF/FOB"]))
-                ed_compart = e4c4.text_input("Veículo compartilhado:", value=str(reg_plan["Veículo compartilhado"]))
+                ed_transp = e4c1.text_input("Transportadora:", value=str(row_ed["Transportadora"]))
+                ed_placa = e4c2.text_input("Placa do veículo:", value=str(row_ed["Placa do veículo"]))
+                ed_tipo_veic = e4c3.text_input("Tipo de Veículo:", value=str(row_ed["Tipo de Veículo"]))
+                ed_val_frete = e4c4.text_input("Valor de Frete:", value=str(row_ed["Valor de Frete"]))
 
-                e5c1, e5c2 = st.columns(2)
-                st_atual_ed = str(reg_plan["Status"])
-                idx_ed_st = STATUS_PLANEJAMENTO.index(st_atual_ed) if st_atual_ed in STATUS_PLANEJAMENTO else 0
-                ed_status = e5c1.selectbox("Status:", STATUS_PLANEJAMENTO, index=idx_ed_st)
-                ed_obs = e5c2.text_input("Observação:", value=str(reg_plan["Observação"]))
+                e5c1, e5c2, e5c3 = st.columns((1.0, 1.0, 2.5))
+                idx_cf = ["CIF", "FOB"].index(row_ed["CIF/FOB"]) if row_ed["CIF/FOB"] in ["CIF", "FOB"] else 0
+                ed_cif_fob = e5c1.selectbox("CIF/FOB:", ["CIF", "FOB"], index=idx_cf)
+                idx_cp = ["NÃO", "SIM"].index(row_ed["Veículo compartilhado"]) if row_ed["Veículo compartilhado"] in ["NÃO", "SIM"] else 0
+                ed_compart = e5c2.selectbox("Veículo compartilhado:", ["NÃO", "SIM"], index=idx_cp)
+                ed_obs = e5c3.text_input("Observação:", value=str(row_ed["Observação"]))
 
-                if tem_permissao("🗑️ Excluir Cargas e Pedidos"):
-                 c_btn_save, c_btn_del = st.columns(2)
-                 btn_atualizar_plan = c_btn_save.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
-                 btn_excluir_plan = c_btn_del.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
+                st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+                if tem_permissao("🗑️ Excluir Pedidos"):
+                    col_b1, col_b2 = st.columns((3, 1.2))
+                    btn_atualizar_plan = col_b1.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
+                    btn_excluir_plan = col_b2.form_submit_button("🗑️ Excluir este Pedido", use_container_width=True)
                 else:
-                 btn_atualizar_plan = st.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
-                 btn_excluir_plan = False
+                    btn_atualizar_plan = st.form_submit_button("💾 Salvar Alterações", type="primary", use_container_width=True)
+                    btn_excluir_plan = False
 
                 if btn_atualizar_plan:
                     dados_editados = {
