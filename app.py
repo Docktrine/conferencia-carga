@@ -2908,18 +2908,44 @@ elif aba == "📊 Análise de Pedidos":
             limite_critico = st.number_input("⚠️ Limite Crítico (dias úteis p/ carregar):", min_value=0.0, max_value=15.0, value=2.0, step=0.5)
 
     if arquivo_bi is not None:
-        try:
-            nome_arq_bi = arquivo_bi.name.lower()
-            if nome_arq_bi.endswith(".csv"):
-                df_bi_lido = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str)
-            else:
-                df_bi_lido = pd.read_excel(arquivo_bi, dtype=str)
-            df_bi_lido = df_bi_lido.dropna(how="all")
-            df_bi_lido = df_bi_lido.loc[:, ~df_bi_lido.columns.astype(str).str.startswith("Unnamed:")].fillna("")
-            st.session_state["bi_df_bruto"] = df_bi_lido
-            st.session_state["bi_cache_nome"] = arquivo_bi.name
-        except Exception as e_up_bi:
-            st.error(f"Erro ao abrir o arquivo do BI: {e_up_bi}")
+        assinatura_bi = f"{arquivo_bi.name}_{arquivo_bi.size}"
+        if st.session_state.get("bi_assinatura_lida") != assinatura_bi:
+            try:
+                nome_arq_bi = arquivo_bi.name.lower()
+                if nome_arq_bi.endswith(".csv"):
+                    df_bi_lido = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str)
+                elif nome_arq_bi.endswith(".xlsx"):
+                    import openpyxl
+                    wb_ro = openpyxl.load_workbook(arquivo_bi, read_only=True, data_only=True)
+                    df_bi_lido = pd.DataFrame()
+                    for nome_aba_ro in wb_ro.sheetnames:
+                        ws_ro = wb_ro[nome_aba_ro]
+                        linhas_ro = list()
+                        vazias_seg = 0
+                        for r_val in ws_ro.iter_rows(values_only=True):
+                            if r_val and any(v is not None and str(v).strip() != "" for v in r_val):
+                                linhas_ro.append(r_val)
+                                vazias_seg = 0
+                            else:
+                                vazias_seg += 1
+                                if vazias_seg >= 30 and len(linhas_ro) >= 2:
+                                    break
+                        if len(linhas_ro) >= 2:
+                            cab_ro = [str(c).strip() if c is not None and str(c).strip() != "" else f"Unnamed:{i}" for i, c in enumerate(linhas_ro[0])]
+                            df_bi_lido = pd.DataFrame(linhas_ro[1:], columns=cab_ro).astype(str)
+                            break
+                    wb_ro.close()
+                else:
+                    df_bi_lido = pd.read_excel(arquivo_bi, dtype=str)
+
+                if not df_bi_lido.empty:
+                    df_bi_lido = df_bi_lido.replace({"None": "", "nan": "", "NaN": "", "<NA>": ""})
+                    df_bi_lido = df_bi_lido.loc[:, ~df_bi_lido.columns.astype(str).str.startswith("Unnamed:")].fillna("")
+                st.session_state["bi_df_bruto"] = df_bi_lido
+                st.session_state["bi_cache_nome"] = arquivo_bi.name
+                st.session_state["bi_assinatura_lida"] = assinatura_bi
+            except Exception as e_up_bi:
+                st.error(f"Erro ao abrir o arquivo do BI: {e_up_bi}")
 
     if st.session_state.get("bi_df_bruto") is not None:
         try:
