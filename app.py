@@ -2982,91 +2982,19 @@ elif aba == "📊 Análise de Pedidos":
 
             if st.session_state.get("bi_chave_compilada") != chave_comp:
                 idx_map = {c: i for i, c in enumerate(cols_bi)}
-                i_ped = idx_map.get(col_ped_bi, -1)
-                i_fil = idx_map.get(col_filial_bi, -1)
-                i_cli = idx_map.get(col_cli_bi, -1)
-                i_uf = idx_map.get(col_uf_bi, -1)
-                i_cid = idx_map.get(col_cid_bi, -1)
-                i_dc = idx_map.get(col_dt_cria, -1)
-                i_de = idx_map.get(col_dt_ent, -1)
-                i_val = idx_map.get(col_val_bi, -1)
-                i_vol = idx_map.get(col_vol_bi, -1)
-                i_nf = idx_map.get(col_nf_bi, -1)
-
-                pedidos_compilados = {}
-                ordem_pedidos_bi = list()
-                cont_linhas = [0]
-
-                def _processar_tupla_bi(row_t, num_l):
-                    n_cols = len(row_t)
-                    if i_ped >= 0:
-                        raw_p = row_t[i_ped] if i_ped < n_cols else None
-                        ped_raw = str(raw_p).strip() if raw_p is not None else ""
-                        if ped_raw.endswith(".0"):
-                            ped_raw = ped_raw[:-2]
-                    else:
-                        ped_raw = f"LINHA-{num_l}"
-
-                    if not ped_raw or ped_raw.upper() in ("NAN", "NONE", "NULL", "<NA>"):
-                        return
-
-                    cont_linhas[0] += 1
-                    ped_chave = ped_raw.upper()
-
-                    fil_v = str(row_t[i_fil]).strip() if (0 <= i_fil < n_cols and row_t[i_fil] is not None) else ""
-                    cli_v = str(row_t[i_cli]).strip() if (0 <= i_cli < n_cols and row_t[i_cli] is not None) else ""
-                    uf_v = str(row_t[i_uf]).strip() if (0 <= i_uf < n_cols and row_t[i_uf] is not None) else ""
-                    cid_v = str(row_t[i_cid]).strip() if (0 <= i_cid < n_cols and row_t[i_cid] is not None) else ""
-
-                    raw_val = row_t[i_val] if (0 <= i_val < n_cols) else 0.0
-                    val_n = float(raw_val) if isinstance(raw_val, (int, float)) and not pd.isna(raw_val) else limpar_numero_bi(raw_val)
-
-                    raw_vol = row_t[i_vol] if (0 <= i_vol < n_cols) else 0.0
-                    vol_n = int(round(float(raw_vol))) if isinstance(raw_vol, (int, float)) and not pd.isna(raw_vol) else int(round(limpar_numero_bi(raw_vol)))
-
-                    nf_v = str(row_t[i_nf]).strip() if (0 <= i_nf < n_cols and row_t[i_nf] is not None) else ""
-                    if nf_v.upper() in ("NAN", "NONE", "NULL", "-", "<NA>"):
-                        nf_v = ""
-                    elif nf_v.endswith(".0"):
-                        nf_v = nf_v[:-2]
-
-                    raw_dc = row_t[i_dc] if (0 <= i_dc < n_cols) else None
-                    raw_de = row_t[i_de] if (0 <= i_de < n_cols) else None
-
-                    if ped_chave not in pedidos_compilados:
-                        ordem_pedidos_bi.append(ped_chave)
-                        pedidos_compilados[ped_chave] = {
-                            "ped_exib": ped_raw,
-                            "filial": fil_v,
-                            "cliente": cli_v,
-                            "uf": uf_v,
-                            "cidade": cid_v,
-                            "valor_num": val_n,
-                            "vol_num": vol_n,
-                            "qtd_itens": 1,
-                            "nfs": [nf_v] if nf_v else list(),
-                            "dt_c": _parse_data_bi_segura(raw_dc),
-                            "dt_e": _parse_data_bi_segura(raw_de)
-                        }
-                    else:
-                        it = pedidos_compilados[ped_chave]
-                        it["valor_num"] += val_n
-                        it["vol_num"] += vol_n
-                        it["qtd_itens"] += 1
-                        if not it["filial"] and fil_v:
-                            it["filial"] = fil_v
-                        if not it["cliente"] and cli_v:
-                            it["cliente"] = cli_v
-                        if not it["uf"] and uf_v:
-                            it["uf"] = uf_v
-                        if not it["cidade"] and cid_v:
-                            it["cidade"] = cid_v
-                        if nf_v and nf_v not in it["nfs"]:
-                            it["nfs"].append(nf_v)
-                        if pd.isna(it["dt_c"]) and raw_dc is not None:
-                            it["dt_c"] = _parse_data_bi_segura(raw_dc)
-                        if pd.isna(it["dt_e"]) and raw_de is not None:
-                            it["dt_e"] = _parse_data_bi_segura(raw_de)
+                mapa_cols_usar = {
+                    "ped": idx_map.get(col_ped_bi, -1),
+                    "fil": idx_map.get(col_filial_bi, -1),
+                    "cli": idx_map.get(col_cli_bi, -1),
+                    "uf": idx_map.get(col_uf_bi, -1),
+                    "cid": idx_map.get(col_cid_bi, -1),
+                    "dc": idx_map.get(col_dt_cria, -1),
+                    "de": idx_map.get(col_dt_ent, -1),
+                    "val": idx_map.get(col_val_bi, -1),
+                    "vol": idx_map.get(col_vol_bi, -1),
+                    "nf": idx_map.get(col_nf_bi, -1),
+                }
+                cols_usar_idx = sorted({v for v in mapa_cols_usar.values() if v >= 0})
 
                 arquivo_bi.seek(0)
                 cab_b = arquivo_bi.read(8)
@@ -3075,11 +3003,12 @@ elif aba == "📊 Análise de Pedidos":
                 if cab_b.startswith(b"PK\x03\x04"):
                     import openpyxl
                     wb_s = openpyxl.load_workbook(arquivo_bi, read_only=True, data_only=True)
+                    linhas_util = list()
                     for nm_aba in wb_s.sheetnames:
                         ws_s = wb_s[nm_aba]
                         achou_hdr = False
                         vazias = 0
-                        for idx_r, r_vals in enumerate(ws_s.iter_rows(values_only=True), start=1):
+                        for r_vals in ws_s.iter_rows(values_only=True):
                             if not r_vals or not any(v is not None and str(v).strip() != "" for v in r_vals):
                                 vazias += 1
                                 if achou_hdr and vazias >= 30:
@@ -3089,31 +3018,119 @@ elif aba == "📊 Análise de Pedidos":
                             if not achou_hdr:
                                 achou_hdr = True
                                 continue
-                            _processar_tupla_bi(r_vals, idx_r)
+                            n_c = len(r_vals)
+                            linhas_util.append([r_vals[idx_u] if idx_u < n_c else "" for idx_u in cols_usar_idx])
                         if achou_hdr:
                             break
                     wb_s.close()
+                    df_raw_min = pd.DataFrame(linhas_util, columns=cols_usar_idx).astype(str)
+                    del linhas_util
                 elif cab_b.startswith(b"\xd0\xcf\x11\xe0"):
-                    df_tmp = pd.read_excel(arquivo_bi, dtype=str)
-                    for idx_r, r_vals in enumerate(df_tmp.itertuples(index=False, name=None), start=1):
-                        _processar_tupla_bi(r_vals, idx_r)
-                    del df_tmp
+                    df_raw_min = pd.read_excel(arquivo_bi, usecols=cols_usar_idx, dtype=str)
+                    df_raw_min.columns = cols_usar_idx
                 else:
                     primeira_linha_b = arquivo_bi.readline().decode("utf-8-sig", errors="ignore")
                     arquivo_bi.seek(0)
                     sep_bi_b = ";" if primeira_linha_b.count(";") >= primeira_linha_b.count(",") else ","
                     try:
-                        chunks_csv = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, chunksize=5000, encoding="utf-8-sig", on_bad_lines="skip")
+                        df_raw_min = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, usecols=cols_usar_idx, encoding="utf-8-sig", on_bad_lines="skip")
                     except Exception:
                         arquivo_bi.seek(0)
-                        chunks_csv = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, chunksize=5000, encoding="latin-1", on_bad_lines="skip")
-                    idx_r = 0
-                    for ch_df in chunks_csv:
-                        for r_vals in ch_df.itertuples(index=False, name=None):
-                            idx_r += 1
-                            _processar_tupla_bi(r_vals, idx_r)
+                        df_raw_min = pd.read_csv(arquivo_bi, sep=sep_bi_b, dtype=str, usecols=cols_usar_idx, encoding="latin-1", on_bad_lines="skip")
+                    df_raw_min.columns = cols_usar_idx
 
-                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, cont_linhas[0])
+                df_raw_min = df_raw_min.fillna("")
+
+                def _col_min(chave_m):
+                    ix = mapa_cols_usar[chave_m]
+                    if ix >= 0 and ix in df_raw_min.columns:
+                        return df_raw_min[ix].astype(str).str.strip()
+                    return pd.Series("", index=df_raw_min.index)
+
+                if mapa_cols_usar["ped"] >= 0:
+                    s_ped = _col_min("ped").str.replace(r"\.0$", "", regex=True)
+                else:
+                    s_ped = pd.Series([f"LINHA-{i+1}" for i in range(len(df_raw_min))], index=df_raw_min.index)
+
+                s_ped_k = s_ped.str.upper()
+                mask_ok = ~s_ped_k.isin(["", "NAN", "NONE", "NULL", "<NA>"])
+                total_linhas_lidas_v = int(mask_ok.sum())
+
+                def _num_vec(s_str):
+                    s = s_str.str.replace("R$", "", regex=False).str.replace(" ", "", regex=False)
+                    tem_v = s.str.contains(",", na=False)
+                    tem_p = s.str.contains(r"\.", na=False)
+                    s_amb = s.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
+                    s_vir = s.str.replace(",", ".", regex=False)
+                    s = s.where(~(tem_v & tem_p), s_amb).where(~(tem_v & ~tem_p), s_vir)
+                    return pd.to_numeric(s, errors="coerce").fillna(0.0)
+
+                df_ag = pd.DataFrame({
+                    "ped_k": s_ped_k[mask_ok],
+                    "ped_exib": s_ped[mask_ok],
+                    "filial": _col_min("fil")[mask_ok],
+                    "cliente": _col_min("cli")[mask_ok],
+                    "uf": _col_min("uf")[mask_ok],
+                    "cidade": _col_min("cid")[mask_ok],
+                    "dc_raw": _col_min("dc")[mask_ok],
+                    "de_raw": _col_min("de")[mask_ok],
+                    "val": _num_vec(_col_min("val")[mask_ok]),
+                    "vol": _num_vec(_col_min("vol")[mask_ok]),
+                    "qtd": 1,
+                    "nf": _col_min("nf")[mask_ok].str.replace(r"\.0$", "", regex=True)
+                })
+                del df_raw_min
+
+                df_ag["nf"] = df_ag["nf"].where(~df_ag["nf"].str.upper().isin(["NAN", "NONE", "NULL", "-", "<NA>"]), "")
+
+                def _first_val(s):
+                    for v in s:
+                        if v and v.upper() not in ("NAN", "NONE", "NULL", "<NA>"):
+                            return v
+                    return ""
+
+                def _uniq_nfs(s):
+                    out = list()
+                    for v in s:
+                        if v and v not in out:
+                            out.append(v)
+                    return out
+
+                df_grp = df_ag.groupby("ped_k", sort=False, as_index=False).agg({
+                    "ped_exib": "first",
+                    "filial": _first_val,
+                    "cliente": _first_val,
+                    "uf": _first_val,
+                    "cidade": _first_val,
+                    "dc_raw": _first_val,
+                    "de_raw": _first_val,
+                    "val": "sum",
+                    "vol": "sum",
+                    "qtd": "sum",
+                    "nf": _uniq_nfs
+                })
+                del df_ag
+
+                pedidos_compilados = {}
+                ordem_pedidos_bi = list()
+                for _, rg in df_grp.iterrows():
+                    pk = rg["ped_k"]
+                    ordem_pedidos_bi.append(pk)
+                    pedidos_compilados[pk] = {
+                        "ped_exib": rg["ped_exib"],
+                        "filial": rg["filial"],
+                        "cliente": rg["cliente"],
+                        "uf": rg["uf"],
+                        "cidade": rg["cidade"],
+                        "valor_num": float(rg["val"]),
+                        "vol_num": int(round(float(rg["vol"]))),
+                        "qtd_itens": int(rg["qtd"]),
+                        "nfs": rg["nf"],
+                        "dt_c": _parse_data_bi_segura(rg["dc_raw"]),
+                        "dt_e": _parse_data_bi_segura(rg["de_raw"])
+                    }
+
+                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas_v)
                 st.session_state["bi_chave_compilada"] = chave_comp
 
             pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas = st.session_state["bi_compilado_cache"]
