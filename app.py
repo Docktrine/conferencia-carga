@@ -4346,7 +4346,7 @@ elif aba == "🚚 Planejamento Logística":
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
-                <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Manutenção de Agendamento</div>
+                <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Manutenção de Planejamento</div>
                 <div style="color:#FFFFFF; font-size:0.86rem; font-weight:600; margin-top:2px;">Selecione o pedido na lista abaixo para alterar horários, transportadora, frete, status ou excluir o registro.</div>
             </div>
             """,
