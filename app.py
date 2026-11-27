@@ -4749,8 +4749,19 @@ elif aba == "🚚 Planejamento Logística":
             st.info("Nenhum agendamento cadastrado na planilha ainda.")
 
 elif aba == "📥 Importação de Pedidos":
-    st.title("📥 Importar Pedidos para Conferência")
-    st.write("Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade). Eles ficarão disponíveis imediatamente para o conferente.")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Operação WMS • Liberação de Carga</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Romaneios • Pedidos • SKU & Quantidade</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">📥 Importar Pedidos para Conferência</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Suba um ou vários arquivos de pedido (SKU, Produto e Quantidade) para liberar imediatamente ao conferente no pátio.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     arquivos_pedidos = st.file_uploader(
         "Suba o(s) Excel/CSV do(s) pedido(s)",
@@ -4882,6 +4893,34 @@ elif aba == "📥 Importação de Pedidos":
                 st.error(f"Erro ao processar arquivo(s): {e}")
 
     st.divider()
+    c_man1, c_man2 = st.columns(2, gap="medium")
+    with c_man1:
+        st.markdown(
+            """
+            <div style="background:#F0F9FF; border:1px solid rgba(2,132,199,0.35); border-left:5px solid #0284C7; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.86rem; font-weight:800; color:#0C4A6E;">✏️ Ajuste de Identificação</span>
+                    <span style="background:#E0F2FE; color:#0369A1; font-size:0.64rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Renomear</span>
+                </div>
+                <div style="font-size:0.75rem; color:#334155; margin-top:3px;">Corrija o número da carga ou pedido já liberado sem perder os itens importados.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with c_man2:
+        st.markdown(
+            """
+            <div style="background:#FEF2F2; border:1px solid rgba(220,38,38,0.35); border-left:5px solid #DC2626; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.86rem; font-weight:800; color:#7F1D1D;">🗑️ Limpeza & Remoção</span>
+                    <span style="background:#FEE2E2; color:#991B1B; font-size:0.64rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Gerenciar / Excluir</span>
+                </div>
+                <div style="font-size:0.75rem; color:#334155; margin-top:3px;">Remova cargas duplicadas, canceladas ou de teste da fila de conferência.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
     with st.expander("✏️ Renomear Carga Existente"):
         df_cargas_ren = carregar_dados("cargas")
         if not df_cargas_ren.empty and "id_carga" in df_cargas_ren.columns:
