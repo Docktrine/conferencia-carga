@@ -3933,9 +3933,36 @@ elif aba == "🚚 Planejamento Logística":
                             else:
                                 st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
         with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
-            c_cap_fr, c_ref_fr = st.columns((4.2, 1.0), vertical_alignment="center")
-            c_cap_fr.markdown(
-                "<div style='font-size:0.82rem; color:#3E4740;'>Monte o itinerário completo (ex: <b>Friozem</b> ➔ <b>Fábrica</b> ➔ <b>São Paulo/SP</b>). O sistema identifica automaticamente a filial de origem de cada trecho e permite editar desvios na tabela.</div>",
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stExpander"]:has(div[data-testid="stElementContainer"] .calc-frete-banner) {
+                    background: linear-gradient(180deg, #F4F7F4 0%, #EAECE7 100%) !important;
+                    border: 1.5px solid #2E7D32 !important;
+                    border-radius: 14px !important;
+                    box-shadow: 0 4px 14px rgba(20, 26, 22, 0.06) !important;
+                }
+                div.stButton > button[key="btn_undo_parada_fr"],
+                div[class*="st-key-btn_undo_parada_fr"] button {
+                    background-color: #FEF3C7 !important;
+                    border: 1px solid #D97706 !important;
+                    color: #92400E !important;
+                }
+                div[class*="st-key-btn_undo_parada_fr"] button p { color: #92400E !important; font-weight: 700 !important; }
+                div[class*="st-key-btn_limpar_parada_fr"] button {
+                    background-color: #FEE2E2 !important;
+                    border: 1px solid #DC2626 !important;
+                    color: #991B1B !important;
+                }
+                div[class*="st-key-btn_limpar_parada_fr"] button p { color: #991B1B !important; font-weight: 700 !important; }
+                </style>
+                <div class="calc-frete-banner" style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Simulador Logístico de Roteiros</div>
+                        <div style="color:#FFFFFF; font-size:0.88rem; font-weight:600; margin-top:2px;">Monte coletas e entregas em sequência (ex: Friozem ➔ Fábrica ➔ São Paulo/SP) com cálculo automático por trecho.</div>
+                    </div>
+                </div>
+                """,
                 unsafe_allow_html=True
             )
 
@@ -3982,10 +4009,6 @@ elif aba == "🚚 Planejamento Logística":
                         }
                 return mapa_tf, sorted(list(filiais_set))
 
-            if c_ref_fr.button("🔄 Atualizar Tabela", use_container_width=True, key="btn_reload_tab_frete"):
-                carregar_tabela_frete_oficial.clear()
-                st.rerun()
-
             try:
                 mapa_frete_of, lista_filiais_of = carregar_tabela_frete_oficial()
             except Exception as e_tf:
@@ -4024,12 +4047,15 @@ elif aba == "🚚 Planejamento Logística":
                     return sede_para_filial.get(cid_l, ""), cid_l
 
                 with st.container(border=True):
-                    cf1, cf2, cf3, cf4 = st.columns((1.6, 1.3, 1.9, 1.0), vertical_alignment="bottom")
+                    cf1, cf2, cf3, cf4, cf5 = st.columns((1.5, 1.2, 1.8, 0.95, 0.95), vertical_alignment="bottom")
                     ponto_saida_fr = cf1.selectbox("🚩 Ponto de Saída (1ª Origem):", options=opcoes_pontos_fr, index=0, key="calc_fr_saida")
                     veic_calc_fr = cf2.selectbox("🚛 Tipo de Veículo:", options=["CARRETA", "TRUCK / BI-TRUCK"], key="calc_fr_veic")
                     prox_parada_fr = cf3.selectbox("📍 Próxima Parada (Coleta / Entrega):", options=opcoes_pontos_fr, key="calc_fr_prox")
                     if cf4.button("➕ Adicionar", type="primary", use_container_width=True, key="btn_add_parada_fr"):
                         st.session_state.roteiro_frete_paradas.append(prox_parada_fr)
+                        st.rerun()
+                    if cf5.button("🔄 Tabela", use_container_width=True, key="btn_reload_tab_frete", help="Recarregar valores da aba tabela frete"):
+                        carregar_tabela_frete_oficial.clear()
                         st.rerun()
 
                 if st.session_state.roteiro_frete_paradas:
@@ -4074,26 +4100,27 @@ elif aba == "🚚 Planejamento Logística":
                         if fil_dest_tr:
                             filial_ativa = fil_dest_tr
 
-                    # Linha do Tempo Visual do Itinerário
+                    # Linha do Tempo Colorida por Tipo de Etapa
                     nos_rota_html = (
-                        f"<div style='display:inline-flex; align-items:center; gap:6px; background:#1F2922; color:#FFFFFF; "
-                        f"padding:5px 12px; border-radius:20px; font-size:0.77rem; font-weight:700; border:1px solid #4CAF50;'>"
-                        f"<span>🚩 SAÍDA</span><span style='color:#A5D6A7;'>{ponto_saida_fr.replace('🏭 ', '')}</span></div>"
+                        f"<div style='display:inline-flex; align-items:center; gap:6px; background:#141A16; color:#FFFFFF; "
+                        f"padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid #4CAF50;'>"
+                        f"<span style='color:#81C784;'>🚩 SAÍDA</span><span>{ponto_saida_fr.replace('🏭 ', '')}</span></div>"
                     )
                     for idx_no, p_no in enumerate(paradas_atuais, start=1):
                         eh_ultimo_no = (idx_no == len(paradas_atuais))
-                        bg_no = "#E8F5E9" if eh_ultimo_no else "#FAF8F5"
-                        bd_no = "#1B5E20" if eh_ultimo_no else "rgba(27,94,32,0.45)"
-                        tag_no = "🏁 DESTINO" if eh_ultimo_no else f"📍 PARADA {idx_no}"
+                        if eh_ultimo_no:
+                            bg_no, bd_no, cor_tag, cor_txt, tag_no = "#E0F2FE", "#0284C7", "#0369A1", "#0C4A6E", "🏁 DESTINO FINAL"
+                        else:
+                            bg_no, bd_no, cor_tag, cor_txt, tag_no = "#FEF3C7", "#D97706", "#B45309", "#78350F", f"📍 PARADA {idx_no}"
                         nos_rota_html += (
-                            f"<span style='color:#1B5E20; font-weight:800; font-size:0.9rem;'>➔</span>"
-                            f"<div style='display:inline-flex; align-items:center; gap:6px; background:{bg_no}; color:#141A16; "
-                            f"padding:5px 12px; border-radius:20px; font-size:0.77rem; font-weight:700; border:1.5px solid {bd_no};'>"
-                            f"<span style='color:#1B5E20;'>{tag_no}</span><span>{p_no.replace('🏭 ', '')}</span></div>"
+                            f"<span style='color:#2E7D32; font-weight:900; font-size:0.95rem;'>➔</span>"
+                            f"<div style='display:inline-flex; align-items:center; gap:6px; background:{bg_no}; color:{cor_txt}; "
+                            f"padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid {bd_no};'>"
+                            f"<span style='color:{cor_tag};'>{tag_no}</span><span>{p_no.replace('🏭 ', '')}</span></div>"
                         )
 
                     st.markdown(
-                        f"<div style='background:rgba(255,255,255,0.55); border:1px solid rgba(27,94,32,0.28); border-radius:12px; "
+                        f"<div style='background:#FFFFFF; border:1px solid #C8D6C9; border-radius:12px; "
                         f"padding:10px 14px; margin:8px 0 10px 0; display:flex; flex-wrap:wrap; align-items:center; gap:8px;'>"
                         f"{nos_rota_html}</div>",
                         unsafe_allow_html=True
@@ -4122,28 +4149,28 @@ elif aba == "🚚 Planejamento Logística":
                     c_kpi_f1, c_kpi_f2, c_kpi_f3, c_btns_fr = st.columns((1.6, 1.2, 1.0, 1.5), vertical_alignment="center")
                     with c_kpi_f1:
                         st.markdown(
-                            f"<div style='background:linear-gradient(135deg, #1F2922 0%, #141A16 100%); border:1px solid #4CAF50; "
-                            f"border-left:5px solid #4CAF50; border-radius:12px; padding:10px 16px; box-shadow:0 3px 10px rgba(0,0,0,0.08);'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:#A5D6A7; font-weight:700;'>💰 Frete Total Estimado</div>"
+                            f"<div style='background:linear-gradient(135deg, #1B4332 0%, #081C15 100%); border:1.5px solid #40916C; "
+                            f"border-left:6px solid #74C69D; border-radius:12px; padding:10px 16px; box-shadow:0 3px 10px rgba(0,0,0,0.1);'>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:#B7E4C7; font-weight:800;'>💰 Frete Total Estimado</div>"
                             f"<div style='font-size:1.45rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{tot_fr_fmt}</div>"
                             f"</div>",
                             unsafe_allow_html=True
                         )
                     with c_kpi_f2:
                         st.markdown(
-                            f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #1B5E20; "
+                            f"<div style='background:#E0F2FE; border:1.5px solid #38BDF8; border-left:5px solid #0284C7; "
                             f"border-radius:12px; padding:10px 14px;'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>🛣️ Distância Total</div>"
-                            f"<div style='font-size:1.35rem; font-weight:800; color:#141A16; margin-top:2px;'>{int(round(total_km_rota))} km</div>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#0369A1; font-weight:800;'>🛣️ Distância Total</div>"
+                            f"<div style='font-size:1.35rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{int(round(total_km_rota))} km</div>"
                             f"</div>",
                             unsafe_allow_html=True
                         )
                     with c_kpi_f3:
                         st.markdown(
-                            f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #2E7D32; "
+                            f"<div style='background:#FEF3C7; border:1.5px solid #FBBF24; border-left:5px solid #D97706; "
                             f"border-radius:12px; padding:10px 14px;'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>📍 Paradas</div>"
-                            f"<div style='font-size:1.35rem; font-weight:800; color:#141A16; margin-top:2px;'>{len(paradas_atuais)}</div>"
+                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#B45309; font-weight:800;'>📍 Paradas</div>"
+                            f"<div style='font-size:1.35rem; font-weight:800; color:#78350F; margin-top:2px;'>{len(paradas_atuais)}</div>"
                             f"</div>",
                             unsafe_allow_html=True
                         )
@@ -4172,7 +4199,7 @@ elif aba == "🚚 Planejamento Logística":
                                 st.rerun()
                 else:
                     st.info("Selecione o **Ponto de Saída**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")
-    
+                    
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
