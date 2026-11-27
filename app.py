@@ -2909,149 +2909,213 @@ elif aba == "📊 Análise de Pedidos":
 
     if arquivo_bi is not None:
         assinatura_bi = f"{arquivo_bi.name}_{arquivo_bi.size}"
-        if st.session_state.get("bi_assinatura_lida") != assinatura_bi:
+        if st.session_state.get("bi_assinatura_cols") != assinatura_bi:
             try:
-                nome_arq_bi = arquivo_bi.name.lower()
-                if nome_arq_bi.endswith(".csv"):
-                    df_bi_lido = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str)
-                elif nome_arq_bi.endswith(".xlsx"):
+                cab_bytes = arquivo_bi.read(8)
+                arquivo_bi.seek(0)
+                if cab_bytes.startswith(b"PK\x03\x04"):
                     import openpyxl
-                    wb_ro = openpyxl.load_workbook(arquivo_bi, read_only=True, data_only=True)
-                    df_bi_lido = pd.DataFrame()
-                    for nome_aba_ro in wb_ro.sheetnames:
-                        ws_ro = wb_ro[nome_aba_ro]
-                        linhas_ro = list()
-                        vazias_seg = 0
-                        for r_val in ws_ro.iter_rows(values_only=True):
-                            if r_val and any(v is not None and str(v).strip() != "" for v in r_val):
-                                linhas_ro.append(r_val)
-                                vazias_seg = 0
-                            else:
-                                vazias_seg += 1
-                                if vazias_seg >= 30 and len(linhas_ro) >= 2:
-                                    break
-                        if len(linhas_ro) >= 2:
-                            cab_ro = [str(c).strip() if c is not None and str(c).strip() != "" else f"Unnamed:{i}" for i, c in enumerate(linhas_ro[0])]
-                            df_bi_lido = pd.DataFrame(linhas_ro[1:], columns=cab_ro).astype(str)
+                    wb_cab = openpyxl.load_workbook(arquivo_bi, read_only=True, data_only=True)
+                    cols_detectadas = list()
+                    for nm_aba in wb_cab.sheetnames:
+                        ws_c = wb_cab[nm_aba]
+                        for row_c in ws_c.iter_rows(max_row=5, values_only=True):
+                            if row_c and sum(1 for v in row_c if v is not None and str(v).strip() != "") >= 2:
+                                cols_detectadas = [str(c).strip() if c is not None and str(c).strip() != "" else f"Col_{i+1}" for i, c in enumerate(row_c)]
+                                break
+                        if cols_detectadas:
                             break
-                    wb_ro.close()
+                    wb_cab.close()
+                elif cab_bytes.startswith(b"\xd0\xcf\x11\xe0"):
+                    df_cab = pd.read_excel(arquivo_bi, nrows=2, dtype=str)
+                    cols_detectadas = [str(c).strip() for c in df_cab.columns]
                 else:
-                    df_bi_lido = pd.read_excel(arquivo_bi, dtype=str)
+                    try:
+                        df_cab = pd.read_csv(arquivo_bi, sep=None, engine="python", nrows=2, dtype=str, encoding="utf-8-sig")
+                    except Exception:
+                        arquivo_bi.seek(0)
+                        df_cab = pd.read_csv(arquivo_bi, sep=";", nrows=2, dtype=str, encoding="latin-1")
+                    cols_detectadas = [str(c).strip() for c in df_cab.columns]
 
-                if not df_bi_lido.empty:
-                    df_bi_lido = df_bi_lido.replace({"None": "", "nan": "", "NaN": "", "<NA>": ""})
-                    df_bi_lido = df_bi_lido.loc[:, ~df_bi_lido.columns.astype(str).str.startswith("Unnamed:")].fillna("")
-                st.session_state["bi_df_bruto"] = df_bi_lido
-                st.session_state["bi_cache_nome"] = arquivo_bi.name
-                st.session_state["bi_assinatura_lida"] = assinatura_bi
-            except Exception as e_up_bi:
-                st.error(f"Erro ao abrir o arquivo do BI: {e_up_bi}")
+                st.session_state["bi_cols_disponiveis"] = cols_detectadas
+                st.session_state["bi_assinatura_cols"] = assinatura_bi
+                st.session_state.pop("bi_compilado_cache", None)
+            except Exception as e_cab:
+                st.error(f"Erro ao ler cabeçalho do BI: {e_cab}")
 
-    if st.session_state.get("bi_df_bruto") is not None:
+    cols_bi = st.session_state.get("bi_cols_disponiveis", list())
+    if arquivo_bi is not None and cols_bi:
         try:
-            df_bi = st.session_state["bi_df_bruto"]
+            with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
+                def _opcoes_bi(termos):
+                    enc = achar_col_bi(cols_bi, termos)
+                    return ["(Nenhum)"] + cols_bi, (cols_bi.index(enc) + 1) if enc in cols_bi else 0
 
-            if df_bi.empty:
-                st.warning("O arquivo enviado está vazio.")
+                m1, m2, m3, m4, m5 = st.columns(5)
+                op_ped, idx_ped = _opcoes_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"))
+                col_ped_bi = m1.selectbox("Número do Pedido / Carga:", op_ped, index=idx_ped)
+                op_fil, idx_fil = _opcoes_bi(("FILIAL", "UNIDADE", "LOCAL", "CD", "DEPOSITO", "EMPRESA"))
+                col_filial_bi = m2.selectbox("Filial (Local Carreg.):", op_fil, index=idx_fil)
+                op_cli, idx_cli = _opcoes_bi(("CLIENTE", "DESTINATARIO", "RAZAO"))
+                col_cli_bi = m3.selectbox("Cliente (Opcional):", op_cli, index=idx_cli)
+                op_uf, idx_uf = _opcoes_bi(("UF", "ESTADO"))
+                col_uf_bi = m4.selectbox("Estado (UF):", op_uf, index=idx_uf)
+                op_cid, idx_cid = _opcoes_bi(("CIDADE", "MUNICIPIO"))
+                col_cid_bi = m5.selectbox("Cidade:", op_cid, index=idx_cid)
+
+                m6, m7, m8, m9, m10 = st.columns(5)
+                op_dc, idx_dc = _opcoes_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA"))
+                col_dt_cria = m6.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
+                op_de, idx_de = _opcoes_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"))
+                col_dt_ent = m7.selectbox("Data de Entrega:", op_de, index=idx_de)
+                op_val, idx_val = _opcoes_bi(("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
+                col_val_bi = m8.selectbox("Valor do Pedido (R$):", op_val, index=idx_val)
+                op_vol, idx_vol = _opcoes_bi(("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
+                col_vol_bi = m9.selectbox("Qtd de Volumes:", op_vol, index=idx_vol)
+                op_nf, idx_nf = _opcoes_bi(("NOTA FISCAL", "NF", "NFE", "NOTA", "DANFE"))
+                col_nf_bi = m10.selectbox("Nota Fiscal (Opcional):", op_nf, index=idx_nf)
+
+            chave_comp = f"{st.session_state.get('bi_assinatura_cols')}|{col_ped_bi}|{col_filial_bi}|{col_cli_bi}|{col_uf_bi}|{col_cid_bi}|{col_dt_cria}|{col_dt_ent}|{col_val_bi}|{col_vol_bi}|{col_nf_bi}"
+
+            if st.session_state.get("bi_chave_compilada") != chave_comp:
+                idx_map = {c: i for i, c in enumerate(cols_bi)}
+                i_ped = idx_map.get(col_ped_bi, -1)
+                i_fil = idx_map.get(col_filial_bi, -1)
+                i_cli = idx_map.get(col_cli_bi, -1)
+                i_uf = idx_map.get(col_uf_bi, -1)
+                i_cid = idx_map.get(col_cid_bi, -1)
+                i_dc = idx_map.get(col_dt_cria, -1)
+                i_de = idx_map.get(col_dt_ent, -1)
+                i_val = idx_map.get(col_val_bi, -1)
+                i_vol = idx_map.get(col_vol_bi, -1)
+                i_nf = idx_map.get(col_nf_bi, -1)
+
+                pedidos_compilados = {}
+                ordem_pedidos_bi = list()
+                total_linhas_lidas = 0
+
+                def _processar_tupla_bi(row_t, num_l):
+                    nonlocal total_linhas_lidas
+                    n_cols = len(row_t)
+                    if i_ped >= 0:
+                        raw_p = row_t[i_ped] if i_ped < n_cols else None
+                        ped_raw = str(raw_p).strip() if raw_p is not None else ""
+                        if ped_raw.endswith(".0"):
+                            ped_raw = ped_raw[:-2]
+                    else:
+                        ped_raw = f"LINHA-{num_l}"
+
+                    if not ped_raw or ped_raw.upper() in ("NAN", "NONE", "NULL", "<NA>"):
+                        return
+
+                    total_linhas_lidas += 1
+                    ped_chave = ped_raw.upper()
+
+                    fil_v = str(row_t[i_fil]).strip() if (0 <= i_fil < n_cols and row_t[i_fil] is not None) else ""
+                    cli_v = str(row_t[i_cli]).strip() if (0 <= i_cli < n_cols and row_t[i_cli] is not None) else ""
+                    uf_v = str(row_t[i_uf]).strip() if (0 <= i_uf < n_cols and row_t[i_uf] is not None) else ""
+                    cid_v = str(row_t[i_cid]).strip() if (0 <= i_cid < n_cols and row_t[i_cid] is not None) else ""
+
+                    raw_val = row_t[i_val] if (0 <= i_val < n_cols) else 0.0
+                    val_n = float(raw_val) if isinstance(raw_val, (int, float)) and not pd.isna(raw_val) else limpar_numero_bi(raw_val)
+
+                    raw_vol = row_t[i_vol] if (0 <= i_vol < n_cols) else 0.0
+                    vol_n = int(round(float(raw_vol))) if isinstance(raw_vol, (int, float)) and not pd.isna(raw_vol) else int(round(limpar_numero_bi(raw_vol)))
+
+                    nf_v = str(row_t[i_nf]).strip() if (0 <= i_nf < n_cols and row_t[i_nf] is not None) else ""
+                    if nf_v.upper() in ("NAN", "NONE", "NULL", "-", "<NA>"):
+                        nf_v = ""
+                    elif nf_v.endswith(".0"):
+                        nf_v = nf_v[:-2]
+
+                    raw_dc = row_t[i_dc] if (0 <= i_dc < n_cols) else None
+                    raw_de = row_t[i_de] if (0 <= i_de < n_cols) else None
+
+                    if ped_chave not in pedidos_compilados:
+                        ordem_pedidos_bi.append(ped_chave)
+                        pedidos_compilados[ped_chave] = {
+                            "ped_exib": ped_raw,
+                            "filial": fil_v,
+                            "cliente": cli_v,
+                            "uf": uf_v,
+                            "cidade": cid_v,
+                            "valor_num": val_n,
+                            "vol_num": vol_n,
+                            "qtd_itens": 1,
+                            "nfs": [nf_v] if nf_v else list(),
+                            "dt_c": _parse_data_bi_segura(raw_dc),
+                            "dt_e": _parse_data_bi_segura(raw_de)
+                        }
+                    else:
+                        it = pedidos_compilados[ped_chave]
+                        it["valor_num"] += val_n
+                        it["vol_num"] += vol_n
+                        it["qtd_itens"] += 1
+                        if not it["filial"] and fil_v:
+                            it["filial"] = fil_v
+                        if not it["cliente"] and cli_v:
+                            it["cliente"] = cli_v
+                        if not it["uf"] and uf_v:
+                            it["uf"] = uf_v
+                        if not it["cidade"] and cid_v:
+                            it["cidade"] = cid_v
+                        if nf_v and nf_v not in it["nfs"]:
+                            it["nfs"].append(nf_v)
+                        if pd.isna(it["dt_c"]) and raw_dc is not None:
+                            it["dt_c"] = _parse_data_bi_segura(raw_dc)
+                        if pd.isna(it["dt_e"]) and raw_de is not None:
+                            it["dt_e"] = _parse_data_bi_segura(raw_de)
+
+                arquivo_bi.seek(0)
+                cab_b = arquivo_bi.read(8)
+                arquivo_bi.seek(0)
+
+                if cab_b.startswith(b"PK\x03\x04"):
+                    import openpyxl
+                    wb_s = openpyxl.load_workbook(arquivo_bi, read_only=True, data_only=True)
+                    for nm_aba in wb_s.sheetnames:
+                        ws_s = wb_s[nm_aba]
+                        achou_hdr = False
+                        vazias = 0
+                        for idx_r, r_vals in enumerate(ws_s.iter_rows(values_only=True), start=1):
+                            if not r_vals or not any(v is not None and str(v).strip() != "" for v in r_vals):
+                                vazias += 1
+                                if achou_hdr and vazias >= 30:
+                                    break
+                                continue
+                            vazias = 0
+                            if not achou_hdr:
+                                achou_hdr = True
+                                continue
+                            _processar_tupla_bi(r_vals, idx_r)
+                        if achou_hdr:
+                            break
+                    wb_s.close()
+                elif cab_b.startswith(b"\xd0\xcf\x11\xe0"):
+                    df_tmp = pd.read_excel(arquivo_bi, dtype=str)
+                    for idx_r, r_vals in enumerate(df_tmp.itertuples(index=False, name=None), start=1):
+                        _processar_tupla_bi(r_vals, idx_r)
+                    del df_tmp
+                else:
+                    try:
+                        chunks_csv = pd.read_csv(arquivo_bi, sep=None, engine="python", dtype=str, chunksize=5000, encoding="utf-8-sig")
+                    except Exception:
+                        arquivo_bi.seek(0)
+                        chunks_csv = pd.read_csv(arquivo_bi, sep=";", dtype=str, chunksize=5000, encoding="latin-1")
+                    idx_r = 0
+                    for ch_df in chunks_csv:
+                        for r_vals in ch_df.itertuples(index=False, name=None):
+                            idx_r += 1
+                            _processar_tupla_bi(r_vals, idx_r)
+
+                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas)
+                st.session_state["bi_chave_compilada"] = chave_comp
+
+            pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas = st.session_state["bi_compilado_cache"]
+
+            if not ordem_pedidos_bi:
+                st.warning("Nenhum pedido válido encontrado com as colunas mapeadas.")
             else:
-                cols_bi = list(df_bi.columns)
-
-                with st.expander("⚙️ Mapeamento das Colunas do BI (confirme se estão corretas)", expanded=True):
-                    def _opcoes_bi(termos):
-                        enc = achar_col_bi(cols_bi, termos)
-                        return ["(Nenhum)"] + cols_bi, (cols_bi.index(enc) + 1) if enc in cols_bi else 0
-
-                    m1, m2, m3, m4, m5 = st.columns(5)
-                    op_ped, idx_ped = _opcoes_bi(("PEDIDO", "CARGA", "ORDEM", "NUMERO", "DOCUMENTO"))
-                    col_ped_bi = m1.selectbox("Número do Pedido / Carga:", op_ped, index=idx_ped)
-                    op_fil, idx_fil = _opcoes_bi(("FILIAL", "UNIDADE", "LOCAL", "CD", "DEPOSITO", "EMPRESA"))
-                    col_filial_bi = m2.selectbox("Filial (Local Carreg.):", op_fil, index=idx_fil)
-                    op_cli, idx_cli = _opcoes_bi(("CLIENTE", "DESTINATARIO", "RAZAO"))
-                    col_cli_bi = m3.selectbox("Cliente (Opcional):", op_cli, index=idx_cli)
-                    op_uf, idx_uf = _opcoes_bi(("UF", "ESTADO"))
-                    col_uf_bi = m4.selectbox("Estado (UF):", op_uf, index=idx_uf)
-                    op_cid, idx_cid = _opcoes_bi(("CIDADE", "MUNICIPIO"))
-                    col_cid_bi = m5.selectbox("Cidade:", op_cid, index=idx_cid)
-
-                    m6, m7, m8, m9, m10 = st.columns(5)
-                    op_dc, idx_dc = _opcoes_bi(("CRIADA", "LANCAMENTO", "CRIACAO", "EMISSAO", "FATURAMENTO", "DATA PEDIDO", "INCLUSAO", "DATA"))
-                    col_dt_cria = m6.selectbox("Data de Criação/Lançamento:", op_dc, index=idx_dc)
-                    op_de, idx_de = _opcoes_bi(("ENTREGA", "PREVISAO", "AGENDAMENTO", "PRAZO"))
-                    col_dt_ent = m7.selectbox("Data de Entrega:", op_de, index=idx_de)
-                    op_val, idx_val = _opcoes_bi(("VALOR", "TOTAL", "FATURAMENTO", "PRECO", "VLR"))
-                    col_val_bi = m8.selectbox("Valor do Pedido (R$):", op_val, index=idx_val)
-                    op_vol, idx_vol = _opcoes_bi(("VOLUME", "CAIXA", "QTD", "QUANTIDADE", "UNIDADE"))
-                    col_vol_bi = m9.selectbox("Qtd de Volumes:", op_vol, index=idx_vol)
-                    op_nf, idx_nf = _opcoes_bi(("NOTA FISCAL", "NF", "NFE", "NOTA", "DANFE"))
-                    col_nf_bi = m10.selectbox("Nota Fiscal (Opcional):", op_nf, index=idx_nf)
-
-                # Compilação rápida vetorizada para suportar dezenas de milhares de linhas sem travar
-                df_work = pd.DataFrame(index=df_bi.index)
-                if col_ped_bi != "(Nenhum)":
-                    s_ped = df_bi[col_ped_bi].astype(str).str.strip().str.replace(r"\.0$", "", regex=True)
-                else:
-                    s_ped = pd.Series([f"LINHA-{i + 1}" for i in range(len(df_bi))], index=df_bi.index)
-
-                df_work["_ped_exib"] = s_ped
-                df_work["_ped_chave"] = s_ped.str.upper().str.strip()
-                df_work = df_work[~df_work["_ped_chave"].isin(["", "NAN", "NONE", "NULL", "<NA>"])].copy()
-
-                idx_valido = df_work.index
-                df_work["_filial"] = df_bi.loc[idx_valido, col_filial_bi].astype(str).str.strip() if col_filial_bi != "(Nenhum)" else ""
-                df_work["_cliente"] = df_bi.loc[idx_valido, col_cli_bi].astype(str).str.strip() if col_cli_bi != "(Nenhum)" else ""
-                df_work["_uf"] = df_bi.loc[idx_valido, col_uf_bi].astype(str).str.strip() if col_uf_bi != "(Nenhum)" else ""
-                df_work["_cidade"] = df_bi.loc[idx_valido, col_cid_bi].astype(str).str.strip() if col_cid_bi != "(Nenhum)" else ""
-                df_work["_dt_c_raw"] = df_bi.loc[idx_valido, col_dt_cria].astype(str).str.strip() if col_dt_cria != "(Nenhum)" else ""
-                df_work["_dt_e_raw"] = df_bi.loc[idx_valido, col_dt_ent].astype(str).str.strip() if col_dt_ent != "(Nenhum)" else ""
-
-                def _conv_col_num_bi(serie_str):
-                    s = serie_str.astype(str).str.replace("R$", "", regex=False).str.replace(" ", "", regex=False).str.strip()
-                    tem_virg = s.str.contains(",", na=False)
-                    tem_ponto = s.str.contains(r"\.", na=False)
-                    s_ambos = s.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
-                    s_so_virg = s.str.replace(",", ".", regex=False)
-                    s_final = s.where(~(tem_virg & tem_ponto), s_ambos)
-                    s_final = s_final.where(~(tem_virg & ~tem_ponto), s_so_virg)
-                    return pd.to_numeric(s_final, errors="coerce").fillna(0.0)
-
-                df_work["_val"] = _conv_col_num_bi(df_bi.loc[idx_valido, col_val_bi]) if col_val_bi != "(Nenhum)" else 0.0
-                df_work["_vol"] = _conv_col_num_bi(df_bi.loc[idx_valido, col_vol_bi]) if col_vol_bi != "(Nenhum)" else 0.0
-                df_work["_qtd_sku"] = 1
-
-                if col_nf_bi != "(Nenhum)":
-                    s_nf = df_bi.loc[idx_valido, col_nf_bi].astype(str).str.strip().str.replace(r"\.0$", "", regex=True)
-                    s_nf = s_nf.where(~s_nf.str.upper().isin(["NAN", "NONE", "NULL", "-", "<NA>"]), "")
-                    df_work["_nf"] = s_nf
-                else:
-                    df_work["_nf"] = ""
-
-                def _primeiro_nao_vazio(s):
-                    for v in s:
-                        if v and str(v).upper() not in ("NAN", "NONE", "NULL", "<NA>"):
-                            return v
-                    return ""
-
-                def _juntar_nfs(s):
-                    vistos = list()
-                    for v in s:
-                        if v and v not in vistos:
-                            vistos.append(v)
-                    return " | ".join(vistos)
-
-                df_comp = df_work.groupby("_ped_chave", sort=False, as_index=False).agg({
-                    "_ped_exib": "first",
-                    "_filial": _primeiro_nao_vazio,
-                    "_cliente": _primeiro_nao_vazio,
-                    "_uf": _primeiro_nao_vazio,
-                    "_cidade": _primeiro_nao_vazio,
-                    "_dt_c_raw": _primeiro_nao_vazio,
-                    "_dt_e_raw": _primeiro_nao_vazio,
-                    "_val": "sum",
-                    "_vol": "sum",
-                    "_qtd_sku": "sum",
-                    "_nf": _juntar_nfs
-                })
-
                 df_plan_exist = carregar_dados("planejamento")
                 peds_plan_exatos = set()
                 peds_plan_tokens = set()
@@ -3072,19 +3136,20 @@ elif aba == "📊 Análise de Pedidos":
                 cidades_sem_lt = set()
                 alteracoes_entrega = list()
 
-                for _, comp in df_comp.iterrows():
-                    ped_val = comp["_ped_exib"]
+                for ped_k_raw in ordem_pedidos_bi:
+                    comp = pedidos_compilados[ped_k_raw]
+                    ped_val = comp["ped_exib"]
                     ped_k = limpar_texto(ped_val)
-                    fil_val = comp["_filial"]
-                    cli_val = comp["_cliente"]
-                    uf_val = limpar_texto(comp["_uf"])
-                    cid_val = limpar_texto(comp["_cidade"])
-                    valor_num = float(comp["_val"])
-                    vol_num = int(round(float(comp["_vol"])))
-                    qtd_skus_ped = int(comp["_qtd_sku"])
-                    nf_raw = comp["_nf"]
-                    dt_c = _parse_data_bi_segura(comp["_dt_c_raw"])
-                    dt_e = _parse_data_bi_segura(comp["_dt_e_raw"])
+                    fil_val = comp["filial"]
+                    cli_val = comp["cliente"]
+                    uf_val = limpar_texto(comp["uf"])
+                    cid_val = limpar_texto(comp["cidade"])
+                    valor_num = comp["valor_num"]
+                    vol_num = comp["vol_num"]
+                    qtd_skus_ped = comp["qtd_itens"]
+                    nf_raw = " | ".join(comp["nfs"])
+                    dt_c = comp["dt_c"]
+                    dt_e = comp["dt_e"]
 
                     lt_info = mapa_lt.get((uf_val, cid_val))
                     if lt_info is None and (uf_val or cid_val):
@@ -3173,12 +3238,12 @@ elif aba == "📊 Análise de Pedidos":
                     })
 
                 df_res_bi = pd.DataFrame(linhas_analise)
-                    
+
                 if not df_res_bi.empty:
                     df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Dias Úteis p/ Carregar"], ascending=[True, True], na_position="last").reset_index(drop=True)
 
-                    if len(df_bi) > len(df_res_bi):
-                        st.info(f"🧩 **Compilação automática:** {len(df_bi)} linhas de itens do BI foram consolidadas em **{len(df_res_bi)} pedido(s) único(s)** com valores e volumes somados.")
+                    if total_linhas_lidas > len(df_res_bi):
+                        st.info(f"🧩 **Compilação automática:** {total_linhas_lidas} linhas de itens do BI foram consolidadas em **{len(df_res_bi)} pedido(s) único(s)** com valores e volumes somados.")
 
                     if alteracoes_entrega:
                         with st.container(border=True):
@@ -3380,7 +3445,7 @@ elif aba == "📊 Análise de Pedidos":
         except Exception as e_bi:
             st.error(f"Erro ao ler a planilha do BI: {e_bi}")
 
-    if arq_trizy is None and st.session_state.get("bi_cache_bytes") is None:
+    if arq_trizy is None and arquivo_bi is None:
         components.html(
             """
             <style>
