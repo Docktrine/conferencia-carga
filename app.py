@@ -5637,7 +5637,19 @@ elif aba == "📦 Conferência dos Pedidos":
             renderizar_tabela_wms(df_carga_bipes.head(10), "conf_bipes_op", use_container_width=True, hide_index=True)
 
 elif aba == "📈 Painel de Acompanhamento":
-    st.title("📈 Painel de Acompanhamento")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Monitoramento de Pátio • Tempo Real</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Conferência • Progresso • Lacre & Cortes</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">📈 Painel de Acompanhamento</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Acompanhe em tempo real a evolução da bipagem por carga, registre o número do lacre e confira itens pendentes.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     df_todas_cargas = carregar_dados("cargas")
     if df_todas_cargas.empty:
@@ -5662,10 +5674,25 @@ elif aba == "📈 Painel de Acompanhamento":
     total_bipado = int(df["bipado"].sum())
     total_falta = max(0, df[df["Falta Bipar"] > 0]["Falta Bipar"].sum())
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Total do Pedido", total_pedido)
-    c2.metric("Total Já Bipado", total_bipado)
-    c3.metric("Falta Bipar", int(total_falta))
+    def _card_kpi_painel(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+        return (
+            f"<div style='background:{bg}; border:1px solid {borda}44; border-left:5px solid {borda}; "
+            f"border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 3px 8px rgba(0,0,0,0.04);'>"
+            f"<div style='font-size:0.75rem; font-weight:700; color:{cor_tit}; letter-spacing:0.02em;'>{icone} {titulo}</div>"
+            f"<div style='font-size:1.75rem; font-weight:800; color:{cor_val}; margin-top:4px; line-height:1.1;'>{valor:,}</div>"
+            f"</div>"
+        ).replace(",", ".")
+
+    val_falta_int = int(total_falta)
+    cor_falta_bg = "#ECFDF5" if val_falta_int == 0 else "#FEF2F2"
+    cor_falta_bd = "#059669" if val_falta_int == 0 else "#DC2626"
+    cor_falta_tt = "#065F46" if val_falta_int == 0 else "#991B1B"
+    cor_falta_vl = "#064E3B" if val_falta_int == 0 else "#7F1D1D"
+
+    c1, c2, c3 = st.columns(3, gap="medium")
+    c1.markdown(_card_kpi_painel("📦", "Total do Pedido", int(total_pedido), "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
+    c2.markdown(_card_kpi_painel("✅", "Total Já Bipado", int(total_bipado), "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
+    c3.markdown(_card_kpi_painel("⏳" if val_falta_int > 0 else "🎉", "Falta Bipar", val_falta_int, cor_falta_bg, cor_falta_bd, cor_falta_tt, cor_falta_vl), unsafe_allow_html=True)
 
     progresso = min(1.0, total_bipado / total_pedido) if total_pedido > 0 else (1.0 if verificar_carga_100_concluida(df) else 0)
     st.progress(progresso, text=f"Progresso: {int(progresso * 100)}%")
