@@ -15,11 +15,14 @@ from streamlit_gsheets import GSheetsConnection
 from PIL import Image
 import requests
 
-ARQUIVO_LOGO = next((f for f in ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"] if os.path.exists(f)), None)
+_DIR_APP = os.path.dirname(os.path.abspath(__file__))
+_CANDIDATOS_LOGO = ["logo_grano.png", "logo_grano.jpg", "logo_grano.jpeg"]
+ARQUIVO_LOGO = next((os.path.join(_DIR_APP, f) for f in _CANDIDATOS_LOGO if os.path.exists(os.path.join(_DIR_APP, f))), None)
+_ICON_PAGINA = Image.open(ARQUIVO_LOGO) if ARQUIVO_LOGO else "📦"
 
 st.set_page_config(
     page_title="WMS Grano — Inteligência Logística",
-    page_icon=ARQUIVO_LOGO if ARQUIVO_LOGO else "📦",
+    page_icon=_ICON_PAGINA,
     layout="wide"
 )
 
