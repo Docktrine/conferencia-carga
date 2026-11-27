@@ -4281,68 +4281,30 @@ elif aba == "🚚 Planejamento Logística":
             "✏️ Editar ou Excluir Pedido"
         ])
         with tab_calc_fr:
-
-            st.markdown(
-                """
-                <style>
-                div[data-testid="stExpander"]:has(div[data-testid="stElementContainer"] .calc-frete-banner) {
-                    background: linear-gradient(180deg, #F4F7F4 0%, #EAECE7 100%) !important;
-                    border: 1.5px solid #2E7D32 !important;
-                    border-radius: 14px !important;
-                    box-shadow: 0 4px 14px rgba(20, 26, 22, 0.06) !important;
-                }
-                div.stButton > button[key="btn_undo_parada_fr"],
-                div[class*="st-key-btn_undo_parada_fr"] button {
-                    background-color: #FEF3C7 !important;
-                    border: 1px solid #D97706 !important;
-                    color: #92400E !important;
-                }
-                div[class*="st-key-btn_undo_parada_fr"] button p { color: #92400E !important; font-weight: 700 !important; }
-                div[class*="st-key-btn_limpar_parada_fr"] button {
-                    background-color: #FEE2E2 !important;
-                    border: 1px solid #DC2626 !important;
-                    color: #991B1B !important;
-                }
-                div[class*="st-key-btn_limpar_parada_fr"] button p { color: #991B1B !important; font-weight: 700 !important; }
-                </style>
-                <div class="calc-frete-banner" style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
-                    <div>
-                        <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Simulador Logístico de Roteiros</div>
-                        <div style="color:#FFFFFF; font-size:0.88rem; font-weight:600; margin-top:2px;">Monte coletas e entregas em sequência (ex: Friozem ➔ Fábrica ➔ São Paulo/SP) com cálculo automático por trecho.</div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            st.markdown("""<style>
+            div[data-testid="stExpander"]:has(div[data-testid="stElementContainer"] .calc-frete-banner) { background: linear-gradient(180deg, #F4F7F4 0%, #EAECE7 100%) !important; border: 1.5px solid #2E7D32 !important; border-radius: 14px !important; box-shadow: 0 4px 14px rgba(20, 26, 22, 0.06) !important; }
+            div.stButton > button[key="btn_undo_parada_fr"], div[class*="st-key-btn_undo_parada_fr"] button { background-color: #FEF3C7 !important; border: 1px solid #D97706 !important; color: #92400E !important; }
+            div[class*="st-key-btn_undo_parada_fr"] button p { color: #92400E !important; font-weight: 700 !important; }
+            div[class*="st-key-btn_limpar_parada_fr"] button { background-color: #FEE2E2 !important; border: 1px solid #DC2626 !important; color: #991B1B !important; }
+            div[class*="st-key-btn_limpar_parada_fr"] button p { color: #991B1B !important; font-weight: 700 !important; }
+            </style><div class="calc-frete-banner" style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;"><div><div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Simulador Logístico de Roteiros</div><div style="color:#FFFFFF; font-size:0.88rem; font-weight:600; margin-top:2px;">1ª perna pela Tabela Oficial e entregas extras calculadas automaticamente pelo KM rodado × R$/KM regional.</div></div></div>""", unsafe_allow_html=True)
 
             @st.cache_data(ttl=43200, show_spinner=False)
             def carregar_tabela_frete_oficial():
                 df_tf = conn.read(worksheet="tabela frete", ttl=0).dropna(how="all").fillna("")
                 if df_tf is None or df_tf.empty:
-                    return {},
-                c_fil, c_uf, c_cid, c_km, c_fc, c_ft = None, None, None, None, None, None
-                for col_t in df_tf.columns:
-                    cl = limpar_texto(col_t)
-                    if not c_fil and "FILIAL" in cl:
-                        c_fil = col_t
-                    elif not c_uf and cl in ("ESTADO", "UF"):
-                        c_uf = col_t
-                    elif not c_cid and ("CIDADE" in cl or "MUNICIPIO" in cl):
-                        c_cid = col_t
-                    elif not c_km and "DISTANCIA" in cl:
-                        c_km = col_t
-                    elif not c_fc and "CARRETA" in cl:
-                        c_fc = col_t
-                    elif not c_ft and "TRUCK" in cl:
-                        c_ft = col_t
-
-                mapa_tf = {}
-                filiais_set = set()
+                    return {}, list()
+                c_fil = next((c for c in df_tf.columns if "FILIAL" in limpar_texto(c)), None)
+                c_uf = next((c for c in df_tf.columns if limpar_texto(c) in ("ESTADO", "UF")), None)
+                c_cid = next((c for c in df_tf.columns if "CIDADE" in limpar_texto(c) or "MUNICIPIO" in limpar_texto(c)), None)
+                c_km = next((c for c in df_tf.columns if "DISTANCIA" in limpar_texto(c)), None)
+                c_fc = next((c for c in df_tf.columns if "CARRETA" in limpar_texto(c) and "KM" not in limpar_texto(c)), None)
+                c_ft = next((c for c in df_tf.columns if "TRUCK" in limpar_texto(c) and "KM" not in limpar_texto(c)), None)
+                mapa_tf, filiais_set = {}, set()
                 if c_fil and c_cid and (c_fc or c_ft):
                     for _, rt in df_tf.iterrows():
                         fil_n = str(rt[c_fil]).strip()
-                        fil_k = limpar_texto(fil_n)
-                        cid_k = limpar_texto(rt[c_cid])
+                        fil_k, cid_k = limpar_texto(fil_n), limpar_texto(rt[c_cid])
                         uf_k = limpar_texto(rt[c_uf]) if c_uf else ""
                         if not fil_k or not cid_k:
                             continue
@@ -4352,16 +4314,51 @@ elif aba == "🚚 Planejamento Logística":
                         fc_v = converter_moeda_para_float(rt[c_fc]) if c_fc else 0.0
                         ft_v = converter_moeda_para_float(rt[c_ft]) if c_ft else 0.0
                         mapa_tf[(fil_k, dest_lbl)] = {
-                            "km": km_v,
-                            "frete_carreta": fc_v,
-                            "frete_truck": ft_v
+                            "km": km_v, "frete_carreta": fc_v, "frete_truck": ft_v,
+                            "r_km_carreta": round(fc_v / km_v, 2) if km_v > 0 else 0.0,
+                            "r_km_truck": round(ft_v / km_v, 2) if km_v > 0 else 0.0
                         }
                 return mapa_tf, sorted(list(filiais_set))
+            @st.cache_data(ttl=86400, show_spinner=False)
+            def obter_coord_cidade_br(cidade_uf):
+                try:
+                    partes = [p.strip() for p in str(cidade_uf).split("/") if p.strip()]
+                    if not partes:
+                        return None
+                    cid, *resto = partes
+                    uf = next(iter(resto), "")
+                    q = f"{cid}, {uf}, Brasil" if uf else f"{cid}, Brasil"
+                    resp = requests.get("https://openstreetmap.org", params={"q": q, "format": "json", "limit": 1, "countrycodes": "br"}, headers={"User-Agent": "WMS-Grano-Logistica/2.0"}, timeout=6)
+                    primeiro = next(iter(resp.json()), None)
+                    if isinstance(primeiro, dict) and "lat" in primeiro and "lon" in primeiro:
+                        return float(primeiro["lat"]), float(primeiro["lon"])
+                except Exception:
+                    pass
+                return None
+
+            @st.cache_data(ttl=86400, show_spinner=False)
+            def calcular_km_rodovia_cidades(cidade_origem, cidade_destino):
+                if limpar_texto(cidade_origem) == limpar_texto(cidade_destino):
+                    return 0.0
+                c1, c2 = obter_coord_cidade_br(cidade_origem), obter_coord_cidade_br(cidade_destino)
+                if not c1 or not c2:
+                    return 0.0
+                try:
+                    lat1, lon1 = c1
+                    lat2, lon2 = c2
+                    resp = requests.get(f"http://project-osrm.org{lon1},{lat1};{lon2},{lat2}", params={"overview": "false"}, timeout=6)
+                    dados = resp.json()
+                    rota_p = next(iter(dados.get("routes") or list()), None)
+                    if dados.get("code") == "Ok" and isinstance(rota_p, dict):
+                        return round(float(rota_p.get("distance", 0.0)) / 1000.0, 1)
+                except Exception:
+                    pass
+                return 0.0
 
             try:
                 mapa_frete_of, lista_filiais_of = carregar_tabela_frete_oficial()
             except Exception as e_tf:
-                mapa_frete_of, lista_filiais_of = {},
+                mapa_frete_of, lista_filiais_of = {}, list()
                 st.error(f"Erro ao ler aba 'tabela frete': {e_tf}")
 
             if not mapa_frete_of:
@@ -4369,34 +4366,20 @@ elif aba == "🚚 Planejamento Logística":
             else:
                 if "roteiro_frete_paradas" not in st.session_state:
                     st.session_state.roteiro_frete_paradas = list()
-
                 filiais_tags = [f"🏭 {f}" for f in lista_filiais_of]
-                todas_cidades_fr = sorted(list({dest for (_, dest) in mapa_frete_of.keys()}))
-                opcoes_pontos_fr = filiais_tags + todas_cidades_fr
-
-                sede_para_filial = {
-                    "ESTEIO/RS": "FRIOZEM",
-                    "SAPUCAIA DO SUL/RS": "FRIOZEM",
-                    "SERAFINA CORREA/RS": "FABRICA",
-                    "COLOMBO/PR": "COLOMBO",
-                    "ITUPEVA/SP": "BRASFRIGO",
-                }
-                filial_para_sede = {
-                    "FRIOZEM": "ESTEIO/RS",
-                    "FABRICA": "SERAFINA CORREA/RS",
-                    "COLOMBO": "COLOMBO/PR",
-                    "BRASFRIGO": "ITUPEVA/SP",
-                }
+                opcoes_pontos_fr = filiais_tags + sorted(list({dest for (_, dest) in mapa_frete_of.keys()}))
+                sede_para_filial = {"ESTEIO/RS": "FRIOZEM", "SAPUCAIA DO SUL/RS": "FRIOZEM", "SERAFINA CORREA/RS": "FABRICA", "COLOMBO/PR": "COLOMBO", "ITUPEVA/SP": "BRASFRIGO"}
+                filial_para_sede = {"FRIOZEM": "ESTEIO/RS", "FABRICA": "SERAFINA CORREA/RS", "COLOMBO": "COLOMBO/PR", "BRASFRIGO": "ITUPEVA/SP"}
 
                 def _resolver_filial_e_cidade(ponto_str):
                     if ponto_str.startswith("🏭 "):
-                        fn = limpar_texto(ponto_str[2:])
+                        fn = limpar_texto(ponto_str.replace("🏭 ", "", 1))
                         return fn, filial_para_sede.get(fn, "")
                     cid_l = limpar_texto(ponto_str)
                     return sede_para_filial.get(cid_l, ""), cid_l
 
                 with st.container(border=True):
-                    cf1, cf2, cf3, cf4, cf5 = st.columns((1.5, 1.2, 1.8, 0.95, 0.95), vertical_alignment="bottom")
+                    cf1, cf2, cf3, cf4, cf5 = st.columns((1.5, 1.2, 1.8, 0.9, 0.9), vertical_alignment="bottom")
                     ponto_saida_fr = cf1.selectbox("🚩 Ponto de Saída (1ª Origem):", options=opcoes_pontos_fr, index=0, key="calc_fr_saida")
                     veic_calc_fr = cf2.selectbox("🚛 Tipo de Veículo:", options=["CARRETA", "TRUCK / BI-TRUCK"], key="calc_fr_veic")
                     prox_parada_fr = cf3.selectbox("📍 Próxima Parada (Coleta / Entrega):", options=opcoes_pontos_fr, key="calc_fr_prox")
@@ -4406,123 +4389,79 @@ elif aba == "🚚 Planejamento Logística":
                     if cf5.button("🔄 Tabela", use_container_width=True, key="btn_reload_tab_frete", help="Recarregar valores da aba tabela frete"):
                         carregar_tabela_frete_oficial.clear()
                         st.rerun()
-
                 if st.session_state.roteiro_frete_paradas:
                     paradas_atuais = st.session_state.roteiro_frete_paradas
                     eh_carreta = (veic_calc_fr == "CARRETA")
                     linhas_trechos = list()
-
                     ponto_ant = ponto_saida_fr
-                    filial_ativa, _ = _resolver_filial_e_cidade(ponto_saida_fr)
-                    if not filial_ativa and lista_filiais_of:
-                        filial_ativa = limpar_texto(lista_filiais_of)
+                    filial_base, _ = _resolver_filial_e_cidade(ponto_saida_fr)
+                    if not filial_base and lista_filiais_of:
+                        filial_base = limpar_texto(next(iter(lista_filiais_of), ""))
 
                     for seq_p, parada_dest in enumerate(paradas_atuais, start=1):
+                        eh_orig_filial, eh_dest_filial = ponto_ant.startswith("🏭 "), parada_dest.startswith("🏭 ")
                         fil_orig_tr, cid_orig_tr = _resolver_filial_e_cidade(ponto_ant)
                         fil_dest_tr, cid_dest_tr = _resolver_filial_e_cidade(parada_dest)
+                        if fil_orig_tr:
+                            filial_base = fil_orig_tr
+                        km_tr, val_tr, r_km_usado, regra_tr = 0.0, 0.0, 0.0, ""
 
-                        km_tr, val_tr = 0.0, 0.0
-                        if fil_orig_tr and cid_dest_tr and (fil_orig_tr, cid_dest_tr) in mapa_frete_of:
+                        if eh_orig_filial and not eh_dest_filial and (fil_orig_tr, cid_dest_tr) in mapa_frete_of:
                             d = mapa_frete_of[(fil_orig_tr, cid_dest_tr)]
-                            km_tr = d["km"]
-                            val_tr = d["frete_carreta"] if eh_carreta else d["frete_truck"]
-                        elif fil_dest_tr and cid_orig_tr and (fil_dest_tr, cid_orig_tr) in mapa_frete_of:
+                            km_tr, val_tr = d["km"], (d["frete_carreta"] if eh_carreta else d["frete_truck"])
+                            r_km_usado = d["r_km_carreta"] if eh_carreta else d["r_km_truck"]
+                            regra_tr = "Tabela Oficial"
+                        elif not eh_orig_filial and eh_dest_filial and (fil_dest_tr, cid_orig_tr) in mapa_frete_of:
                             d = mapa_frete_of[(fil_dest_tr, cid_orig_tr)]
-                            km_tr = d["km"]
-                            val_tr = d["frete_carreta"] if eh_carreta else d["frete_truck"]
-                        elif filial_ativa and cid_orig_tr in [c for (f, c) in mapa_frete_of if f == filial_ativa] and cid_dest_tr in [c for (f, c) in mapa_frete_of if f == filial_ativa]:
-                            d1 = mapa_frete_of[(filial_ativa, cid_orig_tr)]
-                            d2 = mapa_frete_of[(filial_ativa, cid_dest_tr)]
-                            km_tr = abs(d2["km"] - d1["km"])
-                            t1 = d1["frete_carreta"] if eh_carreta else d1["frete_truck"]
-                            t2 = d2["frete_carreta"] if eh_carreta else d2["frete_truck"]
-                            val_tr = abs(t2 - t1)
+                            km_tr, val_tr = d["km"], (d["frete_carreta"] if eh_carreta else d["frete_truck"])
+                            r_km_usado = d["r_km_carreta"] if eh_carreta else d["r_km_truck"]
+                            regra_tr = "Tabela Oficial"
+                        else:
+                            orig_geo = cid_orig_tr or ponto_ant.replace("🏭 ", "")
+                            dest_geo = cid_dest_tr or parada_dest.replace("🏭 ", "")
+                            km_tr = calcular_km_rodovia_cidades(orig_geo, dest_geo)
+                            info_dest = mapa_frete_of.get((filial_base, dest_geo)) or next((v for (f, c), v in mapa_frete_of.items() if c == dest_geo), None)
+                            r_km_usado = (info_dest["r_km_carreta"] if eh_carreta else info_dest["r_km_truck"]) if info_dest else (10.23 if eh_carreta else 8.18)
+                            val_tr = round(km_tr * r_km_usado, 2)
+                            regra_tr = f"R$ {r_km_usado:.2f}/km"
 
-                        linhas_trechos.append({
-                            "Etapa": f"Trecho {seq_p}",
-                            "De (Saída/Parada)": ponto_ant,
-                            "Para (Parada/Destino)": parada_dest,
-                            "KM Trecho": round(km_tr, 1),
-                            "Valor Trecho (R$)": round(val_tr, 2)
-                        })
+                        linhas_trechos.append({"Etapa": f"Trecho {seq_p}", "De (Saída/Parada)": ponto_ant, "Para (Parada/Destino)": parada_dest, "Tarifa": regra_tr, "KM Trecho": round(km_tr, 1), "Valor Trecho (R$)": round(val_tr, 2), "_r_km": r_km_usado})
                         ponto_ant = parada_dest
                         if fil_dest_tr:
-                            filial_ativa = fil_dest_tr
+                            filial_base = fil_dest_tr
 
-                    # Linha do Tempo Colorida por Tipo de Etapa
-                    nos_rota_html = (
-                        f"<div style='display:inline-flex; align-items:center; gap:6px; background:#141A16; color:#FFFFFF; "
-                        f"padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid #4CAF50;'>"
-                        f"<span style='color:#81C784;'>🚩 SAÍDA</span><span>{ponto_saida_fr.replace('🏭 ', '')}</span></div>"
-                    )
+                    nos_rota_html = f"<div style='display:inline-flex; align-items:center; gap:6px; background:#141A16; color:#FFFFFF; padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid #4CAF50;'><span style='color:#81C784;'>🚩 SAÍDA</span><span>{ponto_saida_fr.replace('🏭 ', '')}</span></div>"
                     for idx_no, p_no in enumerate(paradas_atuais, start=1):
-                        eh_ultimo_no = (idx_no == len(paradas_atuais))
-                        if eh_ultimo_no:
-                            bg_no, bd_no, cor_tag, cor_txt, tag_no = "#E0F2FE", "#0284C7", "#0369A1", "#0C4A6E", "🏁 DESTINO FINAL"
-                        else:
-                            bg_no, bd_no, cor_tag, cor_txt, tag_no = "#FEF3C7", "#D97706", "#B45309", "#78350F", f"📍 PARADA {idx_no}"
-                        nos_rota_html += (
-                            f"<span style='color:#2E7D32; font-weight:900; font-size:0.95rem;'>➔</span>"
-                            f"<div style='display:inline-flex; align-items:center; gap:6px; background:{bg_no}; color:{cor_txt}; "
-                            f"padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid {bd_no};'>"
-                            f"<span style='color:{cor_tag};'>{tag_no}</span><span>{p_no.replace('🏭 ', '')}</span></div>"
-                        )
-
-                    st.markdown(
-                        f"<div style='background:#FFFFFF; border:1px solid #C8D6C9; border-radius:12px; "
-                        f"padding:10px 14px; margin:8px 0 10px 0; display:flex; flex-wrap:wrap; align-items:center; gap:8px;'>"
-                        f"{nos_rota_html}</div>",
-                        unsafe_allow_html=True
-                    )
-
-                    st.caption("✏️ **Tabela Editável:** Clique sobre `KM Trecho` ou `Valor Trecho (R$)` se precisar ajustar algum desvio:")
+                        bg_no, bd_no, cor_tag, cor_txt, tag_no = ("#E0F2FE", "#0284C7", "#0369A1", "#0C4A6E", "🏁 DESTINO FINAL") if idx_no == len(paradas_atuais) else ("#FEF3C7", "#D97706", "#B45309", "#78350F", f"📍 PARADA {idx_no}")
+                        nos_rota_html += f"<span style='color:#2E7D32; font-weight:900; font-size:0.95rem;'>➔</span><div style='display:inline-flex; align-items:center; gap:6px; background:{bg_no}; color:{cor_txt}; padding:6px 13px; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid {bd_no};'><span style='color:{cor_tag};'>{tag_no}</span><span>{p_no.replace('🏭 ', '')}</span></div>"
+                    st.markdown(f"<div style='background:#FFFFFF; border:1px solid #C8D6C9; border-radius:12px; padding:10px 14px; margin:8px 0 10px 0; display:flex; flex-wrap:wrap; align-items:center; gap:8px;'>{nos_rota_html}</div>", unsafe_allow_html=True)
+                    st.caption("✏️ **Tabela Editável:** Se alterar o `KM Trecho` de um trecho entre cidades, o valor em `R$` recalcula automaticamente:")
                     df_trechos_edit = st.data_editor(
-                        pd.DataFrame(linhas_trechos),
-                        key="editor_trechos_frete",
-                        use_container_width=True,
-                        hide_index=True,
-                        disabled=["Etapa", "De (Saída/Parada)", "Para (Parada/Destino)"],
+                        pd.DataFrame(linhas_trechos).drop(columns=["_r_km"]),
+                        key="editor_trechos_frete", use_container_width=True, hide_index=True,
+                        disabled=["Etapa", "De (Saída/Parada)", "Para (Parada/Destino)", "Tarifa"],
                         column_config={
                             "Etapa": st.column_config.TextColumn("Etapa", width="small"),
-                            "De (Saída/Parada)": st.column_config.TextColumn("🚩 Origem do Trecho", width="medium"),
-                            "Para (Parada/Destino)": st.column_config.TextColumn("📍 Destino do Trecho", width="medium"),
+                            "De (Saída/Parada)": st.column_config.TextColumn("🚩 Origem", width="medium"),
+                            "Para (Parada/Destino)": st.column_config.TextColumn("📍 Destino", width="medium"),
+                            "Tarifa": st.column_config.TextColumn("⚙️ Tarifa", width="small"),
                             "KM Trecho": st.column_config.NumberColumn("🛣️ KM Trecho", min_value=0.0, step=1.0, format="%.1f km"),
                             "Valor Trecho (R$)": st.column_config.NumberColumn("💰 Valor Trecho (R$)", min_value=0.0, step=10.0, format="R$ %.2f"),
                         }
                     )
+
+                    for idx_ed, row_ed_t in df_trechos_edit.iterrows():
+                        if "/km" in str(row_ed_t["Tarifa"]) and row_ed_t["KM Trecho"] != linhas_trechos[idx_ed]["KM Trecho"] and row_ed_t["Valor Trecho (R$)"] == linhas_trechos[idx_ed]["Valor Trecho (R$)"]:
+                            df_trechos_edit.at[idx_ed, "Valor Trecho (R$)"] = round(float(row_ed_t["KM Trecho"]) * linhas_trechos[idx_ed]["_r_km"], 2)
 
                     total_frete_rota = float(pd.to_numeric(df_trechos_edit["Valor Trecho (R$)"], errors="coerce").fillna(0.0).sum())
                     total_km_rota = float(pd.to_numeric(df_trechos_edit["KM Trecho"], errors="coerce").fillna(0.0).sum())
                     tot_fr_fmt = f"R$ {total_frete_rota:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
                     c_kpi_f1, c_kpi_f2, c_kpi_f3, c_btns_fr = st.columns((1.6, 1.2, 1.0, 1.5), vertical_alignment="center")
-                    with c_kpi_f1:
-                        st.markdown(
-                            f"<div style='background:linear-gradient(135deg, #1B4332 0%, #081C15 100%); border:1.5px solid #40916C; "
-                            f"border-left:6px solid #74C69D; border-radius:12px; padding:10px 16px; box-shadow:0 3px 10px rgba(0,0,0,0.1);'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:#B7E4C7; font-weight:800;'>💰 Frete Total Estimado</div>"
-                            f"<div style='font-size:1.45rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{tot_fr_fmt}</div>"
-                            f"</div>",
-                            unsafe_allow_html=True
-                        )
-                    with c_kpi_f2:
-                        st.markdown(
-                            f"<div style='background:#E0F2FE; border:1.5px solid #38BDF8; border-left:5px solid #0284C7; "
-                            f"border-radius:12px; padding:10px 14px;'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#0369A1; font-weight:800;'>🛣️ Distância Total</div>"
-                            f"<div style='font-size:1.35rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{int(round(total_km_rota))} km</div>"
-                            f"</div>",
-                            unsafe_allow_html=True
-                        )
-                    with c_kpi_f3:
-                        st.markdown(
-                            f"<div style='background:#FEF3C7; border:1.5px solid #FBBF24; border-left:5px solid #D97706; "
-                            f"border-radius:12px; padding:10px 14px;'>"
-                            f"<div style='font-size:0.72rem; text-transform:uppercase; color:#B45309; font-weight:800;'>📍 Paradas</div>"
-                            f"<div style='font-size:1.35rem; font-weight:800; color:#78350F; margin-top:2px;'>{len(paradas_atuais)}</div>"
-                            f"</div>",
-                            unsafe_allow_html=True
-                        )
+                    c_kpi_f1.markdown(f"<div style='background:linear-gradient(135deg, #1B4332 0%, #081C15 100%); border:1.5px solid #40916C; border-left:6px solid #74C69D; border-radius:12px; padding:10px 16px; box-shadow:0 3px 10px rgba(0,0,0,0.1);'><div style='font-size:0.72rem; text-transform:uppercase; letter-spacing:0.05em; color:#B7E4C7; font-weight:800;'>💰 Frete Total Estimado</div><div style='font-size:1.45rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{tot_fr_fmt}</div></div>", unsafe_allow_html=True)
+                    c_kpi_f2.markdown(f"<div style='background:#E0F2FE; border:1.5px solid #38BDF8; border-left:5px solid #0284C7; border-radius:12px; padding:10px 14px;'><div style='font-size:0.72rem; text-transform:uppercase; color:#0369A1; font-weight:800;'>🛣️ Distância Total</div><div style='font-size:1.35rem; font-weight:800; color:#0C4A6E; margin-top:2px;'>{int(round(total_km_rota))} km</div></div>", unsafe_allow_html=True)
+                    c_kpi_f3.markdown(f"<div style='background:#FEF3C7; border:1.5px solid #FBBF24; border-left:5px solid #D97706; border-radius:12px; padding:10px 14px;'><div style='font-size:0.72rem; text-transform:uppercase; color:#B45309; font-weight:800;'>📍 Paradas</div><div style='font-size:1.35rem; font-weight:800; color:#78350F; margin-top:2px;'>{len(paradas_atuais)}</div></div>", unsafe_allow_html=True)
                     with c_btns_fr:
                         cb_u1, cb_u2 = st.columns(2)
                         if cb_u1.button("↩️ Desfazer", use_container_width=True, key="btn_undo_parada_fr"):
@@ -4532,7 +4471,7 @@ elif aba == "🚚 Planejamento Logística":
                             st.session_state.roteiro_frete_paradas = list()
                             st.rerun()
 
-                    if opcoes_rapidas and total_frete_rota > 0:
+                    if "opcoes_rapidas" in locals() and opcoes_rapidas and total_frete_rota > 0:
                         with st.container(border=True):
                             ca_p1, ca_p2, _ = st.columns((2.2, 1.0, 2.2), vertical_alignment="bottom")
                             ped_aplicar_fr = ca_p1.selectbox("📌 Vincular e gravar este frete no pedido:", list(opcoes_rapidas.keys()), key="sel_aplicar_frete_ped")
@@ -4547,8 +4486,7 @@ elif aba == "🚚 Planejamento Logística":
                                 st.toast(f"💰 Frete {tot_fr_fmt} gravado no pedido {df_plan.at[idx_fr_alvo, 'Nº Pedido']}!", icon="💰")
                                 st.rerun()
                 else:
-                    st.info("Selecione o **Ponto de Saída**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")
-                    
+                    st.info("Selecione o **Ponto de Saída**, o **Tipo de Veículo** e clique em **➕ Adicionar** para montar as paradas do roteiro.")                          
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
