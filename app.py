@@ -4008,7 +4008,8 @@ elif aba == "🚚 Planejamento Logística":
                                     st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
                                     st.rerun()
                                 else:
-                                    st.error("⚠️ Digite a mensagem da notificação antes de salvar."        st.markdown(
+                                    st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+        st.markdown(
             """
             <style>
             div[data-testid="stTabs"] div[role="tablist"] {
