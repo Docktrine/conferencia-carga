@@ -2992,10 +2992,9 @@ elif aba == "📊 Análise de Pedidos":
 
                 pedidos_compilados = {}
                 ordem_pedidos_bi = list()
-                total_linhas_lidas = 0
+                cont_linhas = [0]
 
                 def _processar_tupla_bi(row_t, num_l):
-                    nonlocal total_linhas_lidas
                     n_cols = len(row_t)
                     if i_ped >= 0:
                         raw_p = row_t[i_ped] if i_ped < n_cols else None
@@ -3008,7 +3007,7 @@ elif aba == "📊 Análise de Pedidos":
                     if not ped_raw or ped_raw.upper() in ("NAN", "NONE", "NULL", "<NA>"):
                         return
 
-                    total_linhas_lidas += 1
+                    cont_linhas += 1
                     ped_chave = ped_raw.upper()
 
                     fil_v = str(row_t[i_fil]).strip() if (0 <= i_fil < n_cols and row_t[i_fil] is not None) else ""
@@ -3108,7 +3107,7 @@ elif aba == "📊 Análise de Pedidos":
                             idx_r += 1
                             _processar_tupla_bi(r_vals, idx_r)
 
-                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas)
+                st.session_state["bi_compilado_cache"] = (pedidos_compilados, ordem_pedidos_bi, cont_linhas)
                 st.session_state["bi_chave_compilada"] = chave_comp
 
             pedidos_compilados, ordem_pedidos_bi, total_linhas_lidas = st.session_state["bi_compilado_cache"]
