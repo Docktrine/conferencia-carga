@@ -3146,8 +3146,9 @@ elif aba == "📊 Análise de Pedidos":
                         "Situação WMS": ja_wms
                     })
 
-                    df_res_bi = pd.DataFrame(linhas_analise)
-
+                df_res_bi = pd.DataFrame(linhas_analise)
+                    
+                if not df_res_bi.empty:
                     df_res_bi = df_res_bi.sort_values(by=["Prioridade", "Dias Úteis p/ Carregar"], ascending=[True, True], na_position="last").reset_index(drop=True)
 
                     if len(df_bi) > len(df_res_bi):
