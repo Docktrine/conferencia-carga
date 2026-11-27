@@ -4008,9 +4008,43 @@ elif aba == "🚚 Planejamento Logística":
                                     st.toast("🔔 Notificação enviada com sucesso!", icon="🔔")
                                     st.rerun()
                                 else:
-                                    st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
-        st.markdown(
+                                    st.error("⚠️ Digite a mensagem da notificação antes de salvar."        st.markdown(
             """
+            <style>
+            div[data-testid="stTabs"] div[role="tablist"] {
+                gap: 8px !important;
+                background-color: rgba(20, 26, 22, 0.06) !important;
+                padding: 6px !important;
+                border-radius: 12px !important;
+                border-bottom: none !important;
+                margin-bottom: 10px !important;
+            }
+            div[data-testid="stTabs"] button[role="tab"] {
+                background-color: #FAF8F5 !important;
+                border: 1px solid rgba(27, 94, 32, 0.25) !important;
+                border-radius: 9px !important;
+                padding: 8px 18px !important;
+                color: #3E4740 !important;
+                font-weight: 600 !important;
+                transition: all 0.15s ease !important;
+            }
+            div[data-testid="stTabs"] button[role="tab"]:hover {
+                border-color: #1B5E20 !important;
+                color: #141A16 !important;
+            }
+            div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+                background: linear-gradient(135deg, #141A16 0%, #1E3323 100%) !important;
+                border: 1.5px solid #4CAF50 !important;
+                box-shadow: 0 3px 10px rgba(20, 26, 22, 0.18) !important;
+            }
+            div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p {
+                color: #FFFFFF !important;
+                font-weight: 800 !important;
+            }
+            div[data-testid="stTabs"] div[data-baseweb="tab-highlight"] {
+                display: none !important;
+            }
+            </style>
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
                 <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
                 <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Selecione a aba da ferramenta desejada</span>
