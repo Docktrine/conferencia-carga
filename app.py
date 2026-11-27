@@ -2230,7 +2230,7 @@ if aba == "🏠 Início":
                     st.rerun()
 
     # 2. Pulso Rápido da Operação Hoje (4 Cartões)
-    prog_hoje, patio_conf_hoje, carreg_hoje, pend_auditoria = 0, 0, 0, 0
+    prog_hoje, no_patio_hoje, conferindo_hoje, carreg_hoje, pend_auditoria = 0, 0, 0, 0, 0
     cargas_validadas_ini = set()
 
     if not df_plan_ini.empty:
@@ -2248,7 +2248,8 @@ if aba == "🏠 Início":
             datas_ini = df_p_ativos_ini["Data"].apply(formatar_data_br_str)
             status_ini = df_p_ativos_ini["Status"].apply(limpar_texto)
             prog_hoje = int((datas_ini == hoje_str_ini).sum())
-            patio_conf_hoje = int(status_ini.isin((limpar_texto("🚚 Veículo no Pátio"), limpar_texto("📦 Em Conferência"))).sum())
+            no_patio_hoje = int((status_ini == limpar_texto("🚛 Veículo no Pátio")).sum())
+            conferindo_hoje = int((status_ini == limpar_texto("🔍 Em Conferência")).sum())
             carreg_hoje = int(((datas_ini == hoje_str_ini) & (status_ini == limpar_texto("✅ Carregado / Liberado"))).sum())
 
     if not df_cargas_ini.empty and "id_carga" in df_cargas_ini.columns:
@@ -2265,11 +2266,12 @@ if aba == "🏠 Início":
             f"</div>"
         )
 
-    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4, gap="medium")
+    c_kpi1, c_kpi2, c_kpi3, c_kpi4, c_kpi5 = st.columns(5, gap="small")
     c_kpi1.markdown(_card_kpi_inicio("📅", "Programados Hoje", prog_hoje, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
-    c_kpi2.markdown(_card_kpi_inicio("🚚", "Pátio / Conferindo", patio_conf_hoje, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
-    c_kpi3.markdown(_card_kpi_inicio("✅", "Carregados Hoje", carreg_hoje, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
-    c_kpi4.markdown(_card_kpi_inicio("🛡️", "Aguardando Auditoria", pend_auditoria, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
+    c_kpi2.markdown(_card_kpi_inicio("🚛", "No Pátio", no_patio_hoje, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
+    c_kpi3.markdown(_card_kpi_inicio("🔍", "Conferindo", conferindo_hoje, "#EEF2FF", "#4F46E5", "#3730A3", "#312E81"), unsafe_allow_html=True)
+    c_kpi4.markdown(_card_kpi_inicio("✅", "Carregados Hoje", carreg_hoje, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
+    c_kpi5.markdown(_card_kpi_inicio("🛡️", "Aguardando Auditoria", pend_auditoria, "#FFFBEB", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
 
     st.divider()
 
