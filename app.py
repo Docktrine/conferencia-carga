@@ -3872,6 +3872,31 @@ elif aba == "🚚 Planejamento Logística":
                 "Nota Fiscal": st.column_config.TextColumn("🧾 Nota Fiscal", width="small"),
             }
         )
+        st.markdown(
+            """
+            <style>
+            /* Diferenciação visual dos 3 expanders do Planejamento mesmo quando recolhidos */
+            div[data-testid="stExpander"]:has(summary:contains("Calculadora de Frete")) > details > summary,
+            div[data-testid="stExpander"]:nth-of-type(1) > details > summary {
+                background: linear-gradient(90deg, #E0F2FE 0%, #F8FAFC 100%) !important;
+                border-left: 6px solid #0284C7 !important;
+            }
+            div[data-testid="stExpander"]:nth-of-type(2) > details > summary {
+                background: linear-gradient(90deg, #E8F5E9 0%, #F8FAF8 100%) !important;
+                border-left: 6px solid #2E7D32 !important;
+            }
+            div[data-testid="stExpander"]:nth-of-type(3) > details > summary {
+                background: linear-gradient(90deg, #FEF3C7 0%, #FFFBEB 100%) !important;
+                border-left: 6px solid #D97706 !important;
+            }
+            </style>
+            <div style="display:flex; align-items:center; gap:8px; margin:14px 0 8px 0;">
+                <span style="background:#141A16; color:#A5D6A7; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Operação Rápida</span>
+                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Atualize status e envie alertas em 1 clique</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )        
         with st.container(border=True):
             st.markdown("**⚡ Atualização Rápida de Status**")
             st_c1, st_c2, st_c3 = st.columns(3, vertical_alignment="bottom")
@@ -3932,6 +3957,15 @@ elif aba == "🚚 Planejamento Logística":
                                 st.rerun()
                             else:
                                 st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
+        st.markdown(
+            """
+            <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
+                <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
+                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Clique na barra desejada para expandir a ferramenta</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )                                
         with st.expander("🧮 Calculadora de Frete por Roteiro (Coletas e Entregas)", expanded=False):
             st.markdown(
                 """
