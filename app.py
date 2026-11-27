@@ -3007,7 +3007,7 @@ elif aba == "📊 Análise de Pedidos":
                     if not ped_raw or ped_raw.upper() in ("NAN", "NONE", "NULL", "<NA>"):
                         return
 
-                    cont_linhas += 1
+                    cont_linhas[0] += 1
                     ped_chave = ped_raw.upper()
 
                     fil_v = str(row_t[i_fil]).strip() if (0 <= i_fil < n_cols and row_t[i_fil] is not None) else ""
