@@ -4206,60 +4206,97 @@ elif aba == "🚚 Planejamento Logística":
     st.divider()
 
     with st.expander("➕ Incluir Pedido Manualmente"):
-        st.caption("💡 Consulte rapidamente o trânsito e a data útil ideal de carregamento antes de preencher:")
-        q_c1, q_c2, q_c3 = st.columns((1, 2, 2))
-        q_uf = q_c1.text_input("UF p/ Consulta:", placeholder="Ex: DF", key="q_lt_uf")
-        q_cid = q_c2.text_input("Cidade p/ Consulta:", placeholder="Ex: BRASILIA", key="q_lt_cid")
-        q_ent = q_c3.text_input("Data Entrega Prevista:", placeholder="Ex: 26/11/2026", key="q_lt_ent")
-        if q_uf.strip() and q_cid.strip():
-            lt_info_q = obter_mapa_lead_time().get((limpar_texto(q_uf), limpar_texto(q_cid)))
-            if lt_info_q is not None:
-                lt_q, rota_q, km_q, fc_q, ft_q = calcular_dias_rota_efetivos(lt_info_q)
-                km_txt_q = f" • {int(round(km_q))} km" if km_q is not None else ""
-                ft_str_q = f"R$ {ft_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if ft_q else "-"
-                fc_str_q = f"R$ {fc_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if fc_q else "-"
-                frete_txt_q = f" | 💰 **Frete Tabela:** Truck/Bi-truck `{ft_str_q}` • Carreta `{fc_str_q}`" if (ft_q or fc_q) else ""
-                dt_ent_q = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
-                if pd.notna(dt_ent_q):
-                    dt_sug_q = subtrair_dias_uteis(dt_ent_q, rota_q, obter_feriados_sistema())
-                    if pd.notna(dt_sug_q):
-                        st.info(f"🚚 **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}){frete_txt_q} | 📅 **Sugestão de Carregamento (dia útil):** **{dt_sug_q.strftime('%d/%m/%Y')}**")
-                else:
-                    st.info(f"⏱️ **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}:** Lead Time Total `{lt_q}d` (`{rota_q}d` de rota{km_txt_q}){frete_txt_q}. Informe a data de entrega ao lado para ver a data sugerida.")
-            else:
-                st.warning(f"⚠️ Cidade **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}** não encontrada na aba `lead time`.")
+        st.markdown(
+            """
+            <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
+                <div style="color:#A5D6A7; font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;">Cadastro Manual de Programação</div>
+                <div style="color:#FFFFFF; font-size:0.86rem; font-weight:600; margin-top:2px;">Consulte o Lead Time e o frete de referência antes de preencher os dados da programação.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-        
+        with st.container(border=True):
+            st.markdown("<div style='font-size:0.8rem; font-weight:700; color:#1B5E20; margin-bottom:6px;'>🔍 Consulta Rápida de Lead Time e Frete Tabela</div>", unsafe_allow_html=True)
+            q_c1, q_c2, q_c3 = st.columns((0.8, 1.8, 1.4))
+            q_uf = q_c1.text_input("UF p/ Consulta:", placeholder="Ex: RS", key="q_lt_uf")
+            q_cid = q_c2.text_input("Cidade p/ Consulta:", placeholder="Ex: PORTO ALEGRE", key="q_lt_cid")
+            q_ent = q_c3.text_input("Data Entrega Prevista:", placeholder="DD/MM/AAAA", key="q_lt_ent")
+
+            if q_uf.strip() and q_cid.strip():
+                mapa_lt_q = obter_mapa_lead_time()
+                feriados_q = obter_feriados_sistema()
+                lt_q = mapa_lt_q.get((limpar_texto(q_uf), limpar_texto(q_cid)))
+                if lt_q is not None:
+                    lt_tot_q, dias_rota_q, km_q, fc_q, ft_q = calcular_dias_rota_efetivos(lt_q)
+                    km_txt_q = f"{int(round(km_q))} km" if km_q is not None else "—"
+                    ft_str_q = f"R$ {ft_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if ft_q else "—"
+                    fc_str_q = f"R$ {fc_q:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if fc_q else "—"
+
+                    dt_q_parsed = pd.to_datetime(q_ent.strip(), dayfirst=True, errors="coerce") if q_ent.strip() else pd.NaT
+                    dt_sug_q_str = subtrair_dias_uteis(dt_q_parsed, dias_rota_q, feriados_q).strftime("%d/%m/%Y") if pd.notna(dt_q_parsed) else "Informe a entrega"
+
+                    kq1, kq2, kq3, kq4 = st.columns(4)
+                    kq1.markdown(
+                        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #1B5E20; border-radius:10px; padding:8px 12px;'>"
+                        f"<div style='font-size:0.68rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>⏱️ Lead Time / Rota</div>"
+                        f"<div style='font-size:1.05rem; font-weight:800; color:#141A16; margin-top:2px;'>{lt_tot_q}d ({dias_rota_q}d • {km_txt_q})</div></div>",
+                        unsafe_allow_html=True
+                    )
+                    kq2.markdown(
+                        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #2E7D32; border-radius:10px; padding:8px 12px;'>"
+                        f"<div style='font-size:0.68rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>🚚 Frete Truck</div>"
+                        f"<div style='font-size:1.05rem; font-weight:800; color:#141A16; margin-top:2px;'>{ft_str_q}</div></div>",
+                        unsafe_allow_html=True
+                    )
+                    kq3.markdown(
+                        f"<div style='background:#FAF8F5; border:1px solid rgba(27,94,32,0.3); border-left:4px solid #2E7D32; border-radius:10px; padding:8px 12px;'>"
+                        f"<div style='font-size:0.68rem; text-transform:uppercase; color:#5A635C; font-weight:700;'>🚛 Frete Carreta</div>"
+                        f"<div style='font-size:1.05rem; font-weight:800; color:#141A16; margin-top:2px;'>{fc_str_q}</div></div>",
+                        unsafe_allow_html=True
+                    )
+                    kq4.markdown(
+                        f"<div style='background:linear-gradient(135deg, #1B4332 0%, #081C15 100%); border:1px solid #40916C; border-left:5px solid #74C69D; border-radius:10px; padding:8px 12px;'>"
+                        f"<div style='font-size:0.68rem; text-transform:uppercase; color:#B7E4C7; font-weight:800;'>🎯 Sugestão Carreg.</div>"
+                        f"<div style='font-size:1.05rem; font-weight:800; color:#FFFFFF; margin-top:2px;'>{dt_sug_q_str}</div></div>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.warning(f"⚠️ Cidade **{limpar_texto(q_cid)}/{limpar_texto(q_uf)}** não encontrada na aba `lead time`.")
+
         with st.form("form_novo_planejamento", clear_on_submit=True):
+            st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin-bottom:8px;'>📦 1. Dados da Programação e Datas</div>", unsafe_allow_html=True)
             r1c1, r1c2, r1c3, r1c4 = st.columns(4)
-            in_data = r1c1.text_input("Data (DD/MM/AAAA):", placeholder="Ex: 18/11/2026")
+            in_data = r1c1.text_input("Data Carregamento (DD/MM/AAAA):", placeholder="Ex: 18/11/2026")
             in_hora = r1c2.text_input("Hora:", placeholder="Ex: 08:30")
             in_pedido = r1c3.text_input("Nº Pedido (ID da Carga)*:", placeholder="Ex: 106915")
             in_ordem = r1c4.text_input("Ordem de Carregamento:", placeholder="Ex: OC-450")
 
-            r2c1, r2c2, r2c3, r2c4 = st.columns(4)
-            in_local = r2c1.text_input("Local de Carregamento:", placeholder="Ex: CD Canoas")
-            in_cliente = r2c2.text_input("Cliente:", placeholder="Nome do cliente")
-            in_val_ped = r2c3.text_input("Valor Pedido:", placeholder="Ex: 15.400,00")
-            in_data_ent = r2c4.text_input("Data da entrega (DD/MM/AAAA):", placeholder="Ex: 20/11/2026")
+            r2c1, r2c2, r2c3 = st.columns((1.5, 1.2, 1.3))
+            in_local = r2c1.text_input("Local de Carregamento:", placeholder="Ex: CD Canoas / Friozem")
+            in_data_ent = r2c2.text_input("Data da entrega (DD/MM/AAAA):", placeholder="Ex: 20/11/2026")
+            in_status = r2c3.selectbox("Status Inicial:", STATUS_PLANEJAMENTO)
 
-            r3c1, r3c2, r3c3, r3c4 = st.columns(4)
-            in_transp = r3c1.text_input("Transportadora:", placeholder="Nome da transportadora")
-            in_placa = r3c2.text_input("Placa do veículo:", placeholder="Ex: ABC1D23")
-            in_tipo_veic = r3c3.text_input("Tipo de Veículo:", placeholder="Ex: Carreta / Truck")
-            in_val_frete = r3c4.text_input("Valor de Frete:", placeholder="Ex: 2.100,00")
+            st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin:12px 0 8px 0;'>🏢 2. Cliente, Destino e Modalidade</div>", unsafe_allow_html=True)
+            r3c1, r3c2, r3c3, r3c4 = st.columns((2.0, 1.2, 0.7, 1.5))
+            in_cliente = r3c1.text_input("Cliente:", placeholder="Nome do cliente")
+            in_val_ped = r3c2.text_input("Valor Pedido (R$):", placeholder="Ex: 15.800,00")
+            in_uf = r3c3.text_input("UF:", placeholder="Ex: RS")
+            in_cidade = r3c4.text_input("Cidade:", placeholder="Ex: Porto Alegre")
 
+            st.markdown("<div style='font-size:0.82rem; font-weight:800; color:#141A16; border-bottom:1px solid rgba(27,94,32,0.2); padding-bottom:4px; margin:12px 0 8px 0;'>🚛 3. Transporte, Frete e Observações</div>", unsafe_allow_html=True)
             r4c1, r4c2, r4c3, r4c4 = st.columns(4)
-            in_uf = r4c1.text_input("UF:", placeholder="Ex: RS")
-            in_cidade = r4c2.text_input("Cidade:", placeholder="Ex: Porto Alegre")
-            in_cif_fob = r4c3.selectbox("CIF/FOB:", ["CIF", "FOB"])
-            in_compart = r4c4.selectbox("Veículo compartilhado:", ["NÃO", "SIM"])
+            in_transp = r4c1.text_input("Transportadora:", placeholder="Nome da transportadora")
+            in_placa = r4c2.text_input("Placa do veículo:", placeholder="Ex: ABC1D23")
+            in_tipo_veic = r4c3.text_input("Tipo de Veículo:", placeholder="Ex: Carreta / Truck")
+            in_val_frete = r4c4.text_input("Valor de Frete (R$):", placeholder="Ex: 3.200,00")
 
-            r5c1, r5c2 = st.columns(2)
-            in_status = r5c1.selectbox("Status Inicial:", STATUS_PLANEJAMENTO)
-            in_obs = r5c2.text_input("Observação:", placeholder="Observações gerais do agendamento...")
+            r5c1, r5c2, r5c3 = st.columns((1.0, 1.0, 2.5))
+            in_cif_fob = r5c1.selectbox("CIF/FOB:", ["CIF", "FOB", "OUTRO"])
+            in_compart = r5c2.selectbox("Veículo compartilhado:", ["NÃO", "SIM"])
+            in_obs = r5c3.text_input("Observação:", placeholder="Observações gerais do agendamento...")
 
-            salvar_novo_plan = st.form_submit_button("➕ Incluir Pedido", type="primary", use_container_width=True)
+            salvar_novo_plan = st.form_submit_button("➕ Incluir Pedido na Programação", type="primary", use_container_width=True)
 
             if salvar_novo_plan:
                 ped_limpo = limpar_texto(in_pedido)
