@@ -5115,7 +5115,6 @@ elif aba == "📋 Gestão de Pedidos":
         """
         <div style="background:#FFFBEB; border:1px solid rgba(217,119,6,0.35); border-left:5px solid #D97706; border-radius:10px; padding:9px 14px; margin:10px 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:0.95rem; font-weight:800; color:#78350F;">⏳ Pedidos Aguardando Conferir</span>
-            <span style="background:#FEF3C7; color:#92400E; font-size:0.66rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Fila de Pátio</span>
         </div>
         """,
         unsafe_allow_html=True
@@ -5143,7 +5142,6 @@ elif aba == "📋 Gestão de Pedidos":
         """
         <div style="background:#ECFDF5; border:1px solid rgba(5,150,105,0.35); border-left:5px solid #059669; border-radius:10px; padding:9px 14px; margin:14px 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:0.95rem; font-weight:800; color:#064E3B;">✅ Pedidos Conferidos (100% Concluídos)</span>
-            <span style="background:#DCFCE7; color:#166534; font-size:0.66rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Prontos / Auditados</span>
         </div>
         """,
         unsafe_allow_html=True
