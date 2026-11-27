@@ -4012,38 +4012,6 @@ elif aba == "🚚 Planejamento Logística":
                                     st.error("⚠️ Digite a mensagem da notificação antes de salvar.")
         st.markdown(
             """
-            <style>
-            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) > div[role="radiogroup"] {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 8px !important;
-                background-color: rgba(20, 26, 22, 0.07) !important;
-                padding: 6px !important;
-                border-radius: 12px !important;
-                margin-bottom: 12px !important;
-            }
-            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"] {
-                background-color: #FAF8F5 !important;
-                border: 1px solid rgba(27, 94, 32, 0.25) !important;
-                border-radius: 9px !important;
-                padding: 8px 18px !important;
-                margin: 0 !important;
-                cursor: pointer !important;
-                transition: all 0.15s ease !important;
-            }
-            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"] > div:first-child {
-                display: none !important;
-            }
-            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"]:has(input:checked) {
-                background: linear-gradient(135deg, #141A16 0%, #1E3323 100%) !important;
-                border: 1.5px solid #4CAF50 !important;
-                box-shadow: 0 3px 10px rgba(20, 26, 22, 0.2) !important;
-            }
-            div[data-testid="stRadio"]:has(input[aria-label="🧮 Calculadora de Frete (Roteiros)"]) label[data-baseweb="radio"]:has(input:checked) p {
-                color: #FFFFFF !important;
-                font-weight: 800 !important;
-            }
-            </style>
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
                 <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
                 <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Clique na ferramenta que deseja abrir</span>
@@ -4051,17 +4019,25 @@ elif aba == "🚚 Planejamento Logística":
             """,
             unsafe_allow_html=True
         )
-        ferramenta_plan_sel = st.radio(
-            "Ferramenta:",
-            [
-                "🧮 Calculadora de Frete (Roteiros)",
-                "➕ Incluir Pedido Manualmente",
-                "✏️ Editar ou Excluir Pedido"
-            ],
-            horizontal=True,
-            label_visibility="collapsed",
-            key="radio_ferramenta_plan"
-        )
+        if "ferramenta_plan_ativa" not in st.session_state:
+            st.session_state.ferramenta_plan_ativa = "🧮 Calculadora de Frete (Roteiros)"
+
+        b_fer1, b_fer2, b_fer3 = st.columns(3, gap="small")
+        op_f1 = "🧮 Calculadora de Frete (Roteiros)"
+        op_f2 = "➕ Incluir Pedido Manualmente"
+        op_f3 = "✏️ Editar ou Excluir Pedido"
+
+        if b_fer1.button(op_f1, type="primary" if st.session_state.ferramenta_plan_ativa == op_f1 else "secondary", use_container_width=True, key="btn_tab_calc_fr"):
+            st.session_state.ferramenta_plan_ativa = op_f1
+            st.rerun()
+        if b_fer2.button(op_f2, type="primary" if st.session_state.ferramenta_plan_ativa == op_f2 else "secondary", use_container_width=True, key="btn_tab_inc_ped"):
+            st.session_state.ferramenta_plan_ativa = op_f2
+            st.rerun()
+        if b_fer3.button(op_f3, type="primary" if st.session_state.ferramenta_plan_ativa == op_f3 else "secondary", use_container_width=True, key="btn_tab_ed_ped"):
+            st.session_state.ferramenta_plan_ativa = op_f3
+            st.rerun()
+
+        ferramenta_plan_sel = st.session_state.ferramenta_plan_ativa
         if ferramenta_plan_sel == "🧮 Calculadora de Frete (Roteiros)":
 
             st.markdown(
