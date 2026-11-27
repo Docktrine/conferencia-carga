@@ -1580,10 +1580,6 @@ with st.sidebar:
         except Exception:
             pass
         st.session_state.ultimo_ping_ts = agora_ping
-
-            except Exception:
-                pass
-            st.session_state.ultimo_ping_ts = agora_ping
     
 @st.cache_data(ttl=60, show_spinner=False)
 def montar_html_usuarios_online():
