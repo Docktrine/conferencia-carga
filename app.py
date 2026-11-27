@@ -4992,7 +4992,19 @@ elif aba == "📥 Importação de Pedidos":
             st.info("Nenhuma carga cadastrada no momento.")
 
 elif aba == "📋 Gestão de Pedidos":
-    st.title("📋 Gestão de Pedidos: Conferidos x Pendentes")
+    st.markdown(
+        """
+        <div style="background:linear-gradient(135deg, #141A16 0%, #1E3323 100%); border:1px solid #2E7D32; border-left:6px solid #4CAF50; border-radius:12px; padding:14px 20px; margin-bottom:14px; box-shadow:0 4px 12px rgba(20,26,22,0.12);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="background:#2E7D32; color:#FFFFFF; font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Controle de Expedição • Status de Conferência</span>
+                <span style="color:#A5D6A7; font-size:0.78rem; font-weight:600;">Pendentes • 100% Conferidos • Lacre & Auditoria</span>
+            </div>
+            <div style="font-size:1.35rem; font-weight:800; color:#FFFFFF; margin-top:4px;">📋 Gestão de Pedidos: Conferidos x Pendentes</div>
+            <div style="font-size:0.8rem; color:#D1DDD4; margin-top:2px;">Visão consolidada das cargas aguardando conferência e dos pedidos já bipados e auditados.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     if st.button("🔄 Atualizar Status"):
         limpar_cache_operacional()
@@ -5083,14 +5095,31 @@ elif aba == "📋 Gestão de Pedidos":
                 "Situação": situacao
             })
 
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Total de Cargas", len(lista_pendentes) + len(lista_concluidas))
-    m2.metric("⏳ Faltam Conferir", len(lista_pendentes))
-    m3.metric("🟢 Conferidas (100%)", len(lista_concluidas))
+    def _card_kpi_gestao(icone, titulo, valor, bg, borda, cor_tit, cor_val):
+        return (
+            f"<div style='background:{bg}; border:1px solid {borda}44; border-left:5px solid {borda}; "
+            f"border-radius:12px; padding:12px 16px; margin-bottom:10px; box-shadow:0 3px 8px rgba(0,0,0,0.04);'>"
+            f"<div style='font-size:0.75rem; font-weight:700; color:{cor_tit}; letter-spacing:0.02em;'>{icone} {titulo}</div>"
+            f"<div style='font-size:1.75rem; font-weight:800; color:{cor_val}; margin-top:4px; line-height:1.1;'>{valor}</div>"
+            f"</div>"
+        )
 
-    st.divider()
+    qtd_pend_gp = len(lista_pendentes)
+    qtd_conc_gp = len(lista_concluidas)
+    m1, m2, m3 = st.columns(3, gap="medium")
+    m1.markdown(_card_kpi_gestao("📦", "Total de Cargas", qtd_pend_gp + qtd_conc_gp, "#FAF8F5", "#1B5E20", "#374151", "#141A16"), unsafe_allow_html=True)
+    m2.markdown(_card_kpi_gestao("⏳", "Faltam Conferir", qtd_pend_gp, "#FFFBEB" if qtd_pend_gp > 0 else "#F8FAFC", "#D97706", "#92400E", "#78350F"), unsafe_allow_html=True)
+    m3.markdown(_card_kpi_gestao("✅", "Conferidos (100%)", qtd_conc_gp, "#ECFDF5", "#059669", "#065F46", "#064E3B"), unsafe_allow_html=True)
 
-    st.subheader("⏳ Pedidos Aguardando Conferir")
+    st.markdown(
+        """
+        <div style="background:#FFFBEB; border:1px solid rgba(217,119,6,0.35); border-left:5px solid #D97706; border-radius:10px; padding:9px 14px; margin:10px 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.95rem; font-weight:800; color:#78350F;">⏳ Pedidos Aguardando Conferir</span>
+            <span style="background:#FEF3C7; color:#92400E; font-size:0.66rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Fila de Pátio</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     if lista_pendentes:
         renderizar_tabela_wms(
             pd.DataFrame(lista_pendentes),
@@ -5110,7 +5139,15 @@ elif aba == "📋 Gestão de Pedidos":
     else:
         st.success("🎉 Nenhuma carga pendente! Todas as cargas cadastradas já foram conferidas.")
 
-    st.subheader("✅ Pedidos Conferidos (100% Concluídos)")
+    st.markdown(
+        """
+        <div style="background:#ECFDF5; border:1px solid rgba(5,150,105,0.35); border-left:5px solid #059669; border-radius:10px; padding:9px 14px; margin:14px 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.95rem; font-weight:800; color:#064E3B;">✅ Pedidos Conferidos (100% Concluídos)</span>
+            <span style="background:#DCFCE7; color:#166534; font-size:0.66rem; font-weight:800; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Prontos / Auditados</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     if lista_concluidas:
         renderizar_tabela_wms(
                 pd.DataFrame(lista_concluidas),
