@@ -4014,31 +4014,17 @@ elif aba == "🚚 Planejamento Logística":
             """
             <div style="display:flex; align-items:center; gap:8px; margin:18px 0 8px 0;">
                 <span style="background:#1B5E20; color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:3px 10px; border-radius:6px; letter-spacing:0.06em; text-transform:uppercase;">Cálculo & Cadastro</span>
-                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Clique na ferramenta que deseja abrir</span>
+                <span style="color:#5A635C; font-size:0.78rem; font-weight:600;">Selecione a aba da ferramenta desejada</span>
             </div>
             """,
             unsafe_allow_html=True
         )
-        if "ferramenta_plan_ativa" not in st.session_state:
-            st.session_state.ferramenta_plan_ativa = "🧮 Calculadora de Frete (Roteiros)"
-
-        b_fer1, b_fer2, b_fer3 = st.columns(3, gap="small")
-        op_f1 = "🧮 Calculadora de Frete (Roteiros)"
-        op_f2 = "➕ Incluir Pedido Manualmente"
-        op_f3 = "✏️ Editar ou Excluir Pedido"
-
-        if b_fer1.button(op_f1, type="primary" if st.session_state.ferramenta_plan_ativa == op_f1 else "secondary", use_container_width=True, key="btn_tab_calc_fr"):
-            st.session_state.ferramenta_plan_ativa = op_f1
-            st.rerun()
-        if b_fer2.button(op_f2, type="primary" if st.session_state.ferramenta_plan_ativa == op_f2 else "secondary", use_container_width=True, key="btn_tab_inc_ped"):
-            st.session_state.ferramenta_plan_ativa = op_f2
-            st.rerun()
-        if b_fer3.button(op_f3, type="primary" if st.session_state.ferramenta_plan_ativa == op_f3 else "secondary", use_container_width=True, key="btn_tab_ed_ped"):
-            st.session_state.ferramenta_plan_ativa = op_f3
-            st.rerun()
-
-        ferramenta_plan_sel = st.session_state.ferramenta_plan_ativa
-        if ferramenta_plan_sel == "🧮 Calculadora de Frete (Roteiros)":
+        tab_calc_fr, tab_inc_ped, tab_ed_ped = st.tabs([
+            "🧮 Calculadora de Frete (Roteiros)",
+            "➕ Incluir Pedido Manualmente",
+            "✏️ Editar ou Excluir Pedido"
+        ])
+        with tab_calc_fr:
 
             st.markdown(
                 """
@@ -4310,7 +4296,7 @@ elif aba == "🚚 Planejamento Logística":
     else:
         st.info("Nenhum pedido cadastrado no planejamento ainda.")    
 
-    if ferramenta_plan_sel == "➕ Incluir Pedido Manualmente":
+    with tab_inc_ped:
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
@@ -4447,7 +4433,7 @@ elif aba == "🚚 Planejamento Logística":
                     st.success(f"✅ Pedido **'{ped_limpo}'** adicionado ao planejamento!")
                     st.rerun()
                     
-    if ferramenta_plan_sel == "✏️ Editar ou Excluir Pedido":
+    with tab_ed_ped:
         st.markdown(
             """
             <div style="background:linear-gradient(90deg, #141A16 0%, #1E3323 100%); border-left:5px solid #4CAF50; border-radius:10px; padding:10px 16px; margin-bottom:12px;">
