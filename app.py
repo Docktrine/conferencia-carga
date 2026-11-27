@@ -3403,7 +3403,7 @@ elif aba == "📊 Análise de Pedidos":
                     k5.markdown(_card_kpi_bi("💰 Valor Carteira", tot_val_str, "linear-gradient(135deg, #141A16 0%, #1E3323 100%)", "#4CAF50", "#A5D6A7", "#FFFFFF"), unsafe_allow_html=True)
                     k6.markdown(_card_kpi_bi("🧊 Total Volumes", tot_vol_str, "#F0F9FF", "#0284C7", "#075985", "#0C4A6E"), unsafe_allow_html=True)
 
-                    f_bi1, f_bi2 = st.columns(2)
+                    f_bi1, f_bi2, f_bi3 = st.columns(3)
                     filtro_sla = f_bi1.multiselect(
                         "Filtrar por Indicador de Prazo:",
                         options=df_res_bi["Status SLA"].unique().tolist(),
@@ -3414,12 +3414,18 @@ elif aba == "📊 Análise de Pedidos":
                         options=df_res_bi["Situação WMS"].unique().tolist(),
                         default=df_res_bi["Situação WMS"].unique().tolist()
                     )
+                    filiais_opcoes_bi = sorted(df_res_bi["Filial"].unique().tolist())
+                    filtro_filial_bi = f_bi3.multiselect(
+                        "Filtrar por Filial:",
+                        options=filiais_opcoes_bi,
+                        default=filiais_opcoes_bi
+                    )
 
                     df_exib_bi = df_res_bi[
                         (df_res_bi["Status SLA"].isin(filtro_sla)) &
-                        (df_res_bi["Situação WMS"].isin(filtro_wms_bi))
-                    ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()
-   
+                        (df_res_bi["Situação WMS"].isin(filtro_wms_bi)) &
+                        (df_res_bi["Filial"].isin(filtro_filial_bi))
+                    ].drop(columns=["Prioridade", "Valor_Num", "NF_Raw"]).copy()   
                     df_pagina_bi = df_exib_bi.head(300).copy()
 
                     def _cor_linha_sla_bi(row_bi):
