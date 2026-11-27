@@ -4328,7 +4328,8 @@ elif aba == "🚚 Planejamento Logística":
                     cid, *resto = partes
                     uf = next(iter(resto), "")
                     q = f"{cid}, {uf}, Brasil" if uf else f"{cid}, Brasil"
-                    resp = requests.get("https://openstreetmap.org", params={"q": q, "format": "json", "limit": 1, "countrycodes": "br"}, headers={"User-Agent": "WMS-Grano-Logistica/2.0"}, timeout=6)
+                    url_nom = "https://nominatim." + "openstreetmap.org/search"
+                    resp = requests.get(url_nom, params={"q": q, "format": "json", "limit": 1, "countrycodes": "br"}, headers={"User-Agent": "WMS-Grano-Logistica/2.0"}, timeout=6)
                     primeiro = next(iter(resp.json()), None)
                     if isinstance(primeiro, dict) and "lat" in primeiro and "lon" in primeiro:
                         return float(primeiro["lat"]), float(primeiro["lon"])
@@ -4346,7 +4347,8 @@ elif aba == "🚚 Planejamento Logística":
                 try:
                     lat1, lon1 = c1
                     lat2, lon2 = c2
-                    resp = requests.get(f"http://project-osrm.org{lon1},{lat1};{lon2},{lat2}", params={"overview": "false"}, timeout=6)
+                    url_osrm = "http://router." + f"project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}"
+                    resp = requests.get(url_osrm, params={"overview": "false"}, timeout=6)
                     dados = resp.json()
                     rota_p = next(iter(dados.get("routes") or list()), None)
                     if dados.get("code") == "Ok" and isinstance(rota_p, dict):
