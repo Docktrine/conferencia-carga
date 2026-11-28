@@ -5164,11 +5164,11 @@ elif aba == "📋 Gestão de Pedidos":
 
         for _, r in df_det.iterrows():
             prod_raw = str(r["produto"])
-            if "[CORTADO:" in prod_raw:
-                desc_limpa = prod_raw.split(" [CORTADO:")[0].strip()
-                trecho_corte = prod_raw.split("[CORTADO:")[-1].rstrip("]").strip()
-                if "| Motivo:" in trecho_corte:
-                    partes = trecho_corte.split("| Motivo:")
+            if "[CORTADO:" in prod_raw.upper():
+                desc_limpa = re.split(r"\s*\[CORTADO:", prod_raw, flags=re.IGNORECASE)[0].strip()
+                trecho_corte = re.split(r"\[CORTADO:", prod_raw, flags=re.IGNORECASE)[-1].rstrip("]").strip()
+                if re.search(r"\|\s*MOTIVO\s*:", trecho_corte, flags=re.IGNORECASE):
+                    partes = re.split(r"\|\s*MOTIVO\s*:", trecho_corte, maxsplit=1, flags=re.IGNORECASE)
                     qtd_corte_str = partes[0].strip()
                     motivo_info = partes[1].strip()
                 else:
