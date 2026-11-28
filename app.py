@@ -1560,7 +1560,6 @@ with st.sidebar:
             limpar_cache_operacional()
         st.session_state.usuario_autenticado = False
         st.rerun()
-    st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)        
     st.markdown("<div style='text-align:center; color:#8A928C; font-size:0.72rem; margin-top:14px; line-height:1.35;'><strong>WMS Grano v2.0</strong><br>Inteligência Logística</div>", unsafe_allow_html=True)
     agora_ping = datetime.now()
     ultimo_ping_sessao = st.session_state.get("ultimo_ping_ts")
